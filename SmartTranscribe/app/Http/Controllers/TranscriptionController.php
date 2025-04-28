@@ -30,7 +30,7 @@ class TranscriptionController extends Controller
         ]);
     }
 
-    public function findExternal(TranscriptionFindExternalRequest $request)
+    public function find(TranscriptionFindExternalRequest $request)
     {
         $transcription = $this->transcriptionService->findByExternalId($request->external_id);
 
@@ -39,7 +39,7 @@ class TranscriptionController extends Controller
         ]);
     }
 
-    public function deleteExternal(TranscriptionFindExternalRequest $request)
+    public function delete(TranscriptionFindExternalRequest $request)
     {
         $this->transcriptionService->deleteByExternalId($request->external_id);
 

@@ -22,11 +22,7 @@ class ResumeCreateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'input' => ['required', 'string'],
-            'date' => ['required', 'date'],
-            'localization' => ['required', 'string'],
-            'participants' => ['required', 'string'],
-            'subject' => ['required', 'string']
+            'input' => ['required', 'string']
         ];
     }
 }

@@ -21,12 +21,7 @@ class ResumeService
     public function create(array $data)
     {
         try {
-            $prompt = "Crie uma ata de reunião com as seguintes informações: \n" .
-                "Data: {$data['date']}\n" .
-                "Localização: {$data['localization']}\n" .
-                "Participantes: {$data['participants']}\n" .
-                "Assunto: {$data['subject']}\n" .
-                "Conteúdo: {$data['input']}";
+            $prompt = "Crie uma ata de reunião com as seguintes informações: $data[input]";
 
             $minute = $this->openAiLibrary->makeRequest($prompt);
 

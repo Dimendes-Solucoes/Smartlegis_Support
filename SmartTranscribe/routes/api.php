@@ -9,8 +9,8 @@ Route::get('/', fn () => response()->json(['message' => 'Welcome to the API']));
 Route::group(['prefix' => 'transcriptions'], function () {
     Route::get('/', [TranscriptionController::class, 'list']);
     Route::post('/', [TranscriptionController::class, 'convert']);
-    Route::get('/external', [TranscriptionController::class, 'findExternal']);
-    Route::delete('/external', [TranscriptionController::class, 'deleteExternal']);
+    Route::get('/find', [TranscriptionController::class, 'find']);
+    Route::delete('/', [TranscriptionController::class, 'delete']);
 });
 
 Route::group(['prefix' => 'resumes'], function () {
