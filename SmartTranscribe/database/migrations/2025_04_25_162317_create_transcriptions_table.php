@@ -13,10 +13,13 @@ return new class extends Migration
     {
         Schema::create('transcriptions', function (Blueprint $table) {
             $table->id();
-            $table->string('external_id');
-            $table->string('filename');
+            $table->foreignId('client_id')->constrained()->cascadeOnDelete();
+            $table->string('code');
+            $table->string('external_id')->nullable();
+            $table->string('filename')->nullable();
             $table->longText('content')->nullable();
             $table->string('status')->nullable();
+            $table->string('audio')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

@@ -25,4 +25,19 @@ class TranscriptionConvertRequest extends FormRequest
             'media_url' => ['required', 'string', 'url'],
         ];
     }
+
+    /**
+     * Get the body parameters for Scribe documentation.
+     *
+     * @return array
+     */
+    public function bodyParameters(): array
+    {
+        return [
+            'media_url' => [
+                'description' => 'URL da mídia a ser processada',
+                'example' => 'https://exemplo.com/arquivos/minha-midia.mp4',
+            ],
+        ];
+    }
 }

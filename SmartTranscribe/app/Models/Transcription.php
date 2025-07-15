@@ -16,9 +16,21 @@ class Transcription extends Model
     const STATUS_FAILED = '4';
 
     protected $fillable = [
+        'client_id',
+        'code',
         'external_id',
         'filename',
         'content',
-        'status'
+        'status',
+        'audio'
     ];
+
+    protected $guarded = [
+        'id'
+    ];
+
+    public function client()
+    {
+        return $this->belongsTo(Client::class);
+    }
 }

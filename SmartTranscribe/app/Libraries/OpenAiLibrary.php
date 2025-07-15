@@ -19,21 +19,10 @@ class OpenAiLibrary
         $this->model = env('OPENAI_API_MODEL');
     }
 
-    public function makeRequest(string $input): string
+    public function makeRequest(array $input): string
     {
-        $data = [
-            "model" => $this->model,
-            "messages" => [
-                [
-                    "role" => "user",
-                    "content" => $input
-                ]
-            ],
-            "temperature" => 1
-        ];
-
         $response = Http::withHeaders(['Authorization' => "Bearer {$this->subscriptionKey}"])
-            ->post($this->baseUrl, $data);
+            ->post($this->baseUrl, $input);
 
         if ($response->failed()) {
             throw new Exception('Erro ao executar a requisição');
@@ -41,15 +30,16 @@ class OpenAiLibrary
 
         $data = $this->formatData($response->json());
 
-        $this->logRequest($input, $data);
+        $this->logRequest($data);
 
         return $data['content'];
     }
 
-    private function logRequest(string $input, array $data): void
+    private function logRequest(array $data): void
     {
         OpenAiRequest::create([
-            'input' => $input,
+            'client_id' => currentClient()->id,
+            'input' => "",
             'model' => $this->model,
             'content' => $data['content'],
             'tokens' => $data['tokens']

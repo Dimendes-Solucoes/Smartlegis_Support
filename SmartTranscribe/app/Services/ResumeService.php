@@ -3,14 +3,16 @@
 namespace App\Services;
 
 use App\Libraries\OpenAiLibrary;
+use App\Libraries\TrainingGeneratorLibrary;
 use App\Models\Resume;
 use Illuminate\Support\Facades\Log;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Translation\Exception\NotFoundResourceException;
 
 class ResumeService
 {
     public function __construct(
-        protected OpenAiLibrary $openAiLibrary
+        protected OpenAiLibrary $openAiLibrary,
+        protected TrainingGeneratorLibrary $trainingGeneratorLibrary
     ) {}
 
     public function list()
@@ -21,24 +23,30 @@ class ResumeService
     public function create(array $data)
     {
         try {
-            $prompt = "Crie uma ata de reunião com as seguintes informações: $data[input]";
+            $model = $data['model'];
+            $base = $data['base'];
+            $input = $data['input'] ?? "";
 
-            $minute = $this->openAiLibrary->makeRequest($prompt);
+            $prompt = $this->trainingGeneratorLibrary->generate($model, $base, $input);
+            $content = $this->openAiLibrary->makeRequest($prompt);
 
-            return Resume::create(['content' => $minute]);
+            return Resume::create([
+                'client_id' => currentClient()->id,
+                'content' => $content,
+                'model' => $model
+            ]);
         } catch (\Throwable $e) {
-            dd($e);
-            Log::error('Erro ao criar a resumo: ' . $e->getMessage());
+            Log::error('Erro ao criar resumo: ' . $e->getMessage());
             throw new \Exception('Erro ao criar resumo');
         }
     }
 
     public function delete(int $id)
     {
-        $resume = Resume::findOrFail($id);
+        $resume = Resume::find($id);
 
         if (!$resume) {
-            throw new NotFoundHttpException('Resumo não encontrado');
+            throw new NotFoundResourceException('Resumo não encontrado');
         }
 
         $resume->delete();

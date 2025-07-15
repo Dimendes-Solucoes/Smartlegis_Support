@@ -22,7 +22,22 @@ class TranscriptionFindExternalRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'external_id' => ['required', 'string'],
+            'code' => ['required', 'string'],
+        ];
+    }
+
+    /**
+     * Get the body parameters for Scribe documentation.
+     *
+     * @return array
+     */
+    public function bodyParameters(): array
+    {
+        return [
+            'code' => [
+                'description' => 'Código de validação ou autenticação',
+                'example' => 'A1B2-C3D4-E5F6-G7H8',
+            ],
         ];
     }
 }

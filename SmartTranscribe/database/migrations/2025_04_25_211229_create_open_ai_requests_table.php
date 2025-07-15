@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('open_ai_requests', function (Blueprint $table) {
             $table->id();
-            $table->longText('input');
+            $table->foreignId('client_id')->constrained()->cascadeOnDelete();
+            $table->longText('input')->nullable();
             $table->string('model')->nullable();
             $table->longText('content')->nullable();
             $table->json('tokens')->nullable();

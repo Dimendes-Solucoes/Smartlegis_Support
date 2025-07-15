@@ -10,6 +10,7 @@ class OpenAiRequest extends Model
     use SoftDeletes;
 
     protected $fillable = [
+        'client_id',
         'input',
         'model',
         'content',
@@ -19,4 +20,9 @@ class OpenAiRequest extends Model
     protected $casts = [
         'tokens' => 'json'
     ];
+
+    public function client()
+    {
+        return $this->belongsTo(Client::class);
+    }
 }
