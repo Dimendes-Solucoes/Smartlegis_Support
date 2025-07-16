@@ -1,19 +1,34 @@
 <script setup lang="ts">
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import IconButton from '@/Components/Itens/IconButton.vue';
 import TextButton from '@/Components/Itens/TextButton.vue';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { PencilSquareIcon } from '@heroicons/vue/24/solid';
-import { Head } from '@inertiajs/vue3';
+import DocumentCategoryStatusBadge from '@/Components/DocumentCategory/DocumentCategoryStatusBadge.vue';
+import { DocumentMinusIcon, DocumentPlusIcon, PencilSquareIcon } from '@heroicons/vue/24/solid';
+import { Head, router } from '@inertiajs/vue3';
 
 interface DocumentCategory {
     id: number;
     name: string;
     abbreviation: string;
+    is_active: boolean;
 }
 
 const props = defineProps<{
     categories: DocumentCategory[];
 }>();
+
+const changeStatus = (categoryId: number): void => {
+    const category = props.categories.find(c => c.id === categoryId);
+    if (!category) return;
+
+    const action = category.is_active ? 'desativar' : 'ativar';
+
+    if (confirm(`Tem certeza que deseja ${action} esta categoria?`)) {
+        router.patch(route('document-categories.change_status', { id: categoryId }), {}, {
+            preserveScroll: true
+        });
+    }
+};
 
 </script>
 
@@ -42,8 +57,11 @@ const props = defineProps<{
                                         <th scope="col"
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
                                             Abreviação</th>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
+                                            Status</th>
                                         <th scope="col" class="relative px-6 py-3">
-                                            <span class="sr-only">Editar</span>
+                                            <span class="sr-only">Ações</span>
                                         </th>
                                     </tr>
                                 </thead>
@@ -51,10 +69,25 @@ const props = defineProps<{
                                     <tr v-for="category in props.categories" :key="category.id">
                                         <td class="px-6 py-4 whitespace-nowrap">{{ category.name }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap">{{ category.abbreviation }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <DocumentCategoryStatusBadge :status="category.is_active ? 1 : 0" />
+                                        </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                             <IconButton :href="route('document-categories.edit', category.id)"
                                                 color="yellow" title="Editar">
                                                 <PencilSquareIcon class="h-5 w-5" />
+                                            </IconButton>
+
+                                            <IconButton @click="changeStatus(category.id)"
+                                                :color="category.is_active ? 'red' : 'green'"
+                                                :title="category.is_active ? 'Desativar Categoria' : 'Ativar Categoria'"
+                                                href="#" class="ml-1">
+                                                <template v-if="category.is_active">
+                                                    <DocumentMinusIcon class="h-5 w-5" />
+                                                </template>
+                                                <template v-else>
+                                                    <DocumentPlusIcon class="h-5 w-5" />
+                                                </template>
                                             </IconButton>
                                         </td>
                                     </tr>

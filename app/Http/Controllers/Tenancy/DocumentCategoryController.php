@@ -51,6 +51,13 @@ class DocumentCategoryController extends Controller
             ->with('success', 'Categoria de documento atualizada com sucesso!');
     }
 
+    public function changeStatus(int $id)
+    {
+        $this->service->changeCategoryStatus($id);
+
+        return back()->with('success', 'Status da categoria alterado com sucesso!');
+    }
+
     public function destroy(int $id)
     {
         $this->service->destroyCategory($id);

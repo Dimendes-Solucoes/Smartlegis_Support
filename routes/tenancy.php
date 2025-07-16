@@ -40,6 +40,7 @@ Route::middleware(['auth', 'tenant.connection'])
                 Route::get('/{id}/editar', 'edit')->name('document-categories.edit');
                 Route::put('/{id}', 'update')->name('document-categories.update');
                 Route::delete('/{id}', 'destroy')->name('document-categories.destroy');
+                Route::patch('/{id}/status', 'changeStatus')->name('document-categories.change_status');
             });
 
         Route::prefix('tempos')

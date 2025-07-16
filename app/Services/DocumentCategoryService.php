@@ -37,6 +37,14 @@ class DocumentCategoryService
         return $category;
     }
 
+    public function changeCategoryStatus(int $id): void
+    {
+        $category = DocumentCategory::findOrFail($id);
+        $category->update([
+            'is_active' => !$category->is_active,
+        ]);
+    }
+
     public function destroyCategory(int $id)
     {
         $category = DocumentCategory::findOrFail($id);
@@ -47,8 +55,10 @@ class DocumentCategoryService
     {
         $fields = [
             'name',
-            'abbreviation'
+            'abbreviation',
+            'is_active'
         ];
+
         return Arr::only($data, $fields);
     }
 }
