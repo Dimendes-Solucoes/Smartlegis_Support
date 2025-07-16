@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue';
 import NavLink from '@/Components/NavLink.vue';
 import { Link, usePage } from '@inertiajs/vue3';
-import { SunIcon, MoonIcon, UserIcon, HomeIcon, ArrowLeftEndOnRectangleIcon, UsersIcon, NewspaperIcon, CalendarDateRangeIcon, BuildingOfficeIcon, Cog6ToothIcon, ClockIcon } from '@heroicons/vue/24/solid';
+import { SunIcon, MoonIcon, UserIcon, HomeIcon, ArrowLeftEndOnRectangleIcon, UsersIcon, NewspaperIcon, CalendarDateRangeIcon, BuildingOfficeIcon, Cog6ToothIcon, ClockIcon, ShieldCheckIcon } from '@heroicons/vue/24/solid';
 
 const isDark = ref(false);
 
@@ -63,6 +63,13 @@ if (localStorage.getItem("theme") === "dark") {
                         <CalendarDateRangeIcon class="h-5 w-5" />
                     </template>
                     Calendário
+                </NavLink>
+
+                <NavLink :href="route('admin.index')" :active="route().current('admin.index')">
+                    <template #icon>
+                        <ShieldCheckIcon class="h-5 w-5" />
+                    </template>
+                    Administradores
                 </NavLink>
 
                 <NavLink :href="route('profile.edit')" :active="route().current('profile.edit')">

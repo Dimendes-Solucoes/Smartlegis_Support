@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
@@ -15,6 +16,14 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/selecionar-tenant', [SelectedTenantController::class, 'change'])->name('tenant.change');
     Route::get('/configuracoes', [SelectedTenantController::class, 'settings'])->name('tenant.settings');
+
+    Route::get('/administradores', [AdminController::class, 'index'])->name('admin.index');
+    Route::get('/administradores/cadastrar', [AdminController::class, 'create'])->name('admin.create');
+    Route::post('/administradores', [AdminController::class, 'store'])->name('admin.store');
+    Route::get('/administradores/{id}/editar', [AdminController::class, 'edit'])->name('admin.edit');
+    Route::put('/administradores/{id}', [AdminController::class, 'update'])->name('admin.update');
+    Route::delete('/administradores/{id}', [AdminController::class, 'destroy'])->name('admin.destroy');
+    
     Route::get('/calendario', [CalendarController::class, 'index'])->name('calendar.index');
 });
 
