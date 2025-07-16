@@ -17,14 +17,16 @@ Route::middleware('auth')->group(function () {
     Route::post('/selecionar-tenant', [SelectedTenantController::class, 'change'])->name('tenant.change');
     Route::get('/configuracoes', [SelectedTenantController::class, 'settings'])->name('tenant.settings');
 
+    Route::get('/calendario', [CalendarController::class, 'index'])->name('calendar.index');
+});
+
+Route::middleware(['auth', 'is_root'])->group(function () {
     Route::get('/administradores', [AdminController::class, 'index'])->name('admin.index');
     Route::get('/administradores/cadastrar', [AdminController::class, 'create'])->name('admin.create');
     Route::post('/administradores', [AdminController::class, 'store'])->name('admin.store');
     Route::get('/administradores/{id}/editar', [AdminController::class, 'edit'])->name('admin.edit');
     Route::put('/administradores/{id}', [AdminController::class, 'update'])->name('admin.update');
     Route::delete('/administradores/{id}', [AdminController::class, 'destroy'])->name('admin.destroy');
-    
-    Route::get('/calendario', [CalendarController::class, 'index'])->name('calendar.index');
 });
 
 require __DIR__ . '/auth.php';

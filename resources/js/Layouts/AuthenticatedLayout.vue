@@ -4,9 +4,18 @@ import NavLink from '@/Components/NavLink.vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import { SunIcon, MoonIcon, UserIcon, HomeIcon, ArrowLeftEndOnRectangleIcon, UsersIcon, NewspaperIcon, CalendarDateRangeIcon, BuildingOfficeIcon, Cog6ToothIcon, ClockIcon, ShieldCheckIcon } from '@heroicons/vue/24/solid';
 
-const isDark = ref(false);
+interface AuthUser {
+    id: number;
+    name: string;
+    email: string;
+    is_root: boolean;
+}
 
+const isDark = ref(false);
 const page = usePage();
+
+const authUser = computed<AuthUser | null>(() => page.props.auth.user as AuthUser | null);
+const isRootUser = computed(() => authUser.value && authUser.value.is_root);
 
 const currentTenantCityName = computed(() => {
     return (page.props.tenant as any)?.city_name || 'Selecione uma cidade';
@@ -65,7 +74,7 @@ if (localStorage.getItem("theme") === "dark") {
                     Calendário
                 </NavLink>
 
-                <NavLink :href="route('admin.index')" :active="route().current('admin.index')">
+                <NavLink v-if="isRootUser" :href="route('admin.index')" :active="route().current('admin.index')">
                     <template #icon>
                         <ShieldCheckIcon class="h-5 w-5" />
                     </template>
