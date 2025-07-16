@@ -2,7 +2,9 @@
 import { computed, ref } from 'vue';
 import NavLink from '@/Components/NavLink.vue';
 import { Link, usePage } from '@inertiajs/vue3';
-import { SunIcon, MoonIcon, UserIcon, HomeIcon, ArrowLeftEndOnRectangleIcon, UsersIcon, NewspaperIcon, CalendarDateRangeIcon, BuildingOfficeIcon, Cog6ToothIcon, ClockIcon, ShieldCheckIcon } from '@heroicons/vue/24/solid';
+import { SunIcon, MoonIcon } from '@heroicons/vue/24/solid';
+
+import { staticNavigationLinks } from '@/data/navigationLinks';
 
 interface AuthUser {
     id: number;
@@ -38,6 +40,20 @@ if (localStorage.getItem("theme") === "dark") {
 } else {
     applyTheme("light");
 }
+
+const filteredNavigationLinks = computed(() => {
+    return staticNavigationLinks.filter(link => {
+        if (link.type === 'separator') {
+            return true;
+        }
+
+        if (link.route === 'admin.index') {
+            return isRootUser.value;
+        }
+
+        return true;
+    });
+});
 </script>
 
 <template>
@@ -53,80 +69,20 @@ if (localStorage.getItem("theme") === "dark") {
             </div>
 
             <nav class="flex-1 px-4 py-6 space-y-1 flex flex-col">
-                <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
-                    <template #icon>
-                        <HomeIcon class="h-5 w-5" />
+                <template v-for="(link, index) in filteredNavigationLinks" :key="index">
+                    <template v-if="link.type === 'separator'">
+                        <hr class="my-2 border-gray-200 dark:border-gray-700" />
                     </template>
-                    Dashboard
-                </NavLink>
-
-                <NavLink :href="route('tenant.settings')" :active="route().current('tenant.settings')">
-                    <template #icon>
-                        <Cog6ToothIcon class="h-5 w-5" />
+                    <template v-else-if="link.type === 'link'">
+                        <NavLink :href="route(link.route!)" :active="route().current(link.route!)"
+                            :method="link.method || 'get'" :as="link.as || 'a'">
+                            <template #icon>
+                                <component :is="link.icon" :class="['h-5 w-5', link.iconClass]" />
+                            </template>
+                            <span :class="link.textClass">{{ link.label }}</span>
+                        </NavLink>
                     </template>
-                    Configurações
-                </NavLink>
-
-                <NavLink :href="route('calendar.index')" :active="route().current('calendar.index')">
-                    <template #icon>
-                        <CalendarDateRangeIcon class="h-5 w-5" />
-                    </template>
-                    Calendário
-                </NavLink>
-
-                <NavLink v-if="isRootUser" :href="route('admin.index')" :active="route().current('admin.index')">
-                    <template #icon>
-                        <ShieldCheckIcon class="h-5 w-5" />
-                    </template>
-                    Administradores
-                </NavLink>
-
-                <NavLink :href="route('profile.edit')" :active="route().current('profile.edit')">
-                    <template #icon>
-                        <UserIcon class="h-5 w-5" />
-                    </template>
-                    Perfil
-                </NavLink>
-
-                <hr />
-
-                <NavLink :href="route('users.index')" :active="route().current('users.index')">
-                    <template #icon>
-                        <UsersIcon class="h-5 w-5" />
-                    </template>
-                    Usuários
-                </NavLink>
-
-                <NavLink :href="route('councilors.index')" :active="route().current('councilors.index')">
-                    <template #icon>
-                        <BuildingOfficeIcon class="h-5 w-5" />
-                    </template>
-                    Vereadores
-                </NavLink>
-
-                <NavLink :href="route('timers.index')" :active="route().current('timers.index')">
-                    <template #icon>
-                        <ClockIcon class="h-5 w-5" />
-                    </template>
-                    Tempos
-                </NavLink>
-
-                <NavLink :href="route('document-categories.index')"
-                    :active="route().current('document-categories.index')">
-                    <template #icon>
-                        <NewspaperIcon class="h-5 w-5" />
-                    </template>
-                    Categorias de Documentos
-                </NavLink>
-
-                <hr />
-
-                <NavLink :href="route('logout')" method="post" as="button">
-                    <template #icon>
-                        <ArrowLeftEndOnRectangleIcon class="h-5 w-5 text-red-500" />
-                    </template>
-                    <span class="text-red-500">Sair</span>
-                </NavLink>
+                </template>
 
                 <div class="flex-grow"></div>
 
