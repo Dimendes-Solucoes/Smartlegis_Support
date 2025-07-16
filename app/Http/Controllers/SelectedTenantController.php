@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Tenants\TenantChangeRequest;
 use App\Services\SelectedTenantService;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class SelectedTenantController extends Controller
@@ -21,7 +21,7 @@ class SelectedTenantController extends Controller
         ]);
     }
 
-    public function change(Request $request)
+    public function change(TenantChangeRequest $request)
     {
         $this->service->setSelectedTenant($request->input('tenant_id'));
         
