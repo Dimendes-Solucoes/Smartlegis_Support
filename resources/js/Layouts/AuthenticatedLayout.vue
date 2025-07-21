@@ -104,7 +104,7 @@ onMounted(() => {
                 </Link>
             </div>
 
-            <nav class="flex-1 px-2 py-6 space-y-1 flex flex-col" v-show="isSidebarOpen">
+            <nav class="flex-1 px-2 py-1 space-y-1 flex flex-col" v-show="isSidebarOpen">
                 <template v-for="(link, index) in filteredNavigationLinks" :key="index">
                     <template v-if="link.type === 'separator'">
                         <hr class="my-2 border-gray-200 dark:border-gray-700" />
