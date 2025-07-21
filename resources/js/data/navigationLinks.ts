@@ -1,5 +1,3 @@
-// src/data/navigationLinks.ts
-
 import {
     UserIcon,
     HomeIcon,

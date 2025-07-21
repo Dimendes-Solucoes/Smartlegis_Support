@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 import NavLink from '@/Components/NavLink.vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import { SunIcon, MoonIcon, Bars3Icon } from '@heroicons/vue/24/solid';
@@ -52,11 +52,25 @@ const filteredNavigationLinks = computed(() => {
     });
 });
 
-const isSidebarOpen = ref(true);
+const isSidebarOpen = ref(localStorage.getItem("isSidebarOpen") === "true");
 
 const toggleSidebar = () => {
     isSidebarOpen.value = !isSidebarOpen.value;
+    localStorage.setItem("isSidebarOpen", isSidebarOpen.value.toString());
 };
+
+onMounted(() => {
+  const mediaQuery = window.matchMedia('(min-width: 1024px)');
+  const handleMediaQueryChange = (e: MediaQueryListEvent) => {
+    if (!e.matches && isSidebarOpen.value) {
+        isSidebarOpen.value = false;
+        localStorage.setItem("isSidebarOpen", "false");
+    }
+  };
+  
+  mediaQuery.addEventListener('change', handleMediaQueryChange);
+  handleMediaQueryChange(mediaQuery as any);
+});
 
 </script>
 
@@ -71,24 +85,23 @@ const toggleSidebar = () => {
         <aside
             :class="[
                 'bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col fixed h-screen top-0 left-0 z-40 transition-all duration-300 ease-in-out',
-                // ALTERAÇÃO: A largura da barra recolhida foi diminuída de w-16 para w-12.
                 isSidebarOpen ? 'w-64' : 'w-14' 
             ]">
             <div class="flex items-center justify-center h-16 border-b border-gray-200 dark:border-gray-700 relative">
+                <button 
+                    @click="toggleSidebar"
+                    class="absolute p-2 rounded-md text-gray-400 hover:text-gray-500 focus:outline-none top-1/2 -translate-y-1/2"
+                    :class="isSidebarOpen ? 'left-1' : 'left-1/2 -translate-x-1/2'"
+                    aria-label="Toggle sidebar"
+                >
+                    <Bars3Icon class="h-6 w-6" />
+                </button>
+                
                 <Link :href="route('tenant.settings')" class="flex items-center">
                     <span class="text-md font-semibold text-gray-800 dark:text-gray-200" v-show="isSidebarOpen">
                         {{ currentTenantCityName }}
                     </span>
                 </Link>
-
-                <button 
-                    @click="toggleSidebar"
-                    class="absolute p-2 rounded-md text-gray-400 hover:text-gray-500 focus:outline-none top-1/2 -translate-y-1/2"
-                    :class="isSidebarOpen ? 'right-4' : 'left-1/2 -translate-x-1/2'"
-                    aria-label="Toggle sidebar"
-                >
-                    <Bars3Icon class="h-6 w-6" />
-                </button>
             </div>
 
             <nav class="flex-1 px-2 py-6 space-y-1 flex flex-col" v-show="isSidebarOpen">
@@ -114,12 +127,13 @@ const toggleSidebar = () => {
                 <div class="flex-grow"></div>
 
                 <div class="space-y-1 mt-auto pb-4">
-                     <div class="flex justify-center">
-                        <NavLink href="#" @click.prevent="applyTheme('light')" :active="!isDark" class="justify-center">
-                            <SunIcon class="h-5 w-5 text-gray-500 dark:text-gray-400" />
+                    <div class="flex justify-center">
+                        <NavLink href="#" @click.prevent="applyTheme('light')" :active="!isDark">
+                            <SunIcon class="h-5 w-5 text-white" />
                         </NavLink>
-                        <NavLink href="#" @click.prevent="applyTheme('dark')" :active="isDark" class="justify-center">
-                            <MoonIcon class="h-5 w-5 text-gray-500 dark:text-gray-400" />
+
+                        <NavLink href="#" @click.prevent="applyTheme('dark')" :active="isDark">
+                            <MoonIcon :class="['h-5 w-5', { 'text-white': isDark, 'text-gray-400': !isDark }]" />
                         </NavLink>
                     </div>
                 </div>
@@ -129,7 +143,6 @@ const toggleSidebar = () => {
         <main 
             :class="[
                 'flex-1 overflow-auto p-4 sm:p-6 transition-all duration-300 ease-in-out',
-                // ALTERAÇÃO: A margem foi ajustada para lg:ml-12 para corresponder à nova largura da barra.
                 isSidebarOpen ? 'lg:ml-64' : 'lg:ml-14' 
             ]">
             
