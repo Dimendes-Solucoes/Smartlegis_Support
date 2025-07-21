@@ -66,7 +66,7 @@ const props = defineProps<{
                 autocomplete="username" />
             <InputError class="mt-2" :message="form.errors.email" />
 
-            <div v-if="(form.category_id == 2 || form.category_id == 3) && props.isCreating"
+            <div v-if="(form.category_id == 2 || form.category_id == 3) && !props.isCreating"
                 class="p-1 text-yellow-800 dark:text-yellow-200 text-sm">
                 <p>
                     A alteração do nome ou e-mail do vereador exigirá uma nova assinatura eletrônica, invalidando
