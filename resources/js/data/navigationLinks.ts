@@ -8,6 +8,7 @@ import {
     BuildingOfficeIcon,
     Cog6ToothIcon,
     ClockIcon,
+    ClipboardDocumentListIcon,
     ShieldCheckIcon
 } from '@heroicons/vue/24/solid';
 
@@ -28,6 +29,12 @@ export const staticNavigationLinks: NavigationLink[] = [
         label: 'Dashboard',
         icon: HomeIcon,
         route: 'dashboard',
+        type: 'link',
+    },
+    {
+        label: 'Sessões',
+        icon: ClipboardDocumentListIcon,
+        route: 'document-categories.index',
         type: 'link',
     },
     {
