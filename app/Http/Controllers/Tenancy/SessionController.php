@@ -3,10 +3,11 @@
 namespace App\Http\Controllers\Tenancy;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Sessions\UpdateOrderRequest;
 use App\Models\Tenancy\Session;
-use Illuminate\Support\Facades\Storage;
 use App\Services\SessionService;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class SessionController extends Controller
@@ -23,16 +24,11 @@ class SessionController extends Controller
         ]);
     }
 
- public function edit(int $id)
+    public function edit(int $id)
     {
         $session = Session::findOrFail($id);
         
-        $documents = DB::table('document_sessions')
-            ->join('documents', 'document_sessions.document_id', '=', 'documents.id')
-            ->where('document_sessions.session_id', $session->id)
-            ->select('documents.id', 'documents.name', 'documents.attachment', 'document_sessions.ordem_do_dia', 'document_sessions.order')
-            ->orderBy('document_sessions.order', 'asc')
-            ->get();
+        $documents = $session->getDocumentsData();
 
         $documents->transform(function ($doc) {
             $doc->attachment = Storage::url($doc->attachment);
@@ -47,4 +43,46 @@ class SessionController extends Controller
             'extraDocuments' => $extraDocuments->values(),
         ]);
     }
+
+        public function update(UpdateOrderRequest $request, int $id)
+    {
+        $session = Session::findOrFail($id);
+        $validated = $request->validated();
+
+        DB::transaction(function () use ($validated, $session) {
+            
+            $this->updateDocumentOrder(
+                $session->id,
+                $validated['expediente_documents'],
+                0
+            );
+
+            $this->updateDocumentOrder(
+                $session->id,
+                $validated['ordem_do_dia_documents'],
+                1
+            );
+        });
+
+        return back()->with('success', 'Ordem da pauta salva com sucesso!');
+    }
+
+    private function updateDocumentOrder(int $sessionId, array $documentIds, int $ordemDoDia): void
+{
+    if (empty($documentIds)) {
+        return;
+    }
+
+    foreach ($documentIds as $index => $docId) {
+
+        DB::table('document_sessions')
+            ->where('session_id', $sessionId)
+            ->where('document_id', $docId)
+            ->update([
+                'ordem_do_dia' => $ordemDoDia,
+                'order' => $index + 1,
+            ]);
+    }
+}
+
 }

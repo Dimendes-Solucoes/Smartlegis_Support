@@ -34,7 +34,7 @@ const saveOrder = () => {
         ordem_do_dia_documents: ordemDoDiaList.value.map(doc => doc.id),
     };
 
-    router.put(route('sessions.agenda.update', props.session.id), payload, {
+    router.put(route('sessions.update', props.session.id), payload, {
         preserveScroll: true,
         onSuccess: () => alert('Ordem salva com sucesso!'),
         onError: () => alert('Ocorreu um erro ao salvar a ordem.'),
