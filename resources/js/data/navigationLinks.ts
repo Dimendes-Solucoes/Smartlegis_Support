@@ -32,12 +32,6 @@ export const staticNavigationLinks: NavigationLink[] = [
         type: 'link',
     },
     {
-        label: 'Sessões',
-        icon: ClipboardDocumentListIcon,
-        route: 'document-categories.index',
-        type: 'link',
-    },
-    {
         label: 'Calendário',
         icon: CalendarDateRangeIcon,
         route: 'calendar.index',
@@ -73,6 +67,12 @@ export const staticNavigationLinks: NavigationLink[] = [
         label: 'Categorias de Documentos',
         icon: NewspaperIcon,
         route: 'document-categories.index',
+        type: 'link',
+    },
+        {
+        label: 'Sessões',
+        icon: ClipboardDocumentListIcon,
+        route: 'sessions.index',
         type: 'link',
     },
     {

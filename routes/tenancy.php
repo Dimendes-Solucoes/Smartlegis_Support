@@ -4,6 +4,7 @@ use App\Http\Controllers\Tenancy\CouncilorController;
 use App\Http\Controllers\Tenancy\UserController;
 use App\Http\Controllers\Tenancy\DocumentCategoryController;
 use App\Http\Controllers\Tenancy\TimerController;
+use App\Http\Controllers\Tenancy\SessionController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'tenant.connection'])
@@ -49,5 +50,11 @@ Route::middleware(['auth', 'tenant.connection'])
                 Route::get('/', 'index')->name('timers.index');
                 Route::get('/{id}/editar', 'edit')->name('timers.edit');
                 Route::put('/{id}', 'update')->name('timers.update');
+            });
+
+        Route::prefix('sessions')
+            ->controller(SessionController::class)
+            ->group(function(){
+                Route::get('/', 'index')->name('sessions.index');
             });
     });

@@ -5,30 +5,30 @@ const props = defineProps<{
     status: number;
 }>();
 
+
 const badgeClasses = computed(() => {
-    const baseClasses = 'inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium whitespace-nowrap';
+    const baseClasses = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium';
 
     switch (props.status) {
         case 1: 
-            return `${baseClasses} bg-blue-500 text-white dark:bg-blue-600`;
+            return `${baseClasses} bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200`;
         case 2: 
-            //animate-pulse' para dar um efeito de "ao vivo"
-            return `${baseClasses} bg-green-500 text-white dark:bg-green-600 animate-pulse`;
+            return `${baseClasses} bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 animate-pulse`;
         case 3: 
-            return `${baseClasses} bg-gray-500 text-white dark:bg-gray-700`;
-        default:
-            return `${baseClasses} bg-yellow-500 text-white dark:bg-yellow-600`;
+            return `${baseClasses} bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200`;
+        default: //vai que 
+            return `${baseClasses} bg-gray-100 text-gray-800`;
     }
 });
 
 const badgeText = computed(() => {
     switch (props.status) {
         case 1:
-            return 'Aguardando Votação';
+            return 'Aguardando';
         case 2:
             return 'Em Votação';
         case 3:
-            return 'Finalizada';
+            return 'Concluída';
         default:
             return 'Desconhecido';
     }
