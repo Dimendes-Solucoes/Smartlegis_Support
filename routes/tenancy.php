@@ -56,5 +56,6 @@ Route::middleware(['auth', 'tenant.connection'])
             ->controller(SessionController::class)
             ->group(function(){
                 Route::get('/', 'index')->name('sessions.index');
+                Route::get('/{id}/editar-ordem-documentos', 'edit')->name('sessions.edit');
             });
     });

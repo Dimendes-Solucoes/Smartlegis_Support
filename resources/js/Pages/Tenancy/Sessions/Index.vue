@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import SessionStatusBadge from '@/Components/Session/SessionStatusBadge.vue'; 
+import SessionStatusBadge from '@/Components/Session/SessionStatusBadge.vue';
 import { Head } from '@inertiajs/vue3';
+import { ChevronUpIcon, ChevronDownIcon, QueueListIcon } from '@heroicons/vue/24/solid';
+import IconButton from '@/Components/Itens/IconButton.vue';
 
 interface Session {
     id: number;
     name: string;
-    datetime_start: string; 
+    datetime_start: string;
     session_status_id: number;
 }
 
@@ -43,7 +45,6 @@ const formatDate = (datetime: string) => {
     const date = new Date(datetime);
     return date.toLocaleString('pt-BR', {
         day: '2-digit', month: '2-digit', year: 'numeric',
-        hour: '2-digit', minute: '2-digit'
     });
 };
 
@@ -73,9 +74,12 @@ const formatDate = (datetime: string) => {
                                             </button>
                                         </th>
                                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
-                                            Status
+                                            STATUS
                                         </th>
-                                        </tr>
+                                        <th scope="col" class="relative px-6 py-3">
+                                            <span class="sr-only">Ações</span>
+                                        </th>
+                                    </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
                                     <tr v-for="session in sortedSessions" :key="session.id">
@@ -84,7 +88,12 @@ const formatDate = (datetime: string) => {
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <SessionStatusBadge :status="session.session_status_id" />
                                         </td>
-                                        </tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                            <IconButton :href="route('sessions.edit', session.id)" color="blue" title="Ordenar Documentos">
+                                                <QueueListIcon class="h-5 w-5" />
+                                            </IconButton>
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
