@@ -6,6 +6,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
+
     public const USUARIO_VEREADOR = 1;
     public const USUARIO_INVISIVEL = 2;
     public const USUARIO_ENVIO_DOCUMENTO = 3;
