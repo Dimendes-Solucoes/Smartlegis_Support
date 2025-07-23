@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Tenancy;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Sessions\UpdateOrderRequest;
+use App\Models\Tenancy\DocumentSession;
 use App\Models\Tenancy\Session;
 use App\Services\SessionService;
 use Illuminate\Support\Facades\DB;
@@ -74,12 +75,10 @@ class SessionController extends Controller
     }
 
     foreach ($documentIds as $index => $docId) {
-
-        DB::table('document_sessions')
-            ->where('session_id', $sessionId)
+        DocumentSession::where('session_id', $sessionId)
             ->where('document_id', $docId)
+            ->where('ordem_do_dia', $ordemDoDia)
             ->update([
-                'ordem_do_dia' => $ordemDoDia,
                 'order' => $index + 1,
             ]);
     }

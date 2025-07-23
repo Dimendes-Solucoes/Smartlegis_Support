@@ -3,7 +3,7 @@ import { ref } from 'vue';
 import { Head, router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import draggable from 'vuedraggable';
-import { EyeIcon, Bars2Icon } from '@heroicons/vue/24/solid';
+import { EyeIcon, Bars3Icon } from '@heroicons/vue/24/solid';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 
 interface Session {
@@ -44,7 +44,7 @@ const saveOrder = () => {
 </script>
 
 <template>
-    <Head :title="`Ordenar Pauta - ${session.name}`" />
+    <Head :title="`${session.name}`" />
 
     <AuthenticatedLayout>
         <div class="py-12">
@@ -62,11 +62,11 @@ const saveOrder = () => {
                     
                     <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div class="p-6 text-gray-900 dark:text-gray-100">
-                            <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">0 - Expediente do Dia</h2>
+                            <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">EXPEDIENTE DO DIA</h2>
                             <table class="min-w-full">
                                 <thead class="border-b border-gray-200 dark:border-gray-700">
                                     <tr>
-                                        <th class="px-1 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Documento</th>
+                                        <th class="px-1 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">DOCUMENTOS</th>
                                     </tr>
                                 </thead>
                                 <draggable 
@@ -79,14 +79,20 @@ const saveOrder = () => {
                                     <template #item="{ element }">
                                         <tr>
                                             <td class="pt-2" colspan="100%">
-                                                <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg text-gray-800 dark:text-gray-200">
-                                                    <span class="flex-1 mr-4 font-medium">{{ element.name }}</span>
-                                                    <div class="flex items-center space-x-2 flex-shrink-0">
-                                                        <button class="drag-handle p-2 text-gray-500 hover:text-gray-400 rounded-full cursor-grab" title="Mover"><Bars2Icon class="h-5 w-5" /></button>
-                                                        <a :href="element.attachment" target="_blank" rel="noopener noreferrer" class="p-2 text-blue-500 hover:text-blue-400 rounded-full" title="Visualizar"><EyeIcon class="h-5 w-5" /></a>
-                                                    </div>
+                                                <div class="flex items-center p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg text-gray-800 dark:text-gray-200">
+                                                    <button class="drag-handle p-2 text-gray-500 hover:text-gray-400 rounded-full cursor-grab flex-shrink-0" title="Mover">
+                                                        <Bars3Icon class="h-5 w-5" />
+                                                    </button>
+                                                    
+                                                    <span class="flex-1 mx-4 font-medium">{{ element.name }}</span>
+                                                    
+                                                    <a :href="element.attachment" target="_blank" rel="noopener noreferrer" 
+                                                       class="flex items-center justify-center p-1 bg-indigo-600 hover:bg-indigo-700 rounded-md border-2 border-indigo-600 flex-shrink-0" 
+                                                       title="Visualizar">
+                                                        <EyeIcon class="h-5 w-5 text-white" />
+                                                    </a>
                                                 </div>
-                                            </td>
+                                                </td>
                                         </tr>
                                     </template>
                                 </draggable>
@@ -96,11 +102,11 @@ const saveOrder = () => {
 
                     <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div class="p-6 text-gray-900 dark:text-gray-100">
-                            <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">1 - Ordem do Dia</h2>
+                            <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">ORDEM DO DIA</h2>
                              <table class="min-w-full">
                                 <thead class="border-b border-gray-200 dark:border-gray-700">
                                     <tr>
-                                        <th class="px-1 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Documento</th>
+                                        <th class="px-1 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">DOCUMENTOS</th>
                                     </tr>
                                 </thead>
                                 <draggable 
@@ -113,14 +119,20 @@ const saveOrder = () => {
                                     <template #item="{ element }">
                                         <tr>
                                             <td class="pt-2" colspan="100%">
-                                                <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg text-gray-800 dark:text-gray-200">
-                                                    <span class="flex-1 mr-4 font-medium">{{ element.name }}</span>
-                                                    <div class="flex items-center space-x-2 flex-shrink-0">
-                                                        <button class="drag-handle p-2 text-gray-500 hover:text-gray-400 rounded-full cursor-grab" title="Mover"><Bars2Icon class="h-5 w-5" /></button>
-                                                        <a :href="element.attachment" target="_blank" rel="noopener noreferrer" class="p-2 text-blue-500 hover:text-blue-400 rounded-full" title="Visualizar"><EyeIcon class="h-5 w-5" /></a>
-                                                    </div>
+                                                 <div class="flex items-center p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg text-gray-800 dark:text-gray-200">
+                                                    <button class="drag-handle p-2 text-gray-500 hover:text-gray-400 rounded-full cursor-grab flex-shrink-0" title="Mover">
+                                                        <Bars3Icon class="h-5 w-5" />
+                                                    </button>
+                                                    
+                                                    <span class="flex-1 mx-4 font-medium">{{ element.name }}</span>
+                                                    
+                                                    <a :href="element.attachment" target="_blank" rel="noopener noreferrer" 
+                                                       class="flex items-center justify-center p-1 bg-indigo-600 hover:bg-indigo-700 rounded-md border-2 border-indigo-600 flex-shrink-0" 
+                                                       title="Visualizar">
+                                                        <EyeIcon class="h-5 w-5 text-white" />
+                                                    </a>
                                                 </div>
-                                            </td>
+                                                </td>
                                         </tr>
                                     </template>
                                 </draggable>
@@ -133,7 +145,7 @@ const saveOrder = () => {
     </AuthenticatedLayout>
 </template>
 
-<style>
+<style lang="postcss">
 .ghost-item {
     @apply opacity-50 bg-blue-100 dark:bg-blue-900/50 rounded-lg;
 }
