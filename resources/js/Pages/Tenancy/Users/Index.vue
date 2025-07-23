@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head } from '@inertiajs/vue3';
+import { Head, useForm } from '@inertiajs/vue3';
 import { getImageUrl } from '@/Utils/image'
 import TextButton from '@/Components/Itens/TextButton.vue';
 import IconButton from '@/Components/Itens/IconButton.vue';
-import { PencilSquareIcon } from '@heroicons/vue/24/solid';
+import { PencilSquareIcon, TrashIcon } from '@heroicons/vue/24/solid';
 
 interface User {
     id: number;
@@ -23,6 +23,21 @@ const props = defineProps<{
 const getImage = (path: string): string => {
     return getImageUrl(path)
 }
+
+const form = useForm({});
+
+const deleteUser = (userId: number) => {
+    if (confirm('Tem certeza que deseja deletar este usuário?')) {
+        form.delete(route('users.destroy', userId), {
+            preserveScroll: true,
+            onSuccess: () => { },
+            onError: (errors) => {
+                console.error('Erro ao deletar usuário:', errors);
+                alert('Ocorreu um erro ao deletar o usuário.');
+            }
+        });
+    }
+};
 </script>
 
 <template>
@@ -63,7 +78,9 @@ const getImage = (path: string): string => {
                                         <th scope="col"
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
                                             Categoria</th>
-                                        <th></th>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
+                                            Ações</th>
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
@@ -80,9 +97,14 @@ const getImage = (path: string): string => {
                                         <td class="px-6 py-4 whitespace-nowrap">{{ user.nickname || '-' }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap">{{ user.email }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap">{{ user.category?.name || '-' }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <td class="px-6 py-4 whitespace-nowrap text-left text-sm font-medium">
                                             <IconButton :href="route('users.edit', user.id)" color="yellow" title="Editar">
                                                 <PencilSquareIcon class="h-5 w-5" />
+                                            </IconButton>
+
+                                            <IconButton v-if="user.category.id !== 5" @click="deleteUser(user.id)" color="red" title="Deletar"
+                                                class="ml-2">
+                                                <TrashIcon class="h-5 w-5" />
                                             </IconButton>
                                         </td>
                                     </tr>

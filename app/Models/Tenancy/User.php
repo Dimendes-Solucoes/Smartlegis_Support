@@ -2,10 +2,13 @@
 
 namespace App\Models\Tenancy;
 
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
+    use SoftDeletes;
+
     public const USUARIO_VEREADOR = 1;
     public const USUARIO_INVISIVEL = 2;
     public const USUARIO_ENVIO_DOCUMENTO = 3;

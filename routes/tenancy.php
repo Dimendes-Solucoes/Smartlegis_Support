@@ -20,6 +20,7 @@ Route::middleware(['auth', 'tenant.connection'])
                 Route::post('/salvar-prefeito', 'saveMayor')->name('users.save_mayor');
                 Route::get('/{id}/editar', 'edit')->name('users.edit');
                 Route::put('/{id}', 'update')->name('users.update');
+                Route::delete('/{id}', 'destroy')->name('users.destroy');
             });
 
         Route::prefix('vereadores')
@@ -64,7 +65,7 @@ Route::middleware(['auth', 'tenant.connection'])
                 Route::put('/{id}', 'update')->name('timers.update');
             });
 
-        Route::prefix('sessions')
+        Route::prefix('sessoes')
             ->controller(SessionController::class)
             ->group(function () {
                 Route::get('/', 'index')->name('sessions.index');

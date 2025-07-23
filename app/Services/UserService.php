@@ -82,7 +82,9 @@ class UserService
 
             $user = User::create($userData);
 
-            $this->updateMayor($user);
+            if ($user->category_id == UserCategory::PREFEITURA) {
+                $this->updateMayor($user);
+            }
 
             DB::commit();
 
@@ -116,6 +118,38 @@ class UserService
         } catch (Exception $e) {
             throw new Exception("Erro ao atualizar prefeito: " . $e->getMessage());
         }
+    }
+
+    public function delete(int $id)
+    {
+        $userToDelete = User::findOrFail($id);
+
+        if ($userToDelete->category->id == UserCategory::PREFEITURA) {
+            throw new Exception("Não é possível deletar usuários prefeitura");
+        }
+
+        if ($userToDelete->category->id == UserCategory::SECRETARIO) {
+            $otherSecretarios = User::where('id', '!=', $userToDelete->id)
+                ->where('user_category_id', UserCategory::SECRETARIO)
+                ->where('status_user', User::USUARIO_ENVIO_DOCUMENTO)
+                ->count();
+
+            if ($otherSecretarios == 0) {
+                throw new Exception("É necessário ter outro usuário secretário para este poder ser excluído");
+            }
+        }
+
+        $usersInSameCategory = User::where('id', '!=', $userToDelete->id)
+            ->where('user_category_id', $userToDelete->category->id)
+            ->count();
+
+        if ($usersInSameCategory == 0) {
+            throw new Exception("É necessário ter outro usuário dessa categoria para que este possa ser excluído");
+        }
+
+        $userToDelete->delete();
+
+        return true;
     }
 
     private function prepareUserData(array $data): array
