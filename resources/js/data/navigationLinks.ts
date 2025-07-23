@@ -9,7 +9,8 @@ import {
     Cog6ToothIcon,
     ClockIcon,
     ClipboardDocumentListIcon,
-    ShieldCheckIcon
+    ShieldCheckIcon,
+    UserGroupIcon
 } from '@heroicons/vue/24/solid';
 
 interface NavigationLink {
@@ -61,6 +62,12 @@ export const staticNavigationLinks: NavigationLink[] = [
         label: 'Vereadores',
         icon: BuildingOfficeIcon,
         route: 'councilors.index',
+        type: 'link',
+    },
+    {
+        label: 'Comissões',
+        icon: UserGroupIcon,
+        route: 'commissions.index',
         type: 'link',
     },
     {

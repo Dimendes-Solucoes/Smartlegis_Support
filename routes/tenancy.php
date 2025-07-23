@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Tenancy\CommissionController;
 use App\Http\Controllers\Tenancy\CouncilorController;
 use App\Http\Controllers\Tenancy\UserController;
 use App\Http\Controllers\Tenancy\DocumentCategoryController;
@@ -30,6 +31,17 @@ Route::middleware(['auth', 'tenant.connection'])
                 Route::get('/{id}/editar', 'edit')->name('councilors.edit');
                 Route::put('/{id}', 'update')->name('councilors.update');
                 Route::patch('/{id}/trocar-status', 'changeStatus')->name('councilors.change_status');
+            });
+
+        Route::prefix('comissoes')
+            ->controller(CommissionController::class)
+            ->group(function () {
+                Route::get('/', 'index')->name('commissions.index');
+                Route::get('/cadastrar', 'create')->name('commissions.create');
+                Route::post('/', 'store')->name('commissions.store');
+                Route::get('/{id}/editar', 'edit')->name('commissions.edit');
+                Route::put('/{id}', 'update')->name('commissions.update');
+                Route::put('/{id}/users', 'updateUsers')->name('commissions.update_users');
             });
 
         Route::prefix('categorias-de-documentos')
