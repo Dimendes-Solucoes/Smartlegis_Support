@@ -54,7 +54,7 @@ Route::middleware(['auth', 'tenant.connection'])
 
         Route::prefix('sessions')
             ->controller(SessionController::class)
-            ->group(function(){
+            ->group(function () {
                 Route::get('/', 'index')->name('sessions.index');
                 Route::get('/{id}/editar-ordem-documentos', 'edit')->name('sessions.edit');
                 Route::put('/{id}', 'update')->name('sessions.update');

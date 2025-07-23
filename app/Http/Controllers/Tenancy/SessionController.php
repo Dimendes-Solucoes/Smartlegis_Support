@@ -28,7 +28,7 @@ class SessionController extends Controller
     public function edit(int $id)
     {
         $session = Session::findOrFail($id);
-        
+
         $documents = $session->getDocumentsData();
 
         $documents->transform(function ($doc) {
@@ -36,7 +36,7 @@ class SessionController extends Controller
             return $doc;
         });
 
-        [$agendaDocuments, $extraDocuments] = $documents->partition(fn ($doc) => $doc->ordem_do_dia == 1);
+        [$agendaDocuments, $extraDocuments] = $documents->partition(fn($doc) => $doc->ordem_do_dia == 1);
 
         return Inertia::render('Tenancy/Sessions/EditOrder', [
             'session' => $session,
@@ -45,13 +45,13 @@ class SessionController extends Controller
         ]);
     }
 
-        public function update(UpdateOrderRequest $request, int $id)
+    public function update(UpdateOrderRequest $request, int $id)
     {
         $session = Session::findOrFail($id);
         $validated = $request->validated();
 
         DB::transaction(function () use ($validated, $session) {
-            
+
             $this->updateDocumentOrder(
                 $session->id,
                 $validated['expediente_documents'],
@@ -69,19 +69,18 @@ class SessionController extends Controller
     }
 
     private function updateDocumentOrder(int $sessionId, array $documentIds, int $ordemDoDia): void
-{
-    if (empty($documentIds)) {
-        return;
-    }
+    {
+        if (empty($documentIds)) {
+            return;
+        }
 
-    foreach ($documentIds as $index => $docId) {
-        DocumentSession::where('session_id', $sessionId)
-            ->where('document_id', $docId)
-            ->where('ordem_do_dia', $ordemDoDia)
-            ->update([
-                'order' => $index + 1,
-            ]);
+        foreach ($documentIds as $index => $docId) {
+            DocumentSession::where('session_id', $sessionId)
+                ->where('document_id', $docId)
+                ->where('ordem_do_dia', $ordemDoDia)
+                ->update([
+                    'order' => $index + 1,
+                ]);
+        }
     }
-}
-
 }

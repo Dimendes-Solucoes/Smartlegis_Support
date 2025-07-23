@@ -9,7 +9,7 @@ class SessionService
 {
     public function getAllSessions(): Collection
     {
-        return Session::get()->map(fn ($session) => [
+        return Session::get()->map(fn($session) => [
             'id' => $session->id,
             'name' => $session->name,
             'datetime_start' => $session->datetime_start,
