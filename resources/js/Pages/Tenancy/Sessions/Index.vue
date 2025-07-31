@@ -3,7 +3,7 @@ import { ref, watch } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import SessionStatusBadge from '@/Components/Session/SessionStatusBadge.vue';
 import { Head, router, Link } from '@inertiajs/vue3';
-import { QueueListIcon, TrashIcon, ChevronUpIcon, ChevronDownIcon } from '@heroicons/vue/24/solid';
+import { QueueListIcon, TrashIcon, ChevronUpIcon, ChevronDownIcon, CalendarDaysIcon } from '@heroicons/vue/24/solid';
 import IconButton from '@/Components/Itens/IconButton.vue';
 import ConfirmDeletionModal from '@/Components/ConfirmDeletionModal.vue';
 
@@ -75,16 +75,6 @@ const deleteSession = () => {
         onSuccess: () => closeModal(),
     });
 };
-
-watch(confirmingSessionDeletion, (newValue, oldValue) => {
-    console.log(`O estado do modal mudou de ${oldValue} para ${newValue}`);
-    
-    // Se o modal estava ABERTO (true) e de repente foi FECHADO (false)...
-    if (oldValue === true && newValue === false) {
-        // ...pause a execução do código exatamente neste momento!
-        debugger;
-    }
-});
 </script>
 
 <template>
@@ -130,19 +120,24 @@ watch(confirmingSessionDeletion, (newValue, oldValue) => {
                                             <SessionStatusBadge :status="session.session_status_id" />
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            <IconButton :href="route('sessions.edit', session.id)" color="indigo" title="Ordenar Documentos">
-                                                <QueueListIcon class="h-5 w-5" />
-                                            </IconButton>
+                                            <div class="flex items-center justify-end space-x-1">
+                                                <IconButton :href="route('sessions.edit_date', session.id)" color="yellow" title="Editar Data da Sessão">
+                                                    <CalendarDaysIcon class="h-5 w-5" />
+                                                </IconButton>
+                                                
+                                                <IconButton :href="route('sessions.edit', session.id)" color="indigo" title="Ordenar Documentos">
+                                                    <QueueListIcon class="h-5 w-5" />
+                                                </IconButton>
 
-                                            <IconButton 
-                                                as="button" 
-                                                color="red" 
-                                                title="Excluir Sessão" 
-                                                class="ml-1"
-                                                @click.stop="openConfirmDeleteModal(session)"
-                                            >
-                                                <TrashIcon class="h-5 w-5" />
-                                            </IconButton>
+                                                <IconButton 
+                                                    as="button" 
+                                                    color="red" 
+                                                    title="Excluir Sessão"
+                                                    @click.stop="openConfirmDeleteModal(session)"
+                                                >
+                                                    <TrashIcon class="h-5 w-5" />
+                                                </IconButton>
+                                            </div>
                                         </td>
                                     </tr>
                                 </tbody>

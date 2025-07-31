@@ -48,6 +48,24 @@ class SessionController extends Controller
         ]);
     }
 
+    public function editDate(int $id)
+    {
+        $session = Session::findOrFail($id);
+        return Inertia::render('Tenancy/Sessions/EditDate', [
+            'session' => $session,
+        ]);
+    }
+
+    public function updateDate(Request $request, int $id)
+    {
+        $session = Session::findOrFail($id);
+        $validated = $request->validate([
+            'datetime_start' => ['required', 'date'],
+        ]);
+        $session->update($validated);
+        return redirect()->route('sessions.index')->with('success', 'Data da sessão atualizada com sucesso!');
+    }
+
     public function update(UpdateOrderRequest $request, int $id)
     {
         $session = Session::findOrFail($id);

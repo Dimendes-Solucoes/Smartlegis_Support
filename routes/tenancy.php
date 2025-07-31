@@ -72,5 +72,7 @@ Route::middleware(['auth', 'tenant.connection'])
                 Route::get('/{id}/editar-ordem-documentos', 'edit')->name('sessions.edit');
                 Route::put('/{id}', 'update')->name('sessions.update');
                 Route::delete('/{id}', 'destroy')->name('sessions.destroy');
+                Route::get('/{id}/edit-date', 'editDate')->name('sessions.edit_date');
+                Route::put('/{id}/update-date', 'updateDate')->name('sessions.update_date');
             });
     });
