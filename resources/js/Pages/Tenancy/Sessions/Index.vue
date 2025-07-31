@@ -3,7 +3,8 @@ import { computed, ref } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import SessionStatusBadge from '@/Components/Session/SessionStatusBadge.vue';
 import { Head } from '@inertiajs/vue3';
-import { ChevronUpIcon, ChevronDownIcon, QueueListIcon } from '@heroicons/vue/24/solid';
+import { QueueListIcon, TrashIcon } from '@heroicons/vue/24/solid';
+import IconButton from '@/Components/Itens/IconButton.vue';
 
 interface Session {
     id: number;
@@ -88,11 +89,13 @@ const formatDate = (datetime: string) => {
                                             <SessionStatusBadge :status="session.session_status_id" />
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            <a :href="route('sessions.edit', session.id)"
-                                            title="Ordenar Documentos"
-                                            class="inline-flex items-center justify-center w-8 h-8 bg-indigo-600 hover:bg-indigo-700 rounded-md border-2 border-indigo-600 flex-shrink-0">
-                                                <QueueListIcon class="h-5 w-5 text-white" />
-                                            </a>
+                                            <IconButton :href="route('sessions.edit', session.id)" color="indigo" title="Ordenar Documentos">
+                                                <QueueListIcon class="h-5 w-5" />
+                                            </IconButton>
+
+                                            <IconButton as="button" color="red" title="Excluir Sessão" class="ml-1">
+                                                <TrashIcon class="h-5 w-5" />
+                                            </IconButton>
                                         </td>
                                     </tr>
                                 </tbody>
