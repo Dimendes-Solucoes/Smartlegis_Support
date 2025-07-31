@@ -5,13 +5,18 @@ import { computed } from 'vue';
 const props = defineProps({
     href: {
         type: String,
-        required: true,
+        required: false,
+        default: null,
     },
     color: {
         type: String,
         default: 'indigo',
-        validator: (value) => ['indigo', 'red', 'yellow'].includes(value),
+        validator: (value) => ['indigo', 'red', 'yellow', 'blue'].includes(value), 
     },
+});
+
+const tag = computed(() => {
+    return props.href ? Link : 'button';
 });
 
 const dynamicColorClasses = computed(() => {
@@ -40,7 +45,7 @@ const baseButtonClasses = computed(() => `
 </script>
 
 <template>
-    <Link :href="href" :class="baseButtonClasses">
-    <slot></slot>
-    </Link>
+    <component :is="tag" :href="href" :class="baseButtonClasses">
+        <slot></slot>
+    </component>
 </template>

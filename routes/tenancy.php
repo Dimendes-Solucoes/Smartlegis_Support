@@ -71,5 +71,6 @@ Route::middleware(['auth', 'tenant.connection'])
                 Route::get('/', 'index')->name('sessions.index');
                 Route::get('/{id}/editar-ordem-documentos', 'edit')->name('sessions.edit');
                 Route::put('/{id}', 'update')->name('sessions.update');
+                Route::delete('/{id}', 'destroy')->name('sessions.destroy');
             });
     });

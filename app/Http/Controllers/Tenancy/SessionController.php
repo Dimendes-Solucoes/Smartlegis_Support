@@ -10,6 +10,7 @@ use App\Services\SessionService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
+use Illuminate\Http\Request;
 
 class SessionController extends Controller
 {
@@ -17,11 +18,13 @@ class SessionController extends Controller
         protected SessionService $service
     ) {}
 
-    public function index()
+    public function index(Request $request)
     {
         $sessions = $this->service->getAllSessions();
+
         return Inertia::render('Tenancy/Sessions/Index', [
             'sessions' => $sessions,
+            'filters' => $request->only(['sort', 'direction']),
         ]);
     }
 
@@ -82,5 +85,12 @@ class SessionController extends Controller
                     'order' => $index + 1,
                 ]);
         }
+    }
+    public function destroy(int $id)
+    {
+        $session = Session::findOrFail($id);
+        $session->delete();
+
+        return back()->with('success', 'Sessão movida para a lixeira com sucesso!');
     }
 }
