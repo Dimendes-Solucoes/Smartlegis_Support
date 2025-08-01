@@ -212,7 +212,7 @@ class UserService
             $extension = $imageFile->getClientOriginalExtension();
             $file_name = Str::random(40) . '.' . $extension;
 
-            return StorageCustom::putFileAs('imagens_user', $imageFile, $file_name);
+            return "/" . StorageCustom::putFileAs('imagens_user', $imageFile, $file_name);
         }
 
         return null;
