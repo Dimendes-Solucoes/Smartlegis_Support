@@ -25,6 +25,9 @@ export default {
       pattern: /bg-(indigo|red|yellow|orange|green)-500/,
     },
     {
+      pattern: /border-(indigo|red|yellow|orange|green)-600/,
+    },
+    {
       pattern: /hover:bg-(indigo|red|yellow|orange|green)-700/,
     },
     {

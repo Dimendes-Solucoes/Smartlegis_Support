@@ -75,8 +75,7 @@ const saveOrder = () => {
                     <div class="gap-8">
                         <div>
                             <div class="p-5 rounded-lg border dark:border-gray-600 mb-6">
-                                <h2
-                                    class="text-xl font-semibold text-gray-800 dark:text-gray-200 flex items-center">
+                                <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 flex items-center">
                                     Expediente do Dia
                                 </h2>
                                 <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Documentos que serão discutidos
@@ -102,8 +101,9 @@ const saveOrder = () => {
                                             <span class="flex-1 mx-4 font-medium text-gray-800 dark:text-gray-200">{{
                                                 element.name }}</span>
 
-                                            <LinkButton :link="element.attachment" :icon="EyeIcon"
-                                                title="Visualizar documento" />
+                                            <LinkButton :link="element.attachment" title="Visualizar documento">
+                                                <EyeIcon class="h-5 w-5 text-white" />
+                                            </LinkButton>
                                         </li>
                                     </template>
                                 </draggable>
@@ -112,8 +112,7 @@ const saveOrder = () => {
 
                         <div>
                             <div class="p-5 rounded-lg border dark:border-gray-600 mb-6">
-                                <h2
-                                    class="text-xl font-semibold text-gray-800 dark:text-gray-200 flex items-center">
+                                <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 flex items-center">
                                     Ordem do Dia
                                 </h2>
                                 <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Documentos principais a serem
@@ -131,17 +130,18 @@ const saveOrder = () => {
                                     <template #item="{ element }">
                                         <li
                                             class="flex items-center p-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 transition-all duration-200 ease-in-out">
-                                            <IconButton
+                                            <button
                                                 class="drag-handle p-2 text-gray-500 dark:text-gray-400 hover:text-indigo-600 rounded-full cursor-grab flex-shrink-0 transition-colors duration-200"
                                                 title="Mover">
                                                 <Bars2Icon class="h-5 w-5" />
-                                            </IconButton>
+                                            </button>
 
                                             <span class="flex-1 mx-4 font-medium text-gray-800 dark:text-gray-200">{{
                                                 element.name }}</span>
 
-                                            <LinkButton :link="element.attachment" :icon="EyeIcon"
-                                                title="Visualizar documento" />
+                                            <LinkButton :link="element.attachment" title="Visualizar documento">
+                                                <EyeIcon class="h-5 w-5 text-white" />
+                                            </LinkButton>
                                         </li>
                                     </template>
                                 </draggable>
