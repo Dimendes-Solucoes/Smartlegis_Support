@@ -93,6 +93,7 @@ class CouncilorService
 
             $userData = $this->prepareUserData($data, $user);
 
+            dd($userData);
             $user->update($userData);
 
             if ($category_id != UserCategory::PRESIDENTE && $data['category_id'] == UserCategory::PRESIDENTE) {
@@ -215,7 +216,7 @@ class CouncilorService
             $extension = $imageFile->getClientOriginalExtension();
             $file_name = Str::random(40) . '.' . $extension;
 
-            return StorageCustom::putFileAs('imagens_user', $imageFile, $file_name);
+            return "/" . StorageCustom::putFileAs('imagens_user', $imageFile, $file_name);
         }
 
         return null;
