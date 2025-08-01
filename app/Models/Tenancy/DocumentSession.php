@@ -3,11 +3,11 @@
 namespace App\Models\Tenancy;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class DocumentSession extends Model
+class DocumentSession extends Pivot
 {
     use HasFactory, SoftDeletes;
 
@@ -25,6 +25,7 @@ class DocumentSession extends Model
     {
         return $this->belongsTo(Session::class);
     }
+
     public function document(): BelongsTo
     {
         return $this->belongsTo(Document::class);
