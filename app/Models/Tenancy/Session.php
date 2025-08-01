@@ -43,6 +43,7 @@ class Session extends Model
         return $this->belongsToMany(Document::class, 'document_sessions')
             ->using(DocumentSession::class)
             ->withPivot('ordem_do_dia', 'order')
+            ->whereNull('document_sessions.deleted_at')
             ->orderBy('document_sessions.order', 'asc');
     }
 }
