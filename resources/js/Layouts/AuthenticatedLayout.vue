@@ -69,16 +69,14 @@ onMounted(() => {
     };
 
     mediaQuery.addEventListener('change', handleMediaQueryChange);
-    // Chama a função uma vez para definir o estado inicial correto em telas grandes
     handleMediaQueryChange(mediaQuery as any);
 });
 
-// Nova computed property para controlar as classes de margem do main
 const mainContentClasses = computed(() => {
     return {
-        'lg:ml-64': isSidebarOpen.value, // Adiciona margin-left de 256px (largura padrão do w-64 do Tailwind)
-        'ml-0': !isSidebarOpen.value, // Remove margin-left quando a sidebar está fechada
-        'transition-all duration-300 ease-in-out': true // Transição suave
+        'lg:ml-64': isSidebarOpen.value,
+        'ml-0': !isSidebarOpen.value,
+        'transition-all duration-300 ease-in-out': true
     };
 });
 </script>
