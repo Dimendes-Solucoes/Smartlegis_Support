@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Tenancy;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Sessions\UpdateOrderRequest;
+use App\Http\Requests\Sessions\SessionUpdateRequest;
 use App\Models\Tenancy\DocumentSession;
 use App\Models\Tenancy\Session;
 use App\Services\SessionService;
@@ -30,6 +31,22 @@ class SessionController extends Controller
 
     public function edit(int $id)
     {
+        $session = $this->service->find($id);
+
+        return Inertia::render('Tenancy/Sessions/EditSession', [
+            'session' => $session
+        ]);
+    }
+
+    public function update(SessionUpdateRequest $request, int $id)
+    {
+        $this->service->update($id, $request->validated());
+
+        return redirect()->route('sessions.index')->with('success', 'Sessão atualizada com sucesso!');
+    }
+
+    public function editOrder(int $id)
+    {
         $session = Session::findOrFail($id);
 
         $documents = $session->getDocumentsData();
@@ -48,25 +65,7 @@ class SessionController extends Controller
         ]);
     }
 
-    public function editDate(int $id)
-    {
-        $session = Session::findOrFail($id);
-        return Inertia::render('Tenancy/Sessions/EditDate', [
-            'session' => $session,
-        ]);
-    }
-
-    public function updateDate(Request $request, int $id)
-    {
-        $session = Session::findOrFail($id);
-        $validated = $request->validate([
-            'datetime_start' => ['required', 'date'],
-        ]);
-        $session->update($validated);
-        return redirect()->route('sessions.index')->with('success', 'Data da sessão atualizada com sucesso!');
-    }
-
-    public function update(UpdateOrderRequest $request, int $id)
+    public function updateOrder(UpdateOrderRequest $request, int $id)
     {
         $session = Session::findOrFail($id);
         $validated = $request->validated();
@@ -104,6 +103,7 @@ class SessionController extends Controller
                 ]);
         }
     }
+
     public function destroy(int $id)
     {
         $session = Session::findOrFail($id);

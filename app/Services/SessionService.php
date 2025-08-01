@@ -13,11 +13,12 @@ class SessionService
         $sortField = Request::input('sort', 'datetime_start');
         $sortDirection = Request::input('direction', 'desc');
         $sortableFields = ['name', 'datetime_start'];
+
         if (!in_array($sortField, $sortableFields)) {
             $sortField = 'datetime_start';
         }
 
-        return Session::orderBy($sortField, $sortDirection) 
+        return Session::orderBy($sortField, $sortDirection)
             ->paginate(15)
             ->through(fn($session) => [
                 'id' => $session->id,
@@ -25,5 +26,18 @@ class SessionService
                 'datetime_start' => $session->datetime_start,
                 'session_status_id' => $session->session_status_id,
             ]);
+    }
+
+    public function find(int $id)
+    {
+        return Session::findOrFail($id);
+    }
+
+    public function update(int $id, array $data): Session
+    {
+        $session = Session::findOrFail($id);
+        $session->update($data);
+
+        return $session;
     }
 }

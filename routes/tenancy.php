@@ -69,10 +69,10 @@ Route::middleware(['auth', 'tenant.connection'])
             ->controller(SessionController::class)
             ->group(function () {
                 Route::get('/', 'index')->name('sessions.index');
-                Route::get('/{id}/editar-ordem-documentos', 'edit')->name('sessions.edit');
+                Route::get('/{id}/editar', 'edit')->name('sessions.edit');
                 Route::put('/{id}', 'update')->name('sessions.update');
+                Route::get('/{id}/reordenar', 'editOrder')->name('sessions.edit_order');
+                Route::put('/{id}/reordenar', 'updateOrder')->name('sessions.update_order');
                 Route::delete('/{id}', 'destroy')->name('sessions.destroy');
-                Route::get('/{id}/edit-date', 'editDate')->name('sessions.edit_date');
-                Route::put('/{id}/update-date', 'updateDate')->name('sessions.update_date');
             });
     });
