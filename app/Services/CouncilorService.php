@@ -93,7 +93,6 @@ class CouncilorService
 
             $userData = $this->prepareUserData($data, $user);
 
-            dd($userData);
             $user->update($userData);
 
             if ($category_id != UserCategory::PRESIDENTE && $data['category_id'] == UserCategory::PRESIDENTE) {
