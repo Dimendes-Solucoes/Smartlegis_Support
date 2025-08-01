@@ -2,14 +2,12 @@
 
 namespace App\Models\Tenancy;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class DocumentSession extends Pivot
 {
-    use HasFactory, SoftDeletes;
+    use SoftDeletes;
 
     protected $table = 'document_sessions';
 
@@ -21,12 +19,12 @@ class DocumentSession extends Pivot
         'secret_vote',
     ];
 
-    public function session(): BelongsTo
+    public function session()
     {
         return $this->belongsTo(Session::class);
     }
 
-    public function document(): BelongsTo
+    public function document()
     {
         return $this->belongsTo(Document::class);
     }

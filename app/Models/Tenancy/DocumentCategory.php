@@ -2,13 +2,12 @@
 
 namespace App\Models\Tenancy;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes; // usar o SoftDeletes do bd
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class DocumentCategory extends Model
 {
-    use HasFactory, SoftDeletes;
+    use SoftDeletes;
 
     protected $fillable = [
         'name',

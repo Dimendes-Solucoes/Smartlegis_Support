@@ -4,6 +4,7 @@ namespace App\Models\Tenancy;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
 
 class Session extends Model
 {
@@ -38,6 +39,16 @@ class Session extends Model
         return $this->hasMany(DocumentSession::class);
     }
 
+    public function votes()
+    {
+        return $this->hasMany(Vote::class);
+    }
+
+    public function quorums()
+    {
+        return $this->hasMany(Quorum::class);
+    }
+
     public function documents()
     {
         return $this->belongsToMany(Document::class, 'document_sessions')
@@ -45,5 +56,16 @@ class Session extends Model
             ->withPivot('ordem_do_dia', 'order')
             ->whereNull('document_sessions.deleted_at')
             ->orderBy('document_sessions.order', 'asc');
+    }
+
+    protected static function booted()
+    {
+        static::deleting(function ($session) {
+            DB::transaction(function () use ($session) {
+                $session->documentSessions()->delete();
+                $session->votes()->delete();
+                $session->quorums()->delete();
+            });
+        });
     }
 }

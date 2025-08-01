@@ -3,9 +3,12 @@
 namespace App\Models\Tenancy;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class UserCategory extends Model
 {
+    use SoftDeletes;
+
     public const SECRETARIO = 1;
     public const VEREADOR = 2;
     public const PRESIDENTE = 3;
