@@ -3,13 +3,13 @@
 namespace App\Http\Controllers\Tenancy;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Sessions\UpdateOrderRequest;
+use App\Http\Requests\Sessions\SessionUpdateOrderRequest;
+use App\Http\Requests\Sessions\SessionUpdateRequest;
 use App\Models\Tenancy\DocumentSession;
 use App\Models\Tenancy\Session;
 use App\Services\SessionService;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
+use Illuminate\Http\Request;
 
 class SessionController extends Controller
 {
@@ -17,70 +17,50 @@ class SessionController extends Controller
         protected SessionService $service
     ) {}
 
-    public function index()
+    public function index(Request $request)
     {
         $sessions = $this->service->getAllSessions();
+
         return Inertia::render('Tenancy/Sessions/Index', [
             'sessions' => $sessions,
+            'filters' => $request->only(['sort', 'direction']),
         ]);
     }
 
     public function edit(int $id)
     {
-        $session = Session::findOrFail($id);
+        $session = $this->service->find($id);
 
-        $documents = $session->getDocumentsData();
-
-        $documents->transform(function ($doc) {
-            $doc->attachment = Storage::url($doc->attachment);
-            return $doc;
-        });
-
-        [$agendaDocuments, $extraDocuments] = $documents->partition(fn($doc) => $doc->ordem_do_dia == 1);
-
-        return Inertia::render('Tenancy/Sessions/EditOrder', [
-            'session' => $session,
-            'agendaDocuments' => $agendaDocuments->values(),
-            'extraDocuments' => $extraDocuments->values(),
+        return Inertia::render('Tenancy/Sessions/EditSession', [
+            'session' => $session
         ]);
     }
 
-    public function update(UpdateOrderRequest $request, int $id)
+    public function update(SessionUpdateRequest $request, int $id)
     {
-        $session = Session::findOrFail($id);
-        $validated = $request->validated();
+        $this->service->update($id, $request->validated());
 
-        DB::transaction(function () use ($validated, $session) {
+        return back()->with('success', 'Sessão atualizada com sucesso!');
+    }
 
-            $this->updateDocumentOrder(
-                $session->id,
-                $validated['expediente_documents'],
-                0
-            );
+    public function editOrder(int $id)
+    {
+        $data = $this->service->prepareForEditOrder($id);
 
-            $this->updateDocumentOrder(
-                $session->id,
-                $validated['ordem_do_dia_documents'],
-                1
-            );
-        });
+        return Inertia::render('Tenancy/Sessions/EditOrder', $data);
+    }
+
+    public function updateOrder(SessionUpdateOrderRequest $request, int $id)
+    {
+        $this->service->updateOrder($id, $request->validated());
 
         return back()->with('success', 'Ordem da pauta salva com sucesso!');
     }
 
-    private function updateDocumentOrder(int $sessionId, array $documentIds, int $ordemDoDia): void
+    public function destroy(int $id)
     {
-        if (empty($documentIds)) {
-            return;
-        }
+        $this->service->delete($id);
 
-        foreach ($documentIds as $index => $docId) {
-            DocumentSession::where('session_id', $sessionId)
-                ->where('document_id', $docId)
-                ->where('ordem_do_dia', $ordemDoDia)
-                ->update([
-                    'order' => $index + 1,
-                ]);
-        }
+        return back()->with('success', 'Sessão movida para a lixeira com sucesso!');
     }
 }

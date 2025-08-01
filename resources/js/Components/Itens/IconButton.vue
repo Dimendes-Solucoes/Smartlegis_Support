@@ -4,18 +4,20 @@ import BaseButtonLink from './BaseButtonLink.vue';
 const props = defineProps({
     href: {
         type: String,
-        required: true,
+        required: false,
+        default: null,
     },
     color: {
         type: String,
         default: 'indigo',
-        validator: (value) => ['indigo', 'red', 'yellow'].includes(value),
+        validator: (value) => ['indigo', 'red', 'yellow', 'blue'].includes(value),
     },
+    as: String, 
 });
 </script>
 
 <template>
-    <BaseButtonLink :href="href" :color="color" class="p-1 flex justify-center items-center">
+    <BaseButtonLink :href="href" :as="as" :color="color" class="p-1 flex justify-center items-center">
         <slot></slot>
     </BaseButtonLink>
 </template>

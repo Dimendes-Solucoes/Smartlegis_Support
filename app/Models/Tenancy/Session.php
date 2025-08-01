@@ -3,11 +3,12 @@
 namespace App\Models\Tenancy;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB; 
-use Illuminate\Support\Collection;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Session extends Model
 {
+    use SoftDeletes;
+
     protected $fillable = [
         'name',
         'user_id',
@@ -32,19 +33,16 @@ class Session extends Model
         return $this->belongsTo(SessionStatus::class);
     }
 
-    public function getDocumentsData(): Collection
+    public function documentSessions()
     {
-            return DB::table('document_sessions')
-                ->join('documents', 'document_sessions.document_id', '=', 'documents.id')
-                ->where('document_sessions.session_id', $this->id) // Usa o ID da instância atual da sessão
-                ->select(
-                    'documents.id',
-                    'documents.name',
-                    'documents.attachment',
-                    'document_sessions.ordem_do_dia',
-                    'document_sessions.order'
-                )
-                ->orderBy('document_sessions.order', 'asc')
-                ->get();
+        return $this->hasMany(DocumentSession::class);
+    }
+
+    public function documents()
+    {
+        return $this->belongsToMany(Document::class, 'document_sessions')
+            ->using(DocumentSession::class)
+            ->withPivot('ordem_do_dia', 'order')
+            ->orderBy('document_sessions.order', 'asc');
     }
 }

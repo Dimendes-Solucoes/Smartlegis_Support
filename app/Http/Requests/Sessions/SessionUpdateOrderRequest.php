@@ -4,7 +4,7 @@ namespace App\Http\Requests\Sessions;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateOrderRequest extends FormRequest
+class SessionUpdateOrderRequest extends FormRequest
 {
 
     public function authorize(): bool
@@ -18,7 +18,6 @@ class UpdateOrderRequest extends FormRequest
         return [
             'expediente_documents'   => ['present', 'array'],
             'expediente_documents.*' => ['integer', 'exists:documents,id'],
-
             'ordem_do_dia_documents'   => ['present', 'array'],
             'ordem_do_dia_documents.*' => ['integer', 'exists:documents,id'],
         ];

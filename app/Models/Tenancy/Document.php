@@ -4,8 +4,6 @@ namespace App\Models\Tenancy;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Document extends Model
@@ -39,14 +37,16 @@ class Document extends Model
         'votes_are_secret' => 'boolean',
     ];
 
-    public function category(): BelongsTo
+    public function category()
     {
         return $this->belongsTo(DocumentCategory::class, 'document_category_id');
     }
 
-    public function sessions(): BelongsToMany
+    public function sessions()
     {
         return $this->belongsToMany(Session::class, 'document_sessions')
-                    ->withPivot('ordem_do_dia', 'order');
+            ->using(DocumentSession::class)
+            ->withPivot('ordem_do_dia', 'order')
+            ->withTimestamps();
     }
 }
