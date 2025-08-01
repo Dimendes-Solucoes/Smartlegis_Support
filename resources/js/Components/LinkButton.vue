@@ -11,10 +11,6 @@ const props = defineProps({
         type: String,
         default: 'indigo'
     },
-    icon: {
-        type: [Object, String],
-        required: true
-    },
     title: {
         type: String,
         default: ''
@@ -29,7 +25,7 @@ const colorClasses = computed(() => {
 </script>
 
 <template>
-    <a :href="link" target="_blank" rel="noopener noreferrer" :class="[baseClasses, colorClasses]" :title="title">
-        <component :is="icon" class="h-5 w-5 text-white" />
+    <a :href="link" target="_blank" :class="[baseClasses, colorClasses]" :title="title">
+        <slot />
     </a>
 </template>
