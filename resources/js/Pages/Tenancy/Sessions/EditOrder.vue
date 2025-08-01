@@ -59,7 +59,7 @@ const saveOrder = () => {
 
     <AuthenticatedLayout>
         <div class="py-12">
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+            <div class="mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
                     <div class="flex items-center justify-end mb-6 border-b pb-4 border-gray-200 dark:border-gray-700">
                         <PrimaryButton @click="saveOrder" :disabled="isSaving" :class="{ 'opacity-25': isSaving }">

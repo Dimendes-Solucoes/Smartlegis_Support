@@ -60,47 +60,38 @@ const toggleSidebar = () => {
 };
 
 onMounted(() => {
-  const mediaQuery = window.matchMedia('(min-width: 1024px)');
-  const handleMediaQueryChange = (e: MediaQueryListEvent) => {
-    if (!e.matches && isSidebarOpen.value) {
-        isSidebarOpen.value = false;
-        localStorage.setItem("isSidebarOpen", "false");
-    }
-  };
-  
-  mediaQuery.addEventListener('change', handleMediaQueryChange);
-  handleMediaQueryChange(mediaQuery as any);
+    const mediaQuery = window.matchMedia('(min-width: 1024px)');
+    const handleMediaQueryChange = (e: MediaQueryListEvent) => {
+        if (!e.matches && isSidebarOpen.value) {
+            isSidebarOpen.value = false;
+            localStorage.setItem("isSidebarOpen", "false");
+        }
+    };
+
+    mediaQuery.addEventListener('change', handleMediaQueryChange);
+    handleMediaQueryChange(mediaQuery as any);
 });
 
+const mainContentClasses = computed(() => {
+    return {
+        'lg:ml-64': isSidebarOpen.value,
+        'ml-0': !isSidebarOpen.value,
+        'transition-all duration-300 ease-in-out': true
+    };
+});
 </script>
 
 <template>
-    <div class="bg-gray-100 dark:bg-gray-900 min-h-screen">
-        <div 
-            v-if="isSidebarOpen" 
-            @click="toggleSidebar" 
-            class="fixed inset-0 bg-black/50 z-30 lg:hidden"
-        ></div>
+    <div class="bg-gray-100 dark:bg-gray-900 min-h-screen flex">
+        <div v-if="isSidebarOpen" @click="toggleSidebar" class="fixed inset-0 bg-black/50 z-30 lg:hidden"></div>
 
-        <aside
-            :class="[
-                'bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col fixed h-screen top-0 left-0 z-40 transition-all duration-300 ease-in-out',
-                isSidebarOpen ? 'w-64' : 'w-14' 
-            ]">
+        <aside v-if="isSidebarOpen"
+            class="bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col fixed h-screen top-0 left-0 z-40 w-64 transition-all duration-300 ease-in-out">
             <div class="flex items-center justify-center h-16 border-b border-gray-200 dark:border-gray-700 relative">
-                <button 
-                    @click="toggleSidebar"
-                    class="absolute p-2 rounded-md text-gray-400 hover:text-gray-500 focus:outline-none top-1/2 -translate-y-1/2"
-                    :class="isSidebarOpen ? 'left-1' : 'left-1/2 -translate-x-1/2'"
-                    aria-label="Toggle sidebar"
-                >
-                    <Bars3Icon class="h-6 w-6" />
-                </button>
-                
-                <Link :href="route('tenant.settings')" class="flex items-center">
-                    <span class="text-md font-semibold text-gray-800 dark:text-gray-200" v-show="isSidebarOpen">
-                        {{ currentTenantCityName }}
-                    </span>
+                <Link :href="route('tenant.settings')" class="flex items-center" v-show="isSidebarOpen">
+                <span class="text-md font-semibold text-gray-800 dark:text-gray-200">
+                    {{ currentTenantCityName }}
+                </span>
                 </Link>
             </div>
 
@@ -110,12 +101,8 @@ onMounted(() => {
                         <hr class="my-2 border-gray-200 dark:border-gray-700" />
                     </template>
                     <template v-else-if="link.type === 'link'">
-                        <NavLink 
-                            :href="route(link.route!)" 
-                            :active="route().current(link.route!)"
-                            :method="link.method || 'get'" 
-                            :as="link.as || 'a'"
-                        >
+                        <NavLink :href="route(link.route!)" :active="route().current(link.route!)"
+                            :method="link.method || 'get'" :as="link.as || 'a'">
                             <template #icon>
                                 <component :is="link.icon" :class="['h-5 w-5', link.iconClass]" />
                             </template>
@@ -140,12 +127,14 @@ onMounted(() => {
             </nav>
         </aside>
 
-        <main 
-            :class="[
-                'flex-1 overflow-auto p-4 sm:p-6 transition-all duration-300 ease-in-out',
-                isSidebarOpen ? 'lg:ml-64' : 'lg:ml-14' 
-            ]">
-            
+        <div class="fixed top-3 left-1 z-50">
+            <button @click="toggleSidebar" class="p-2 rounded-md text-gray-400 hover:text-gray-500 focus:outline-none"
+                aria-label="Toggle sidebar">
+                <Bars3Icon class="h-6 w-6" />
+            </button>
+        </div>
+
+        <main class="flex-1 overflow-auto p-4" :class="mainContentClasses">
             <slot />
         </main>
     </div>
