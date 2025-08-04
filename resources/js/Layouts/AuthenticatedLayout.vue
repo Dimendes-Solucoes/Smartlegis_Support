@@ -87,7 +87,7 @@ const mainContentClasses = computed(() => {
 
         <aside v-if="isSidebarOpen"
             class="bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col fixed h-screen top-0 left-0 z-40 w-64 transition-all duration-300 ease-in-out">
-            <div class="flex items-center justify-center h-16 border-b border-gray-200 dark:border-gray-700 relative">
+            <div class="flex items-center justify-center h-16 border-b border-gray-200 dark:border-gray-700 relative flex-shrink-0">
                 <Link :href="route('tenant.settings')" class="flex items-center" v-show="isSidebarOpen">
                 <span class="text-md font-semibold text-gray-800 dark:text-gray-200">
                     {{ currentTenantCityName }}
@@ -95,7 +95,7 @@ const mainContentClasses = computed(() => {
                 </Link>
             </div>
 
-            <nav class="flex-1 px-2 py-1 space-y-1 flex flex-col" v-show="isSidebarOpen">
+            <nav class="flex-1 px-2 py-1 space-y-1 flex flex-col overflow-y-auto" v-show="isSidebarOpen">
                 <template v-for="(link, index) in filteredNavigationLinks" :key="index">
                     <template v-if="link.type === 'separator'">
                         <hr class="my-2 border-gray-200 dark:border-gray-700" />
