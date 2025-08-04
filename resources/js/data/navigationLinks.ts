@@ -10,7 +10,8 @@ import {
     ClockIcon,
     ClipboardDocumentListIcon,
     ShieldCheckIcon,
-    UserGroupIcon
+    UserGroupIcon,
+    MegaphoneIcon
 } from '@heroicons/vue/24/solid';
 
 interface NavigationLink {
@@ -86,6 +87,15 @@ export const staticNavigationLinks: NavigationLink[] = [
         label: 'Tempos',
         icon: ClockIcon,
         route: 'timers.index',
+        type: 'link',
+    },
+
+    { type: 'separator' },
+
+        {
+        label: 'Tribunas',
+        icon: MegaphoneIcon,
+        route: 'tribunes.index',
         type: 'link',
     },
 

@@ -6,6 +6,7 @@ use App\Http\Controllers\Tenancy\UserController;
 use App\Http\Controllers\Tenancy\DocumentCategoryController;
 use App\Http\Controllers\Tenancy\TimerController;
 use App\Http\Controllers\Tenancy\SessionController;
+use App\Http\Controllers\Tenancy\TribuneController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'tenant.connection'])
@@ -75,4 +76,12 @@ Route::middleware(['auth', 'tenant.connection'])
                 Route::put('/{id}/reordenar', 'updateOrder')->name('sessions.update_order');
                 Route::delete('/{id}', 'destroy')->name('sessions.destroy');
             });
+
+        Route::prefix('tribunas')
+        ->controller(TribuneController::class)
+        ->group(function () {
+            Route::get('/', 'index')->name('tribunes.index');
+            Route::get('/{id}/editar', 'edit')->name('tribunes.edit');
+            Route::delete('/inscricoes/{tribuneUser}', 'removeUser')->name('tribunes.users.destroy');
+        });
     });
