@@ -11,7 +11,8 @@ import {
     ClipboardDocumentListIcon,
     ShieldCheckIcon,
     UserGroupIcon,
-    MegaphoneIcon
+    MegaphoneIcon,
+    ChatBubbleLeftRightIcon
 } from '@heroicons/vue/24/solid';
 
 interface NavigationLink {
@@ -97,7 +98,14 @@ export const staticNavigationLinks: NavigationLink[] = [
         icon: MegaphoneIcon,
         route: 'tribunes.index',
         type: 'link',
-    },
+        },
+
+            {
+        label: 'Explanações Pessoais',
+        icon: ChatBubbleLeftRightIcon,
+        route: 'big-discussions.index',
+        type: 'link',
+        },
 
     { type: 'separator' },
     {

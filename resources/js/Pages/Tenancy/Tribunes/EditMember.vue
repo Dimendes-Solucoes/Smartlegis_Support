@@ -6,17 +6,16 @@ import IconButton from '@/Components/Itens/IconButton.vue';
 import { TrashIcon } from '@heroicons/vue/24/solid';
 import ConfirmDeletionModal from '@/Components/ConfirmDeletionModal.vue';
 
-// --- INTERFACES ---
 interface User {
     id: number;
     name: string;
 }
 interface TribuneUser {
-    id: number; // ID do registro em 'tribune_users'
+    id: number; 
     user: User;
 }
 interface ApartiamentoUser {
-    id: number; // ID do registro em 'apartiamento_users'
+    id: number; 
     user: User;
 }
 interface Tribune {
@@ -33,12 +32,12 @@ interface TribuneData {
     apartiamento_users: ApartiamentoUser[];
 }
 
-// --- PROPS ---
+
 const props = defineProps<{
     tribuneData: TribuneData;
 }>();
 
-// --- LÓGICA DO MODAL DE EXCLUSÃO ---
+
 const confirmingUserRemoval = ref(false);
 const userToRemove = ref<TribuneUser | null>(null);
 

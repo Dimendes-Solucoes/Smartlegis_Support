@@ -1,21 +1,19 @@
 <?php
 
-// CORREÇÃO: A sintaxe de namespace foi corrigida de '.' para '\'
 namespace App\Http\Controllers\Tenancy;
 
 use App\Http\Controllers\Controller;
 use App\Models\Tenancy\Tribune;
 use App\Models\Tenancy\TribuneUsers;
 use App\Services\TribuneService;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Http\Request;
 
 class TribuneController extends Controller
 {
     public function __construct(protected TribuneService $service)
     {
     }
-
 
     public function index(Request $request)
     {
@@ -29,7 +27,8 @@ class TribuneController extends Controller
     {
         $tribune = Tribune::findOrFail($id);
         
-        return Inertia::render('Tenancy/Tribunes/Show', [
+
+        return Inertia::render('Tenancy/Tribunes/EditMember', [
             'tribuneData' => $this->service->getTribuneDetails($tribune),
         ]);
     }
