@@ -23,7 +23,6 @@ interface PaginatedTribunes {
     }[];
 }
 
-// --- PROPS ---
 const props = defineProps<{
     tribunes: PaginatedTribunes;
     filters: {
@@ -33,7 +32,6 @@ const props = defineProps<{
     }
 }>();
 
-// --- LÓGICA DE ORDENAÇÃO (BACKEND) ---
 const sortBy = (field: string) => {
     let direction = 'asc';
     if (props.filters.sort === field && props.filters.direction === 'asc') {
@@ -43,23 +41,22 @@ const sortBy = (field: string) => {
     router.get(route('tribunes.index'), {
         sort: field,
         direction: direction,
-        search: props.filters.search, // Mantém a busca atual ao reordenar
+        search: props.filters.search, 
     }, {
         preserveState: true,
         replace: true,
     });
 };
 
-// --- LÓGICA DE BUSCA (BACKEND) ---
 const search = ref(props.filters.search);
 watch(search, debounce((value: string) => {
     router.get(route('tribunes.index'), { search: value }, {
         preserveState: true,
         replace: true,
     });
-}, 300)); // Aguarda 300ms após o usuário parar de digitar
+}, 300)); 
 
-// --- FUNÇÃO AUXILIAR ---
+//tipo de tribuna
 const getTribuneType = (type: string): string => {
     const types: { [key: string]: string } = {
         '1': 'Pequeno Expediente',
