@@ -12,7 +12,8 @@ import {
     ShieldCheckIcon,
     UserGroupIcon,
     MegaphoneIcon,
-    ChatBubbleLeftRightIcon
+    ChatBubbleLeftRightIcon,
+    QuestionMarkCircleIcon
 } from '@heroicons/vue/24/solid';
 
 interface NavigationLink {
@@ -111,6 +112,13 @@ export const staticNavigationLinks: NavigationLink[] = [
         label: 'Discussões',
         icon: ChatBubbleLeftRightIcon,
         route: 'discussions.index',
+        type: 'link',
+        },
+
+        {
+        label: 'Questão de Ordem',
+        icon: QuestionMarkCircleIcon,
+        route: 'question-orders.index',
         type: 'link',
         },
 

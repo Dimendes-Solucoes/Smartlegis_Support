@@ -2,7 +2,9 @@
 
 namespace App\Models\Tenancy;
 
-class QuestionOrder extends BaseModel
+use Illuminate\Database\Eloquent\Model;
+
+class QuestionOrder extends Model
 {
     public const SUBSCRIBE = 1;
     public const END_SUBSCRIBE = 2;
@@ -31,8 +33,8 @@ class QuestionOrder extends BaseModel
 
     protected static function booted()
     {
-        static::deleting(function ($discussion) {
-            $discussion->questionOrderUsers()->delete();
+        static::deleting(function ($questionOrder) { 
+            $questionOrder->questionOrderUsers()->delete();
         });
     }
 }
