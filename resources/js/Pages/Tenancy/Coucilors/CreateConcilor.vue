@@ -32,6 +32,7 @@ const form = useForm({
     category_id: '',
     party_id: '',
     is_leader: false,
+    is_first_secretary: false
 });
 
 const submit = () => {

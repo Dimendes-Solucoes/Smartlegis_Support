@@ -24,6 +24,7 @@ class User extends Authenticatable
         'status_user',
         'status_lider',
         'signer_key_clicksign',
+        'is_first_secretary'
     ];
 
     protected $hidden = [

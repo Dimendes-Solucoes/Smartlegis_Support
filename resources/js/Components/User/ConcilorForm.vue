@@ -40,7 +40,12 @@ const props = defineProps<{
                 <Checkbox v-model:checked="form.is_leader" name="is_leader" />
                 <span class="ms-2 text-sm text-gray-600 dark:text-gray-400">Vereador líder</span>
             </label>
-            <InputError class="mt-2" :message="form.errors.is_leader" />
+
+            <label class="flex items-center mt-1">
+                <Checkbox v-model:checked="form.is_first_secretary" name="is_first_secretary" />
+                <span class="ms-2 text-sm text-gray-600 dark:text-gray-400">1º Secretário</span>
+            </label>
+            <InputError class="mt-2" :message="form.errors.is_first_secretary" />
         </div>
     </div>
 </template>

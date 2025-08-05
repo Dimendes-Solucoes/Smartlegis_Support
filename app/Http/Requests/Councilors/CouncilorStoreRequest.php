@@ -30,7 +30,8 @@ class CouncilorStoreRequest extends FormRequest
             'path_image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg'],
             'category_id' => ['required', 'exists:user_categories,id'],
             'party_id' => ['required', 'exists:category_parties,id'],
-            'is_leader' => ['nullable', 'boolean']
+            'is_leader' => ['nullable', 'boolean'],
+            'is_first_secretary' => ['nullable', 'boolean']
         ];
     }
 

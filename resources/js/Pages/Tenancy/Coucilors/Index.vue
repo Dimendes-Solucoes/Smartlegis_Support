@@ -17,6 +17,7 @@ interface User {
     party: { id: number; name_party: string } | null;
     status_lider: string | null;
     status_user: number;
+    is_first_secretary: boolean | null;
 }
 
 const props = defineProps<{
@@ -76,7 +77,7 @@ const changeStatus = (userId: number): void => {
                                             Partido</th>
                                         <th scope="col"
                                             class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
-                                            Líder</th>
+                                            Obs.</th>
                                         <th scope="col"
                                             class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
                                             Status</th>
@@ -98,7 +99,20 @@ const changeStatus = (userId: number): void => {
                                         <td class="px-4 py-4 whitespace-nowrap">{{ user.email }}</td>
                                         <td class="px-4 py-4 whitespace-nowrap">{{ user.category?.name || '-' }}</td>
                                         <td class="px-4 py-4 whitespace-nowrap">{{ user.party?.name_party || '-' }}</td>
-                                        <td class="px-4 py-4 whitespace-nowrap">{{ user.status_lider ? 'Sim' : '-' }}
+                                        <td class="px-4 py-4 whitespace-nowrap">
+                                            <span v-if="user.status_lider"
+                                                class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-gray-300 text-black mr-1">
+                                                Líder
+                                            </span>
+
+                                            <span v-if="user.is_first_secretary"
+                                                class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-gray-300 text-black">
+                                                1º Secretário
+                                            </span>
+
+                                            <span v-if="!user.status_lider && !user.is_first_secretary">
+                                                -
+                                            </span>
                                         </td>
                                         <td class="px-4 py-4 whitespace-nowrap">
                                             <UserStatusBadge :statusUser="user.status_user" />
@@ -112,8 +126,7 @@ const changeStatus = (userId: number): void => {
                                             <IconButton @click="changeStatus(user.id)"
                                                 :color="user.status_user === 1 ? 'red' : 'green'"
                                                 :title="user.status_user === 1 ? 'Desativar usuário' : 'Ativar usuário'"
-                                                href="#" class="ml-1"
-                                                v-if="user.category?.id === 2">
+                                                href="#" class="ml-1" v-if="user.category?.id === 2">
                                                 <template v-if="user.status_user === 1">
                                                     <UserMinusIcon class="h-5 w-5" />
                                                 </template>
