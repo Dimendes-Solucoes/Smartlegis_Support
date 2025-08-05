@@ -91,12 +91,12 @@ const getTribuneType = (type: string): string => {
                                     <tr>
                                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
                                             <button @click="sortBy('session_name')" class="flex items-center space-x-1">
-                                                <span>Sessão Vinculada</span>
+                                                <span>SESSÃO VINCULADA</span>
                                                 </button>
                                         </th>
                                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
                                              <button @click="sortBy('type')" class="flex items-center space-x-1">
-                                                <span>Tipo de Tribuna</span>
+                                                <span>TIPO DE TRIBUNA</span>
                                                 <ChevronUpIcon v-if="filters.sort === 'type' && filters.direction === 'asc'" class="h-4 w-4" />
                                                 <ChevronDownIcon v-if="filters.sort === 'type' && filters.direction === 'desc'" class="h-4 w-4" />
                                             </button>

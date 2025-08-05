@@ -8,6 +8,7 @@ use App\Http\Controllers\Tenancy\TimerController;
 use App\Http\Controllers\Tenancy\SessionController;
 use App\Http\Controllers\Tenancy\TribuneController;
 use App\Http\Controllers\Tenancy\BigDiscussionController;
+use App\Http\Controllers\Tenancy\DiscussionController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'tenant.connection'])
@@ -92,5 +93,13 @@ Route::middleware(['auth', 'tenant.connection'])
             Route::get('/', 'index')->name('big-discussions.index');
             Route::get('/{id}/editar', 'edit')->name('big-discussions.edit');
             Route::delete('/inscricoes/{id}', 'removeUser')->name('big-discussions.users.destroy');
+        });
+
+        Route::prefix('discussoes')
+        ->controller(DiscussionController::class)
+        ->group(function () {
+            Route::get('/', 'index')->name('discussions.index');
+            Route::get('/{id}/editar', 'edit')->name('discussions.edit');
+            Route::delete('/inscricoes/{id}', 'removeUser')->name('discussions.users.destroy');
         });
     });
