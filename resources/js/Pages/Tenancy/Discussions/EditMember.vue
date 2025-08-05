@@ -1,0 +1,102 @@
+<script setup lang="ts">
+import { ref } from 'vue';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import { Head, router } from '@inertiajs/vue3';
+import IconButton from '@/Components/Itens/IconButton.vue';
+import { TrashIcon } from '@heroicons/vue/24/solid';
+import ConfirmDeletionModal from '@/Components/ConfirmDeletionModal.vue';
+
+interface User {
+    id: number;
+    name: string;
+}
+interface DiscussionUser {
+    id: number; 
+    user: User;
+}
+interface Discussion {
+    id: number;
+    quorum: { session: { name: string; } };
+    document: { name: string; };
+}
+interface DiscussionData {
+    discussion: Discussion;
+    users: DiscussionUser[];
+}
+
+const props = defineProps<{
+    discussionData: DiscussionData;
+}>();
+
+const confirmingUserRemoval = ref(false);
+const userToRemove = ref<DiscussionUser | null>(null);
+
+const openConfirmRemoveModal = (user: DiscussionUser) => {
+    userToRemove.value = user;
+    confirmingUserRemoval.value = true;
+};
+
+const closeModal = () => {
+    confirmingUserRemoval.value = false;
+    userToRemove.value = null;
+};
+
+const removeUser = () => {
+    if (!userToRemove.value) return;
+    router.delete(route('discussions.users.destroy', userToRemove.value.id), {
+        preserveScroll: true,
+        onSuccess: () => closeModal(),
+    });
+};
+</script>
+
+<template>
+    <Head :title="`Inscritos - ${discussionData.discussion.document.name}`" />
+
+    <AuthenticatedLayout>
+        <div class="py-12">
+            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+                <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-2">
+                    Discussão do Documento: {{ discussionData.discussion.document.name }}
+                </h1>
+                <h2 class="text-lg text-gray-600 dark:text-gray-400 mb-6">
+                    Sessão: {{ discussionData.discussion.quorum.session.name }}
+                </h2>
+
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="p-6 text-gray-900 dark:text-gray-100">
+                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                            <thead class="bg-gray-50 dark:bg-gray-700">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Vereador Inscrito</th>
+                                    <th class="relative px-6 py-3"><span class="sr-only">Ações</span></th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
+                                <tr v-for="user in discussionData.users" :key="user.id">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">{{ user.user.name }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <IconButton as="button" color="red" title="Remover Inscrição" @click.stop="openConfirmRemoveModal(user)">
+                                            <TrashIcon class="h-5 w-5" />
+                                        </IconButton>
+                                    </td>
+                                </tr>
+                                <tr v-if="discussionData.users.length === 0">
+                                    <td colspan="2" class="px-6 py-10 text-center text-gray-500">Nenhum usuário inscrito nesta discussão.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </AuthenticatedLayout>
+
+    <ConfirmDeletionModal 
+        :show="confirmingUserRemoval"
+        title="Remover Inscrição"
+        :message="`Tem certeza que deseja remover a inscrição de '${userToRemove?.user.name}'?`"
+        @close="closeModal"
+        @confirm="removeUser"
+    />
+</template>

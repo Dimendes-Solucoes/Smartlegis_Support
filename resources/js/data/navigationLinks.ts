@@ -100,10 +100,17 @@ export const staticNavigationLinks: NavigationLink[] = [
         type: 'link',
         },
 
-            {
+        {
         label: 'Explanações Pessoais',
         icon: ChatBubbleLeftRightIcon,
         route: 'big-discussions.index',
+        type: 'link',
+        },
+
+        {
+        label: 'Discussões',
+        icon: ChatBubbleLeftRightIcon,
+        route: 'discussions.index',
         type: 'link',
         },
 
