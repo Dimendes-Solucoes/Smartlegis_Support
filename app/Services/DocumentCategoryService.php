@@ -9,7 +9,9 @@ class DocumentCategoryService
 {
     public function getAllCategories()
     {
-        return DocumentCategory::orderBy('name')->get();
+        return DocumentCategory::orderBy('is_active', 'desc')
+            ->orderBy('name')
+            ->get();
     }
 
     public function createCategory(array $data): DocumentCategory
