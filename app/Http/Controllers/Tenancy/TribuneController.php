@@ -40,4 +40,12 @@ class TribuneController extends Controller
 
         return back()->with('success', 'Inscrição removida com sucesso!');
     }
+
+    public function destroy(int $id)
+    {
+        $tribune = Tribune::findOrFail($id);
+        $this->service->destroyTribune($tribune);
+
+        return back()->with('success', 'Tribuna movida para a lixeira com sucesso!');
+    }
 }
