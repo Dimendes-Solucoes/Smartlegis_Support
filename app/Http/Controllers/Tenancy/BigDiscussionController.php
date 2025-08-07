@@ -37,4 +37,11 @@ class BigDiscussionController extends Controller
 
         return back()->with('success', 'Inscrição removida com sucesso!');
     }
+
+    public function destroy(int $id)
+    {
+        $discussion = BigDiscussion::findOrFail($id);
+        $this->service->destroyBigDiscussion($discussion);
+        return back()->with('success', 'Explanação Pessoal movida para a lixeira com sucesso!');
+    }
 }

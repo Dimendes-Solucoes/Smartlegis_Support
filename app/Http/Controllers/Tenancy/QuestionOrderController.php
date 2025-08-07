@@ -38,10 +38,11 @@ class QuestionOrderController extends Controller
         return back()->with('success', 'Inscrição removida com sucesso!');
     }
 
+    //não usa softdelete
     public function destroy(int $id)
     {
         $questionOrder = QuestionOrder::findOrFail($id);
         $this->service->destroyQuestionOrder($questionOrder);
-        return back()->with('success', 'Questão de Ordem movida para a lixeira com sucesso!');
+        return back()->with('success', 'Questão de Ordem excluida com sucesso!'); 
     }
 }

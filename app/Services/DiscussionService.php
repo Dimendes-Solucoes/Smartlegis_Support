@@ -43,4 +43,9 @@ class DiscussionService
     {
         $user->delete();
     }
+
+    public function destroyDiscussion(Discussion $discussion): void
+    {
+        $discussion->delete();
+    }
 }

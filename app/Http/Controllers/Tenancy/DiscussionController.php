@@ -37,4 +37,11 @@ class DiscussionController extends Controller
 
         return back()->with('success', 'Inscrição removida com sucesso!');
     }
+
+    public function destroy(int $id)
+    {
+        $discussion = Discussion::findOrFail($id);
+        $this->service->destroyDiscussion($discussion);
+        return back()->with('success', 'Discussão movida para a lixeira com sucesso!');
+    }
 }
