@@ -39,4 +39,9 @@ class BigDiscussionService
     {
         $user->delete();
     }
+
+    public function destroyBigDiscussion(BigDiscussion $discussion): void
+    {
+        $discussion->delete();
+    }
 }

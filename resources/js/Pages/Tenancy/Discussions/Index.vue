@@ -4,8 +4,10 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router, Link } from '@inertiajs/vue3';
 import IconButton from '@/Components/Itens/IconButton.vue';
 import TextInput from '@/Components/TextInput.vue';
-import { UsersIcon } from '@heroicons/vue/24/solid';
+import { UsersIcon, TrashIcon, ChevronUpIcon, ChevronDownIcon } from '@heroicons/vue/24/solid';
 import { debounce } from 'lodash';
+import ConfirmDeletionModal from '@/Components/ConfirmDeletionModal.vue';
+
 
 interface Discussion {
     id: number;
@@ -22,17 +24,47 @@ const props = defineProps<{
     discussions: PaginatedDiscussions;
     filters: {
         search: string;
+        sort: string;
+        direction: string;
     }
 }>();
 
-
 const search = ref(props.filters.search);
 watch(search, debounce((value: string) => {
-    router.get(route('discussions.index'), { search: value }, {
+    router.get(route('discussions.index'), { search: value }, { preserveState: true, replace: true });
+}, 300));
+
+const sortBy = (field: string) => {
+    let direction = 'asc';
+    if (props.filters.sort === field && props.filters.direction === 'asc') {
+        direction = 'desc';
+    }
+    router.get(route('discussions.index'), { sort: field, direction: direction, search: props.filters.search }, {
         preserveState: true,
         replace: true,
     });
-}, 300));
+};
+
+const confirmingDeletion = ref(false);
+const itemToDelete = ref<Discussion | null>(null);
+
+const openConfirmDeleteModal = (item: Discussion) => {
+    itemToDelete.value = item;
+    confirmingDeletion.value = true;
+};
+
+const closeModal = () => {
+    confirmingDeletion.value = false;
+    itemToDelete.value = null;
+};
+
+const deleteItem = () => {
+    if (!itemToDelete.value) return;
+    router.delete(route('discussions.destroy', itemToDelete.value.id), {
+        preserveScroll: true,
+        onSuccess: () => closeModal(),
+    });
+};
 </script>
 
 <template>
@@ -55,8 +87,16 @@ watch(search, debounce((value: string) => {
                             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
                                 <thead class="bg-gray-50 dark:bg-gray-700">
                                     <tr>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">DOCUMENTO EM DISCUSSÃO</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">SESSÃO VINCULADA</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
+                                            <button @click="sortBy('document_name')" class="flex items-center space-x-1">
+                                                <span>DOCUMENTO EM DISCUSSÃO</span>
+                                                </button>
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
+                                             <button @click="sortBy('session_name')" class="flex items-center space-x-1">
+                                                <span>SESSÃO VINCULADA</span>
+                                                </button>
+                                        </th>
                                         <th scope="col" class="relative px-6 py-3"><span class="sr-only">AÇÕES</span></th>
                                     </tr>
                                 </thead>
@@ -65,9 +105,14 @@ watch(search, debounce((value: string) => {
                                         <td class="px-6 py-4 whitespace-nowrap font-medium">{{ discussion.document_name }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap">{{ discussion.session_name }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            <IconButton :href="route('discussions.edit', discussion.id)" color="indigo" title="Ver Inscritos">
-                                                <UsersIcon class="h-5 w-5" />
-                                            </IconButton>
+                                            <div class="flex items-center justify-end space-x-1">
+                                                <IconButton :href="route('discussions.edit', discussion.id)" color="indigo" title="Ver Inscritos">
+                                                    <UsersIcon class="h-5 w-5" />
+                                                </IconButton>
+                                                <IconButton as="button" color="red" title="Excluir" @click.stop="openConfirmDeleteModal(discussion)">
+                                                    <TrashIcon class="h-5 w-5" />
+                                                </IconButton>
+                                            </div>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -84,4 +129,12 @@ watch(search, debounce((value: string) => {
             </div>
         </div>
     </AuthenticatedLayout>
+    
+    <ConfirmDeletionModal 
+        :show="confirmingDeletion"
+        title="Excluir Discussão"
+        :message="`Tem certeza que deseja mover a discussão do documento '${itemToDelete?.document_name}' para a lixeira?`"
+        @close="closeModal"
+        @confirm="deleteItem"
+    />
 </template>
