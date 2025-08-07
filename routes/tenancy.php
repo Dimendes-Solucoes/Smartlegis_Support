@@ -95,6 +95,7 @@ Route::middleware(['auth', 'tenant.connection'])
             Route::get('/', 'index')->name('big-discussions.index');
             Route::get('/{id}/editar', 'edit')->name('big-discussions.edit');
             Route::delete('/{id}/inscricoes/', 'removeUser')->name('big-discussions.users.destroy');
+            Route::delete('/{id}', 'destroy')->name('big-discussions.destroy');
         });
 
         Route::prefix('discussoes')
@@ -103,6 +104,7 @@ Route::middleware(['auth', 'tenant.connection'])
             Route::get('/', 'index')->name('discussions.index');
             Route::get('/{id}/editar', 'edit')->name('discussions.edit');
             Route::delete('/{id}/inscricoes/', 'removeUser')->name('discussions.users.destroy');
+            Route::delete('/{id}', 'destroy')->name('discussions.destroy');
         });
 
         Route::prefix('questoes-de-ordem')
@@ -111,5 +113,6 @@ Route::middleware(['auth', 'tenant.connection'])
             Route::get('/', 'index')->name('question-orders.index');
             Route::get('/{id}/editar', 'edit')->name('question-orders.edit');
             Route::delete('/{id}/inscricoes', 'removeUser')->name('question-orders.users.destroy');
+            Route::delete('/{id}','destroy')->name('question-orders.destroy');
         });
     });

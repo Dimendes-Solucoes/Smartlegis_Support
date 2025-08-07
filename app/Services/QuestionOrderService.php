@@ -38,4 +38,9 @@ class QuestionOrderService
     {
         $user->delete();
     }
+
+    public function destroyQuestionOrder(QuestionOrder $qo): void
+    {
+        $qo->delete();
+    }
 }

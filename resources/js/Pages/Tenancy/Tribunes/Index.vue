@@ -2,14 +2,12 @@
 import { ref, watch } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router, Link } from '@inertiajs/vue3';
-// 1. Importe os ícones e componentes necessários
 import { UsersIcon, ChevronUpIcon, ChevronDownIcon, TrashIcon } from '@heroicons/vue/24/solid';
 import IconButton from '@/Components/Itens/IconButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import ConfirmDeletionModal from '@/Components/ConfirmDeletionModal.vue';
 import { debounce } from 'lodash';
 
-// --- INTERFACES ---
 interface Tribune {
     id: number;
     type: string; 
@@ -25,7 +23,6 @@ interface PaginatedTribunes {
     }[];
 }
 
-// --- PROPS ---
 const props = defineProps<{
     tribunes: PaginatedTribunes;
     filters: {
@@ -35,7 +32,6 @@ const props = defineProps<{
     }
 }>();
 
-// --- LÓGICA DE ORDENAÇÃO E BUSCA ---
 const sortBy = (field: string) => {
     let direction = 'asc';
     if (props.filters.sort === field && props.filters.direction === 'asc') {
@@ -55,7 +51,6 @@ watch(search, debounce((value: string) => {
     });
 }, 300)); 
 
-// --- FUNÇÃO AUXILIAR ---
 const getTribuneType = (type: string): string => {
     const types: { [key: string]: string } = {
         '1': 'Pequeno Expediente',
@@ -65,7 +60,6 @@ const getTribuneType = (type: string): string => {
     return types[type] || 'Tipo Desconhecido';
 };
 
-// 2. ADICIONE A LÓGICA DO MODAL DE EXCLUSÃO
 const confirmingTribuneDeletion = ref(false);
 const tribuneToDelete = ref<Tribune | null>(null);
 

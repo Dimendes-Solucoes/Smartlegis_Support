@@ -37,4 +37,11 @@ class QuestionOrderController extends Controller
 
         return back()->with('success', 'Inscrição removida com sucesso!');
     }
+
+    public function destroy(int $id)
+    {
+        $questionOrder = QuestionOrder::findOrFail($id);
+        $this->service->destroyQuestionOrder($questionOrder);
+        return back()->with('success', 'Questão de Ordem movida para a lixeira com sucesso!');
+    }
 }
