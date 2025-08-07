@@ -11,9 +11,10 @@ import {
     ClipboardDocumentListIcon,
     ShieldCheckIcon,
     UserGroupIcon,
+    MicrophoneIcon,
     MegaphoneIcon,
-    ChatBubbleLeftRightIcon,
-    QuestionMarkCircleIcon
+    QuestionMarkCircleIcon,
+    ChatBubbleOvalLeftEllipsisIcon,
 } from '@heroicons/vue/24/solid';
 
 interface NavigationLink {
@@ -25,7 +26,8 @@ interface NavigationLink {
     as?: string;
     textClass?: string;
     iconClass?: string;
-    type?: 'link' | 'separator';
+    type?: 'link' | 'separator' | 'group';
+    children?: NavigationLink[];
 }
 
 export const staticNavigationLinks: NavigationLink[] = [
@@ -79,48 +81,50 @@ export const staticNavigationLinks: NavigationLink[] = [
         route: 'document-categories.index',
         type: 'link',
     },
-        {
-        label: 'Sessões',
-        icon: ClipboardDocumentListIcon,
-        route: 'sessions.index',
-        type: 'link',
-    },
     {
         label: 'Tempos',
         icon: ClockIcon,
         route: 'timers.index',
         type: 'link',
     },
-
-    { type: 'separator' },
-
-        {
-        label: 'Tribunas',
-        icon: MegaphoneIcon,
-        route: 'tribunes.index',
-        type: 'link',
-        },
-
-        {
-        label: 'Explanações Pessoais',
-        icon: ChatBubbleLeftRightIcon,
-        route: 'big-discussions.index',
-        type: 'link',
-        },
-
-        {
-        label: 'Discussões',
-        icon: ChatBubbleLeftRightIcon,
-        route: 'discussions.index',
-        type: 'link',
-        },
-
-        {
-        label: 'Questão de Ordem',
-        icon: QuestionMarkCircleIcon,
-        route: 'question-orders.index',
-        type: 'link',
-        },
+    {
+        label: 'Sessões',
+        icon: ClipboardDocumentListIcon,
+        type: 'group',
+        route: 'sessions.index',
+        children: [
+            {
+                label: 'Lista de Sessões',
+                icon: ClipboardDocumentListIcon,
+                route: 'sessions.index',
+                type: 'link',
+            },
+            {
+                label: 'Tribunas',
+                icon: MicrophoneIcon,
+                route: 'tribunes.index',
+                type: 'link',
+            },
+            {
+                label: 'Discussões',
+                icon: ChatBubbleOvalLeftEllipsisIcon,
+                route: 'discussions.index',
+                type: 'link',
+            },
+            {
+                label: 'Explanações Pessoais',
+                icon: MegaphoneIcon,
+                route: 'big-discussions.index',
+                type: 'link',
+            },
+            {
+                label: 'Questões de Ordem',
+                icon: QuestionMarkCircleIcon,
+                route: 'question-orders.index',
+                type: 'link',
+            },
+        ]
+    },
 
     { type: 'separator' },
     {

@@ -50,13 +50,13 @@ const removeUser = () => {
 </script>
 
 <template>
-    <Head :title="`Inscritos - Questão de Ordem`" />
+    <Head :title="`${ questionOrderData.question_order.quorum.session.name }`" />
 
     <AuthenticatedLayout>
         <div class="py-12">
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
                 <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6">
-                    Inscritos na Questão de Ordem da Sessão: {{ questionOrderData.question_order.quorum.session.name }}
+                    {{ questionOrderData.question_order.quorum.session.name }}
                 </h1>
 
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">

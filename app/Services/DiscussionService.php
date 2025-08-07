@@ -10,9 +10,15 @@ use Illuminate\Http\Request;
 class DiscussionService
 {
 
-    public function getAllDiscussions(Request $request): LengthAwarePaginator
+    public function getAllDiscussions(?array $data = []): LengthAwarePaginator
     {
-        $discussions = Discussion::with(['quorum.session', 'document'])
+        $discussions = Discussion::query();
+
+        if (isset($data['session_id'])) {
+            $discussions->whereHas('quorum', fn($q) => $q->where('session_id', $data['session_id']));
+        }
+
+        $discussions = $discussions->with(['quorum.session', 'document'])
             ->whereHas('quorum.session')
             ->whereHas('document')
             ->latest('id')
@@ -22,6 +28,7 @@ class DiscussionService
             'id' => $discussion->id,
             'session_name' => $discussion->quorum->session->name ?? 'Sessão não encontrada',
             'document_name' => $discussion->document->name ?? 'Documento não encontrado',
+            'quorum' => $discussion->quorum
         ]);
 
         return $discussions;

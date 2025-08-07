@@ -5,13 +5,18 @@ import { Head, router, Link } from '@inertiajs/vue3';
 import IconButton from '@/Components/Itens/IconButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { UsersIcon, TrashIcon, ChevronUpIcon, ChevronDownIcon } from '@heroicons/vue/24/solid';
-import ConfirmDeletionModal from '@/Components/ConfirmDeletionModal.vue';
 import { debounce } from 'lodash';
+import ConfirmDeletionModal from '@/Components/ConfirmDeletionModal.vue';
+
+interface Quorum {
+    session_id: number
+}
 
 interface Discussion {
     id: number;
-    status: string;
     session_name: string;
+    document_name: string;
+    quorum: Quorum
 }
 
 interface PaginatedDiscussions {
@@ -30,10 +35,7 @@ const props = defineProps<{
 
 const search = ref(props.filters.search);
 watch(search, debounce((value: string) => {
-    router.get(route('big-discussions.index'), { search: value }, {
-        preserveState: true,
-        replace: true,
-    });
+    router.get(route('discussions.index'), { search: value }, { preserveState: true, replace: true });
 }, 300));
 
 const sortBy = (field: string) => {
@@ -41,11 +43,7 @@ const sortBy = (field: string) => {
     if (props.filters.sort === field && props.filters.direction === 'asc') {
         direction = 'desc';
     }
-    router.get(route('big-discussions.index'), { 
-        sort: field, 
-        direction: direction, 
-        search: props.filters.search 
-    }, {
+    router.get(route('discussions.index'), { sort: field, direction: direction, search: props.filters.search }, {
         preserveState: true,
         replace: true,
     });
@@ -66,7 +64,7 @@ const closeModal = () => {
 
 const deleteItem = () => {
     if (!itemToDelete.value) return;
-    router.delete(route('big-discussions.destroy', itemToDelete.value.id), {
+    router.delete(route('discussions.destroy', itemToDelete.value.id), {
         preserveScroll: true,
         onSuccess: () => closeModal(),
     });
@@ -74,7 +72,7 @@ const deleteItem = () => {
 </script>
 
 <template>
-    <Head title="Explanações Pessoais" />
+    <Head title="Discussões de Documentos" />
 
     <AuthenticatedLayout>
         <div class="py-12">
@@ -85,7 +83,7 @@ const deleteItem = () => {
                             <TextInput 
                                 type="text"
                                 v-model="search"
-                                placeholder="Buscar por nome da sessão..."
+                                placeholder="Buscar por documento..."
                                 class="w-full md:w-1/2"
                             />
                         </div>
@@ -94,21 +92,19 @@ const deleteItem = () => {
                                 <thead class="bg-gray-50 dark:bg-gray-700">
                                     <tr>
                                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
-                                            <button @click="sortBy('session_name')" class="flex items-center space-x-1">
-                                                <span class="uppercase">Sessão Vinculada</span>
-                                                <ChevronUpIcon v-if="filters.sort === 'session_name' && filters.direction === 'asc'" class="h-4 w-4" />
-                                                <ChevronDownIcon v-if="filters.sort === 'session_name' && filters.direction === 'desc'" class="h-4 w-4" />
-                                            </button>
+                                            <button @click="sortBy('document_name')" class="flex items-center space-x-1">
+                                                <span>DOCUMENTO EM DISCUSSÃO</span>
+                                                </button>
                                         </th>
-                                        <th scope="col" class="relative px-6 py-3"><span class="sr-only">Ações</span></th>
+                                        <th scope="col" class="relative px-6 py-3"><span class="sr-only">AÇÕES</span></th>
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
                                     <tr v-for="discussion in props.discussions.data" :key="discussion.id">
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ discussion.session_name }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap font-medium">{{ discussion.document_name }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                             <div class="flex items-center justify-end space-x-1">
-                                                <IconButton :href="route('big-discussions.edit', discussion.id)" color="indigo" title="Ver Inscritos">
+                                                <IconButton :href="route('sessions.discussions', [discussion.quorum.session_id, discussion.id])" color="indigo" title="Ver Inscritos">
                                                     <UsersIcon class="h-5 w-5" />
                                                 </IconButton>
                                                 <IconButton as="button" color="red" title="Excluir" @click.stop="openConfirmDeleteModal(discussion)">
@@ -121,7 +117,7 @@ const deleteItem = () => {
                             </table>
                         </div>
                         <div v-else>
-                            <p>Nenhuma explanação pessoal encontrada.</p>
+                            <p>Nenhuma discussão encontrada.</p>
                         </div>
                         <div v-if="props.discussions.data.length > 0 && props.discussions.links.length > 3" class="mt-6 flex justify-center">
                             <Link v-for="(link, index) in props.discussions.links" :key="index" :href="link.url || ''" class="px-4 py-2 text-sm" :class="{'bg-indigo-500 text-white rounded-md': link.active, 'text-gray-500 hover:text-gray-800': !link.active, 'cursor-not-allowed text-gray-400': !link.url}" v-html="link.label" />
@@ -131,11 +127,11 @@ const deleteItem = () => {
             </div>
         </div>
     </AuthenticatedLayout>
-
+    
     <ConfirmDeletionModal 
         :show="confirmingDeletion"
-        title="Excluir Explanação Pessoal"
-        :message="`Tem certeza que deseja mover a explanação pessoal da sessão '${itemToDelete?.session_name}' para a lixeira?`"
+        title="Excluir Discussão"
+        :message="`Tem certeza que deseja mover a discussão do documento '${itemToDelete?.document_name}' para a lixeira?`"
         @close="closeModal"
         @confirm="deleteItem"
     />

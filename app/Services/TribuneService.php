@@ -23,7 +23,7 @@ class TribuneService
         $tribunes = Tribune::with('quorum.session')
             ->when($request->input('search'), function ($query, $search) {
                 $query->whereHas('quorum.session', function ($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%");
+                    $q->where('name', 'ilike', "%{$search}%");
                 });
             })
             ->orderBy($sortField, $sortDirection)

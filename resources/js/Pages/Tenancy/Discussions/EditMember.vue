@@ -51,13 +51,13 @@ const removeUser = () => {
 </script>
 
 <template>
-    <Head :title="`Inscritos - ${discussionData.discussion.document.name}`" />
+    <Head :title="`${ discussionData.discussion.quorum.session.name }`" />
 
     <AuthenticatedLayout>
         <div class="py-12">
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
                 <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-2">
-                    Discussão do Documento: {{ discussionData.discussion.document.name }}
+                    Documento: {{ discussionData.discussion.document.name }}
                 </h1>
                 <h2 class="text-lg text-gray-600 dark:text-gray-400 mb-6">
                     Sessão: {{ discussionData.discussion.quorum.session.name }}

@@ -57,6 +57,58 @@ class SessionController extends Controller
         return back()->with('success', 'Ordem da pauta salva com sucesso!');
     }
 
+    public function talks(int $id)
+    {
+        $session = $this->service->find($id);
+
+        return Inertia::render('Tenancy/Sessions/Talks', [
+            'session' => $session
+        ]);
+    }
+
+    public function quorums(int $id)
+    {
+        return Inertia::render('Tenancy/Quorums/EditMember', [
+            'quorumData' => $this->service->getQuorums($id),
+        ]);
+    }
+
+    public function tribunes(int $id)
+    {
+        return Inertia::render('Tenancy/Tribunes/EditMember', [
+            'tribuneData' => $this->service->getTribunes($id),
+        ]);
+    }
+
+    public function listDiscussions(Request $request, int $id)
+    {
+        return Inertia::render('Tenancy/Sessions/Discussions', [
+            'discussions' => $this->service->getAllDiscussionsBySession($id),
+            'filters' => $request->only(['sort', 'direction', 'search']),
+        ]);
+    }
+
+    public function discussions(int $id, int $discussion_id)
+    {
+        return Inertia::render('Tenancy/Discussions/EditMember', [
+            'discussionData' => $this->service->getDiscussions($id, $discussion_id),
+        ]);
+    }
+
+    public function bigDiscussions(int $id)
+    {
+        return Inertia::render('Tenancy/BigDiscussions/EditMember', [
+            'discussionData' => $this->service->getBigDiscussions($id),
+        ]);
+    }
+
+    public function questionOrders(int $id)
+    {
+        return Inertia::render('Tenancy/QuestionOrders/EditMember', [
+            'questionOrderData' => $this->service->getQuestionOrders($id),
+        ]);
+    }
+
     public function destroy(int $id)
     {
         $this->service->delete($id);
