@@ -12,6 +12,14 @@ use Illuminate\Support\Facades\Storage;
 
 class SessionService
 {
+    public function __construct(
+        protected QuorumService $quorumService,
+        protected TribuneService $tribuneService,
+        protected DiscussionService $discussionService,
+        protected BigDiscussionService $bigDiscussionService,
+        protected QuestionOrderService $questionOrderService
+    ) {}
+
     public function getAllSessions(): LengthAwarePaginator
     {
         $sort_field = Request::input('sort', 'datetime_start');
@@ -81,6 +89,53 @@ class SessionService
             DB::rollBack();
             throw new Exception("Erro ao atualizar ordem de documentos da sessão: " . $e->getMessage());
         }
+    }
+
+    public function getQuorums(int $id)
+    {
+        $session = Session::findOrFail($id);
+        $quorum = $session->quorums()->first();
+
+        return $this->quorumService->getQuorumDetails($quorum);
+    }
+
+    public function getTribunes(int $id)
+    {
+        $session = Session::findOrFail($id);
+        $tribune = $session->quorums()->first()->tribunes()->first();
+
+        return $this->tribuneService->getTribuneDetails($tribune);
+    }
+
+    public function getAllDiscussionsBySession($id)
+    {
+        $data['session_id'] = $id;
+
+        return $this->discussionService->getAllDiscussions($data);
+    }
+
+    public function getDiscussions(int $id, int $discussion_id)
+    {
+        $session = Session::findOrFail($id);
+        $discussions = $session->quorums()->first()->discussions()->findOrFail($discussion_id);
+
+        return $this->discussionService->getDiscussionDetails($discussions);
+    }
+
+    public function getBigDiscussions(int $id)
+    {
+        $session = Session::findOrFail($id);
+        $big_discussion = $session->quorums()->first()->bigDiscussions()->first();
+
+        return $this->bigDiscussionService->getBigDiscussionDetails($big_discussion);
+    }
+
+    public function getQuestionOrders(int $id)
+    {
+        $session = Session::findOrFail($id);
+        $question_order = $session->quorums()->first()->questionOrders()->first();
+
+        return $this->questionOrderService->getQuestionOrderDetails($question_order);
     }
 
     public function delete(int $id): void

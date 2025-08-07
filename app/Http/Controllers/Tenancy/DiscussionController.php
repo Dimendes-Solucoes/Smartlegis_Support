@@ -16,7 +16,7 @@ class DiscussionController extends Controller
     public function index(Request $request)
     {
         return Inertia::render('Tenancy/Discussions/Index', [
-            'discussions' => $this->service->getAllDiscussions($request),
+            'discussions' => $this->service->getAllDiscussions(),
             'filters' => $request->only(['sort', 'direction', 'search']),
         ]);
     }

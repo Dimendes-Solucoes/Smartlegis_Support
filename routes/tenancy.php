@@ -73,46 +73,57 @@ Route::middleware(['auth', 'tenant.connection'])
             ->controller(SessionController::class)
             ->group(function () {
                 Route::get('/', 'index')->name('sessions.index');
+
                 Route::get('/{id}/editar', 'edit')->name('sessions.edit');
                 Route::put('/{id}', 'update')->name('sessions.update');
+
                 Route::get('/{id}/reordenar', 'editOrder')->name('sessions.edit_order');
                 Route::put('/{id}/reordenar', 'updateOrder')->name('sessions.update_order');
+                
+                Route::get('/{id}/falas', 'talks')->name('sessions.talks');
+                Route::get('/{id}/quorums', 'quorums')->name('sessions.quorums');
+                Route::get('/{id}/tribunas', 'tribunes')->name('sessions.tribunes');
+                Route::get('/{id}/discussoes', 'listDiscussions')->name('sessions.list_discussions');
+                Route::get('/{id}/discussoes/{discussion_id}', 'discussions')->name('sessions.discussions');
+                Route::get('/{id}/explanacoes-pessoais', 'bigDiscussions')->name('sessions.big_discussions');
+                Route::get('/{id}/questoes-de-ordem', 'questionOrders')->name('sessions.questions_orders');
+                
                 Route::delete('/{id}', 'destroy')->name('sessions.destroy');
             });
 
         Route::prefix('tribunas')
-        ->controller(TribuneController::class)
-        ->group(function () {
-            Route::get('/', 'index')->name('tribunes.index');
-            Route::get('/{id}/editar', 'edit')->name('tribunes.edit');
-            Route::delete('/{id}/inscricoes', 'removeUser')->name('tribunes.users.destroy');
-            Route::delete('/{id}', 'destroy')->name('tribunes.destroy');
-        });
+            ->controller(TribuneController::class)
+            ->group(function () {
+                Route::get('/', 'index')->name('tribunes.index');
+                Route::get('/{id}/editar', 'edit')->name('tribunes.edit');
+                Route::delete('/{id}/inscricoes', 'removeUser')->name('tribunes.users.destroy');
+                Route::delete('/{id}', 'destroy')->name('tribunes.destroy');
+            });
 
         Route::prefix('explanacoes-pessoais')
-        ->controller(BigDiscussionController::class)
-        ->group(function () {
-            Route::get('/', 'index')->name('big-discussions.index');
-            Route::get('/{id}/editar', 'edit')->name('big-discussions.edit');
-            Route::delete('/{id}/inscricoes/', 'removeUser')->name('big-discussions.users.destroy');
-            Route::delete('/{id}', 'destroy')->name('big-discussions.destroy');
-        });
+            ->controller(BigDiscussionController::class)
+            ->group(function () {
+                Route::get('/', 'index')->name('big-discussions.index');
+                Route::get('/{id}/editar', 'edit')->name('big-discussions.edit');
+                Route::delete('/{id}/inscricoes/', 'removeUser')->name('big-discussions.users.destroy');
+                Route::delete('/{id}', 'destroy')->name('big-discussions.destroy');
+            });
 
         Route::prefix('discussoes')
-        ->controller(DiscussionController::class)
-        ->group(function () {
-            Route::get('/', 'index')->name('discussions.index');
-            Route::get('/{id}/editar', 'edit')->name('discussions.edit');
-            Route::delete('/{id}/inscricoes/', 'removeUser')->name('discussions.users.destroy');
-            Route::delete('/{id}', 'destroy')->name('discussions.destroy');
-        });
+            ->controller(DiscussionController::class)
+            ->group(function () {
+                Route::get('/', 'index')->name('discussions.index');
+                Route::get('/{id}/editar', 'edit')->name('discussions.edit');
+                Route::delete('/{id}/inscricoes/', 'removeUser')->name('discussions.users.destroy');
+                Route::delete('/{id}', 'destroy')->name('discussions.destroy');
+            });
 
         Route::prefix('questoes-de-ordem')
-        ->controller(QuestionOrderController::class)
-        ->group(function () {
-            Route::get('/', 'index')->name('question-orders.index');
-            Route::get('/{id}/editar', 'edit')->name('question-orders.edit');
-            Route::delete('/{id}/inscricoes', 'removeUser')->name('question-orders.users.destroy');
-            Route::delete('/{id}','destroy')->name('question-orders.destroy');
-        });
+            ->controller(QuestionOrderController::class)
+            ->group(function () {
+                Route::get('/', 'index')->name('question-orders.index');
+                Route::get('/{id}/editar', 'edit')->name('question-orders.edit');
+                Route::delete('/{id}/inscricoes', 'removeUser')->name('question-orders.users.destroy');
+                Route::delete('/{id}', 'destroy')->name('question-orders.destroy');
+            });
     });

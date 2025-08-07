@@ -62,13 +62,13 @@ const removeUser = () => {
 </script>
 
 <template>
-    <Head :title="`Inscritos na Tribuna - ${tribuneData.tribune.quorum.session.name}`" />
+    <Head :title="`${tribuneData.tribune.quorum.session.name}`" />
 
     <AuthenticatedLayout>
         <div class="py-12">
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
                 <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6">
-                    Inscritos na Tribuna da Sessão: {{ tribuneData.tribune.quorum.session.name }}
+                    {{ tribuneData.tribune.quorum.session.name }}
                 </h1>
 
                 <div class="space-y-8">

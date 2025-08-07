@@ -53,9 +53,8 @@ watch(search, debounce((value: string) => {
 
 const getTribuneType = (type: string): string => {
     const types: { [key: string]: string } = {
-        '1': 'Pequeno Expediente',
-        '2': 'Grande Expediente',
-        '3': 'Ordem do Dia',
+        '1': 'Padrão',
+        '2': 'Convidado'
     };
     return types[type] || 'Tipo Desconhecido';
 };

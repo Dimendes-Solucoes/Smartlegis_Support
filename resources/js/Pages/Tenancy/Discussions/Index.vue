@@ -88,13 +88,13 @@ const deleteItem = () => {
                                 <thead class="bg-gray-50 dark:bg-gray-700">
                                     <tr>
                                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
-                                            <button @click="sortBy('document_name')" class="flex items-center space-x-1">
-                                                <span>DOCUMENTO EM DISCUSSÃO</span>
+                                             <button @click="sortBy('session_name')" class="flex items-center space-x-1">
+                                                <span>SESSÃO VINCULADA</span>
                                                 </button>
                                         </th>
                                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
-                                             <button @click="sortBy('session_name')" class="flex items-center space-x-1">
-                                                <span>SESSÃO VINCULADA</span>
+                                            <button @click="sortBy('document_name')" class="flex items-center space-x-1">
+                                                <span>DOCUMENTO EM DISCUSSÃO</span>
                                                 </button>
                                         </th>
                                         <th scope="col" class="relative px-6 py-3"><span class="sr-only">AÇÕES</span></th>
@@ -102,8 +102,8 @@ const deleteItem = () => {
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
                                     <tr v-for="discussion in props.discussions.data" :key="discussion.id">
-                                        <td class="px-6 py-4 whitespace-nowrap font-medium">{{ discussion.document_name }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap">{{ discussion.session_name }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap font-medium">{{ discussion.document_name }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                             <div class="flex items-center justify-end space-x-1">
                                                 <IconButton :href="route('discussions.edit', discussion.id)" color="indigo" title="Ver Inscritos">
