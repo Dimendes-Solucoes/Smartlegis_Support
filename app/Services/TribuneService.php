@@ -56,4 +56,9 @@ class TribuneService
     {
         $tribuneUser->delete();
     }
+
+    public function destroyTribune(Tribune $tribune): void
+    {
+        $tribune->delete();
+    }
 }

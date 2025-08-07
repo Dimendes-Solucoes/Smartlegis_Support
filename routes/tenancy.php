@@ -85,7 +85,8 @@ Route::middleware(['auth', 'tenant.connection'])
         ->group(function () {
             Route::get('/', 'index')->name('tribunes.index');
             Route::get('/{id}/editar', 'edit')->name('tribunes.edit');
-            Route::delete('/{tribuneUser}/inscricoes', 'removeUser')->name('tribunes.users.destroy');
+            Route::delete('/{id}/inscricoes', 'removeUser')->name('tribunes.users.destroy');
+            Route::delete('/{id}', 'destroy')->name('tribunes.destroy');
         });
 
         Route::prefix('explanacoes-pessoais')
