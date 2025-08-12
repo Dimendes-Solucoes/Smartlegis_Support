@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Models\Tenancy\DocumentSession;
 use App\Models\Tenancy\Session;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Exception;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -105,13 +104,8 @@ class SessionService
     public function getQuorums(int $id)
     {
         $session = Session::findOrFail($id);
-        $quorum = $session->quorums()->first();
 
-        if (!$quorum) {
-            throw new NotFoundHttpException("Quorum não encontrado");
-        }
-
-        return $this->quorumService->getQuorumDetails($quorum);
+        return $this->quorumService->findBySessionId($session->id);
     }
 
     public function clearQuorums(int $id)
