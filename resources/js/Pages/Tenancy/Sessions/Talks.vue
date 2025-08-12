@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import {
     UserGroupIcon,
     MicrophoneIcon,
@@ -48,9 +48,10 @@ const props = defineProps<{
 }>();
 
 const showConfirmModal = ref(false);
+const clearAction = ref<(() => void) | null>(null);
 const modalTitle = ref('');
 const modalMessage = ref('');
-const clearAction = ref<(() => void) | null>(null);
+const firstQuorum = computed(() => props.session.quorums[0] || null);
 
 const clearTribunes = () => {
     modalTitle.value = 'Limpar Tribunas';
@@ -163,7 +164,7 @@ const closeModal = () => {
                                         <span
                                             class="text-lg font-semibold text-gray-900 dark:text-gray-100">Quóruns</span>
                                     </div>
-                                    <div v-if="session.quorums?.length > 0" @click="clearQuorums" color="red"
+                                    <div v-if="props.session.quorums?.length > 0" @click="clearQuorums" color="red"
                                         class="text-gray-500 dark:text-gray-400">
                                         <IconButton :href="route('sessions.quorums', session.id)" color="yellow"
                                             title="Editar">
@@ -185,7 +186,7 @@ const closeModal = () => {
                                         <span
                                             class="text-lg font-semibold text-gray-900 dark:text-gray-100">Tribunas</span>
                                     </div>
-                                    <div v-if="session.quorums[0] && session.quorums[0].tribunes?.length > 0"
+                                    <div v-if="firstQuorum?.tribunes?.length > 0"
                                         class="text-gray-500 dark:text-gray-400">
                                         <IconButton :href="route('sessions.tribunes', session.id)" color="yellow"
                                             title="Editar">
@@ -208,7 +209,7 @@ const closeModal = () => {
                                         <span
                                             class="text-lg font-semibold text-gray-900 dark:text-gray-100">Discussões</span>
                                     </div>
-                                    <div v-if="session.quorums[0] && session.quorums[0].discussions?.length > 0"
+                                    <div v-if="firstQuorum?.discussions?.length > 0"
                                         class="text-gray-500 dark:text-gray-400">
                                         <IconButton :href="route('sessions.list_discussions', session.id)"
                                             color="yellow" title="Editar">
@@ -230,7 +231,7 @@ const closeModal = () => {
                                         <span class="text-lg font-semibold text-gray-900 dark:text-gray-100">Explanações
                                             Pessoais</span>
                                     </div>
-                                    <div v-if="session.quorums[0] && session.quorums[0].big_discussions?.length > 0"
+                                    <div v-if="firstQuorum?.big_discussions?.length > 0"
                                         class="text-gray-500 dark:text-gray-400">
                                         <IconButton :href="route('sessions.big_discussions', session.id)" color="yellow"
                                             title="Editar">
@@ -253,7 +254,7 @@ const closeModal = () => {
                                         <span class="text-lg font-semibold text-gray-900 dark:text-gray-100">Questões de
                                             Ordem</span>
                                     </div>
-                                    <div v-if="session.quorums[0] && session.quorums[0].question_orders?.length > 0"
+                                    <div v-if="firstQuorum?.question_orders?.length > 0"
                                         class="text-gray-500 dark:text-gray-400">
                                         <IconButton :href="route('sessions.questions_orders', session.id)"
                                             color="yellow" title="Editar">
