@@ -101,36 +101,24 @@ Route::middleware(['auth', 'tenant.connection'])
         Route::prefix('tribunas')
             ->controller(TribuneController::class)
             ->group(function () {
-                Route::get('/', 'index')->name('tribunes.index');
-                Route::get('/{id}/editar', 'edit')->name('tribunes.edit');
                 Route::delete('/{id}/inscricoes', 'removeUser')->name('tribunes.users.destroy');
-                Route::delete('/{id}', 'destroy')->name('tribunes.destroy');
             });
 
         Route::prefix('explanacoes-pessoais')
             ->controller(BigDiscussionController::class)
             ->group(function () {
-                Route::get('/', 'index')->name('big-discussions.index');
-                Route::get('/{id}/editar', 'edit')->name('big-discussions.edit');
-                Route::delete('/{id}/inscricoes/', 'removeUser')->name('big-discussions.users.destroy');
-                Route::delete('/{id}', 'destroy')->name('big-discussions.destroy');
+                Route::delete('/{id}/inscricoes', 'removeUser')->name('big-discussions.users.destroy');
             });
 
         Route::prefix('discussoes')
             ->controller(DiscussionController::class)
             ->group(function () {
-                Route::get('/', 'index')->name('discussions.index');
-                Route::get('/{id}/editar', 'edit')->name('discussions.edit');
-                Route::delete('/{id}/inscricoes/', 'removeUser')->name('discussions.users.destroy');
-                Route::delete('/{id}', 'destroy')->name('discussions.destroy');
+                Route::delete('/{id}/inscricoes', 'removeUser')->name('discussions.users.destroy');
             });
 
         Route::prefix('questoes-de-ordem')
             ->controller(QuestionOrderController::class)
             ->group(function () {
-                Route::get('/', 'index')->name('question-orders.index');
-                Route::get('/{id}/editar', 'edit')->name('question-orders.edit');
                 Route::delete('/{id}/inscricoes', 'removeUser')->name('question-orders.users.destroy');
-                Route::delete('/{id}', 'destroy')->name('question-orders.destroy');
             });
     });

@@ -5,8 +5,6 @@ namespace App\Services;
 use App\Models\Tenancy\Discussion;
 use App\Models\Tenancy\DiscussionUsers;
 use App\Models\Tenancy\Session;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Http\Request;
 
 class DiscussionService
 {
@@ -49,8 +47,9 @@ class DiscussionService
         ];
     }
 
-    public function removeUserFromDiscussion(DiscussionUsers $user): void
+    public function removeUserFromDiscussion(int $discussion_user_id): void
     {
+        $user = DiscussionUsers::findOrFail($discussion_user_id);
         $user->delete();
     }
 

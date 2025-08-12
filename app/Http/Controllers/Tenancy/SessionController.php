@@ -5,8 +5,6 @@ namespace App\Http\Controllers\Tenancy;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Sessions\SessionUpdateOrderRequest;
 use App\Http\Requests\Sessions\SessionUpdateRequest;
-use App\Models\Tenancy\DocumentSession;
-use App\Models\Tenancy\Session;
 use App\Services\SessionService;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
