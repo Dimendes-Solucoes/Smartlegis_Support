@@ -1,11 +1,13 @@
 <script setup lang="ts">
+import { ref, watch } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
-import { getImageUrl } from '@/Utils/image'
+import { getImageUrl } from '@/Utils/image';
 import { PencilSquareIcon, UserMinusIcon, UserPlusIcon } from '@heroicons/vue/24/solid';
 import TextButton from '@/Components/Itens/TextButton.vue';
 import IconButton from '@/Components/Itens/IconButton.vue';
 import UserStatusBadge from '@/Components/User/UserStatusBadge.vue';
+import Checkbox from '@/Components/Checkbox.vue';
 
 interface User {
     id: number;
@@ -23,6 +25,9 @@ interface User {
 const props = defineProps<{
     users: User[];
     selectedTenantId: string | null;
+    filters: {
+        show_inactive?: boolean;
+    }
 }>();
 
 const getImage = (path: string): string => {
@@ -36,6 +41,14 @@ const changeStatus = (userId: number): void => {
         });
     }
 };
+
+const showInactive = ref(props.filters.show_inactive || false);
+watch(showInactive, (value) => {
+    router.get(route('councilors.index'), { show_inactive: value }, {
+        preserveState: true,
+        replace: true,
+    });
+});
 </script>
 
 <template>
@@ -47,7 +60,14 @@ const changeStatus = (userId: number): void => {
             <div class="mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900 dark:text-gray-100">
-                        <div class="flex justify-end mb-4">
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="flex items-center">
+                                <Checkbox id="show_inactive" v-model:checked="showInactive" />
+                                <label for="show_inactive" class="ml-2 text-sm text-gray-600 dark:text-gray-400">
+                                    Exibir inativos
+                                </label>
+                            </div>
+
                             <TextButton :href="route('councilors.create')" class="p-4">
                                 Novo Vereador
                             </TextButton>
@@ -65,16 +85,10 @@ const changeStatus = (userId: number): void => {
                                             Nome</th>
                                         <th scope="col"
                                             class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
-                                            Apelido</th>
-                                        <th scope="col"
-                                            class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
                                             Email</th>
                                         <th scope="col"
                                             class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
                                             Categoria</th>
-                                        <th scope="col"
-                                            class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
-                                            Partido</th>
                                         <th scope="col"
                                             class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
                                             Obs.</th>
@@ -94,11 +108,14 @@ const changeStatus = (userId: number): void => {
                                                 <span>N/A</span>
                                             </div>
                                         </td>
-                                        <td class="px-4 py-4 whitespace-nowrap">{{ user.name }}</td>
-                                        <td class="px-4 py-4 whitespace-nowrap">{{ user.nickname || '-' }}</td>
+                                        <td class="px-4 py-4 whitespace-nowrap">
+                                            <div class="flex flex-col">
+                                                <span>{{ user.name }} ({{ user.party?.name_party || '-' }})</span>
+                                                <span class="text-gray-500 text-sm">{{ user.nickname || '-' }}</span>
+                                            </div>
+                                        </td>
                                         <td class="px-4 py-4 whitespace-nowrap">{{ user.email }}</td>
                                         <td class="px-4 py-4 whitespace-nowrap">{{ user.category?.name || '-' }}</td>
-                                        <td class="px-4 py-4 whitespace-nowrap">{{ user.party?.name_party || '-' }}</td>
                                         <td class="px-4 py-4 whitespace-nowrap">
                                             <span v-if="user.status_lider"
                                                 class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-gray-300 text-black mr-1">
@@ -107,7 +124,7 @@ const changeStatus = (userId: number): void => {
 
                                             <span v-if="user.is_first_secretary"
                                                 class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-gray-300 text-black">
-                                                1º Secretário
+                                                1º Sec.
                                             </span>
 
                                             <span v-if="!user.status_lider && !user.is_first_secretary">

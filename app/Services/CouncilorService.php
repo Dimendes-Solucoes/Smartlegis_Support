@@ -17,10 +17,14 @@ use Illuminate\Support\Str;
 
 class CouncilorService
 {
-    public function list()
+    public function list(bool $showInactive = false)
     {
-        return User::whereIn('user_category_id', UserCategory::LEGISLATIVO)
+        return User::query() 
+            ->whereIn('user_category_id', UserCategory::LEGISLATIVO)
             ->with('party', 'category')
+            ->when(!$showInactive, function ($query) {
+                $query->where('status_user', User::USUARIO_VEREADOR);
+            })
             ->orderBy('user_category_id', 'desc')
             ->orderBy('status_user', 'asc')
             ->orderBy('name')
