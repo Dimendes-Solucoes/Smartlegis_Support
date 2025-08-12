@@ -18,6 +18,7 @@ class CouncilorController extends Controller
     {
         $showInactive = request()->boolean('show_inactive');
         $users = $this->service->list($showInactive);
+
         return Inertia::render('Tenancy/Coucilors/Index', [
             'users' => $users,
             'filters' => [
