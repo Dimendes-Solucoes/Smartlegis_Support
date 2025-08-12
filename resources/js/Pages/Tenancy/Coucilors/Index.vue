@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'; 
+import { ref, watch } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
 import { getImageUrl } from '@/Utils/image';
@@ -7,7 +7,7 @@ import { PencilSquareIcon, UserMinusIcon, UserPlusIcon } from '@heroicons/vue/24
 import TextButton from '@/Components/Itens/TextButton.vue';
 import IconButton from '@/Components/Itens/IconButton.vue';
 import UserStatusBadge from '@/Components/User/UserStatusBadge.vue';
-import Checkbox from '@/Components/Checkbox.vue'; 
+import Checkbox from '@/Components/Checkbox.vue';
 
 interface User {
     id: number;
@@ -85,16 +85,10 @@ watch(showInactive, (value) => {
                                             Nome</th>
                                         <th scope="col"
                                             class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
-                                            Apelido</th>
-                                        <th scope="col"
-                                            class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
                                             Email</th>
                                         <th scope="col"
                                             class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
                                             Categoria</th>
-                                        <th scope="col"
-                                            class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
-                                            Partido</th>
                                         <th scope="col"
                                             class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
                                             Obs.</th>
@@ -114,11 +108,14 @@ watch(showInactive, (value) => {
                                                 <span>N/A</span>
                                             </div>
                                         </td>
-                                        <td class="px-4 py-4 whitespace-nowrap">{{ user.name }}</td>
-                                        <td class="px-4 py-4 whitespace-nowrap">{{ user.nickname || '-' }}</td>
+                                        <td class="px-4 py-4 whitespace-nowrap">
+                                            <div class="flex flex-col">
+                                                <span>{{ user.name }} ({{ user.party?.name_party || '-' }})</span>
+                                                <span class="text-gray-500 text-sm">{{ user.nickname || '-' }}</span>
+                                            </div>
+                                        </td>
                                         <td class="px-4 py-4 whitespace-nowrap">{{ user.email }}</td>
                                         <td class="px-4 py-4 whitespace-nowrap">{{ user.category?.name || '-' }}</td>
-                                        <td class="px-4 py-4 whitespace-nowrap">{{ user.party?.name_party || '-' }}</td>
                                         <td class="px-4 py-4 whitespace-nowrap">
                                             <span v-if="user.status_lider"
                                                 class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-gray-300 text-black mr-1">
@@ -127,7 +124,7 @@ watch(showInactive, (value) => {
 
                                             <span v-if="user.is_first_secretary"
                                                 class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-gray-300 text-black">
-                                                1º Secretário
+                                                1º Sec.
                                             </span>
 
                                             <span v-if="!user.status_lider && !user.is_first_secretary">
