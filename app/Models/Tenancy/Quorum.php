@@ -3,13 +3,9 @@
 namespace App\Models\Tenancy;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\DB;
 
 class Quorum extends Model
 {
-    // use SoftDeletes;
-
     protected $fillable = [
         'session_id'
     ];
@@ -48,18 +44,5 @@ class Quorum extends Model
     public function questionOrders()
     {
         return $this->hasMany(QuestionOrder::class);
-    }
-
-    protected static function booted()
-    {
-        static::deleting(function ($quorum) {
-            DB::transaction(function () use ($quorum) {
-                $quorum->quorumUsers()->delete();
-                $quorum->discussions()->delete();
-                $quorum->bigDiscussions()->delete();
-                $quorum->tribunes()->delete();
-                $quorum->questionOrders()->delete();
-            });
-        });
     }
 }

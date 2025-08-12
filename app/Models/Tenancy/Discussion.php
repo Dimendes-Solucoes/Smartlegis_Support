@@ -3,12 +3,9 @@
 namespace App\Models\Tenancy;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Discussion extends Model
 {
-    // use SoftDeletes;
-
     public const STATUS_SUBSCRIBE = 1;
     public const END_SUBSCRIBE = 2;
     public const ENDING_DISCUSSION = 3;
@@ -38,12 +35,5 @@ class Discussion extends Model
     public function discussionUsers()
     {
         return $this->hasMany(DiscussionUsers::class);
-    }
-
-    protected static function booted()
-    {
-        static::deleting(function ($discussion) {
-            $discussion->discussionUsers()->delete();
-        });
     }
 }

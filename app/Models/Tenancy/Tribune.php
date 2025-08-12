@@ -3,12 +3,9 @@
 namespace App\Models\Tenancy;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Tribune extends Model
 {
-    // use SoftDeletes;
-
     public const STATUS_SUBSCRIBE = 1;
     public const END_SUBSCRIBE = 2;
     public const ENDING_TRIBUNE = 3;
@@ -46,13 +43,5 @@ class Tribune extends Model
     public function apartiamentoUsers()
     {
         return $this->hasMany(ApartiamentoUser::class);
-    }
-
-    protected static function booted()
-    {
-        static::deleting(function ($tribune) {
-            $tribune->tribuneUsers()->delete();
-            $tribune->apartiamentoUsers()->delete();
-        });
     }
 }

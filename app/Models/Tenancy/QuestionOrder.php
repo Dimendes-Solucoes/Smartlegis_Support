@@ -30,11 +30,4 @@ class QuestionOrder extends Model
     {
         return $this->hasMany(QuestionOrderUsers::class);
     }
-
-    protected static function booted()
-    {
-        static::deleting(function ($questionOrder) { 
-            $questionOrder->questionOrderUsers()->delete();
-        });
-    }
 }
