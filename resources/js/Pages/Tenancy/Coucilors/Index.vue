@@ -1,11 +1,13 @@
 <script setup lang="ts">
+import { ref, watch } from 'vue'; 
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
-import { getImageUrl } from '@/Utils/image'
+import { getImageUrl } from '@/Utils/image';
 import { PencilSquareIcon, UserMinusIcon, UserPlusIcon } from '@heroicons/vue/24/solid';
 import TextButton from '@/Components/Itens/TextButton.vue';
 import IconButton from '@/Components/Itens/IconButton.vue';
 import UserStatusBadge from '@/Components/User/UserStatusBadge.vue';
+import Checkbox from '@/Components/Checkbox.vue'; 
 
 interface User {
     id: number;
@@ -23,6 +25,9 @@ interface User {
 const props = defineProps<{
     users: User[];
     selectedTenantId: string | null;
+    filters: {
+        show_inactive?: boolean;
+    }
 }>();
 
 const getImage = (path: string): string => {
@@ -36,6 +41,14 @@ const changeStatus = (userId: number): void => {
         });
     }
 };
+
+const showInactive = ref(props.filters.show_inactive || false);
+watch(showInactive, (value) => {
+    router.get(route('councilors.index'), { show_inactive: value }, {
+        preserveState: true,
+        replace: true,
+    });
+});
 </script>
 
 <template>
@@ -47,7 +60,14 @@ const changeStatus = (userId: number): void => {
             <div class="mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900 dark:text-gray-100">
-                        <div class="flex justify-end mb-4">
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="flex items-center">
+                                <Checkbox id="show_inactive" v-model:checked="showInactive" />
+                                <label for="show_inactive" class="ml-2 text-sm text-gray-600 dark:text-gray-400">
+                                    Exibir inativos
+                                </label>
+                            </div>
+
                             <TextButton :href="route('councilors.create')" class="p-4">
                                 Novo Vereador
                             </TextButton>

@@ -16,10 +16,13 @@ class CouncilorController extends Controller
 
     public function index()
     {
-        $users = $this->service->list();
-
+        $showInactive = request()->boolean('show_inactive');
+        $users = $this->service->list($showInactive);
         return Inertia::render('Tenancy/Coucilors/Index', [
-            'users' => $users
+            'users' => $users,
+            'filters' => [
+                'show_inactive' => $showInactive,
+            ],
         ]);
     }
 
