@@ -164,13 +164,13 @@ const closeModal = () => {
                                         <span
                                             class="text-lg font-semibold text-gray-900 dark:text-gray-100">Quóruns</span>
                                     </div>
-                                    <div v-if="props.session.quorums?.length > 0" @click="clearQuorums" color="red"
+                                    <div v-if="props.session.quorums?.length > 0"
                                         class="text-gray-500 dark:text-gray-400">
                                         <IconButton :href="route('sessions.quorums', session.id)" color="yellow"
                                             title="Editar">
                                             <PencilSquareIcon class="h-5 w-5" />
                                         </IconButton>
-                                        <IconButton title="Limpar" class="ml-1" color="red">
+                                        <IconButton @click="clearQuorums" color="red" title="Limpar" class="ml-1">
                                             <TrashIcon class="h-5 w-5" />
                                         </IconButton>
                                     </div>
