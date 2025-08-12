@@ -7,25 +7,22 @@ use App\Models\Tenancy\BigDiscussionUsers;
 
 class BigDiscussionService
 {
-    public function getBigDiscussionDetails(BigDiscussion $discussion): array
+    public function findBySessionId(int $session_id): array
     {
+        $discussion = BigDiscussion::whereHas('quorum', fn($q) => $q->where('session_id', $session_id))->first();
         $discussion->load('quorum.session');
+
         $users = $discussion->bigDiscussionUsers()->with('user')->get();
 
         return [
             'discussion' => $discussion,
-            'users' => $users,
+            'users' => $users
         ];
     }
 
-    public function removeUserFromDiscussion(int $big_discussion_id): void
+    public function removeUserFromBigDiscussion(int $big_discussion_id): void
     {
         $user = BigDiscussionUsers::findOrFail($big_discussion_id);
         $user->delete();
-    }
-
-    public function destroyBigDiscussion(BigDiscussion $discussion): void
-    {
-        $discussion->delete();
     }
 }

@@ -18,8 +18,9 @@ class QuorumService
         ];
     }
 
-    public function removeUserFromQuorum(QuorumUsers $quorumUsers): void
+    public function removeUserFromQuorum(int $id): void
     {
-        $quorumUsers->delete();
+        $quorum_user = QuorumUsers::findOrFail($id);
+        $quorum_user->delete();
     }
 }

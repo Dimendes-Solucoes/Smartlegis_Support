@@ -13,7 +13,7 @@ class BigDiscussionController extends Controller
 
     public function removeUser(int $id)
     {
-        $this->service->removeUserFromDiscussion($id);
+        $this->service->removeUserFromBigDiscussion($id);
 
         return back()->with('success', 'Inscrição removida com sucesso!');
     }

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Tenancy;
 
 use App\Http\Controllers\Controller;
-use App\Models\Tenancy\QuorumUsers;
 use App\Services\QuorumService;
 
 class QuorumController extends Controller
@@ -14,8 +13,7 @@ class QuorumController extends Controller
 
     public function removeUser(int $id)
     {
-        $quorumUser = QuorumUsers::findOrFail($id);
-        $this->service->removeUserFromQuorum($quorumUser);
+        $this->service->removeUserFromQuorum($id);
 
         return back()->with('success', 'Inscrição removida com sucesso!');
     }

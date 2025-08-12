@@ -7,24 +7,22 @@ use App\Models\Tenancy\QuestionOrderUsers;
 
 class QuestionOrderService
 {
-    public function getQuestionOrderDetails(QuestionOrder $qo): array
+    public function findBySessionId(int $session_id): array
     {
-        $qo->load('quorum.session');
-        $users = $qo->questionOrderUsers()->with('user')->get();
+        $question_order = QuestionOrder::whereHas('quorum', fn($q) => $q->where('session_id', $session_id))->first();
+        $question_order->load('quorum.session');
+
+        $users = $question_order->questionOrderUsers()->with('user')->get();
 
         return [
-            'question_order' => $qo,
+            'question_order' => $question_order,
             'users' => $users,
         ];
     }
 
-    public function removeUserFromQuestionOrder(QuestionOrderUsers $user): void
+    public function removeUserFromQuestionOrder(int $id): void
     {
-        $user->delete();
-    }
-
-    public function destroyQuestionOrder(QuestionOrder $qo): void
-    {
-        $qo->delete();
+        $question_order_user = QuestionOrderUsers::findOrFail($id);
+        $question_order_user->delete();
     }
 }

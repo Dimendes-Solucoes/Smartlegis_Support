@@ -7,9 +7,11 @@ use App\Models\Tenancy\TribuneUsers;
 
 class TribuneService
 {
-    public function getTribuneDetails(Tribune $tribune): array
+    public function findBySessionId(int $session_id): array
     {
+        $tribune = Tribune::whereHas('quorum', fn($q) => $q->where('session_id', $session_id))->first();
         $tribune->load('quorum.session');
+
         $tribuneUsers = $tribune->tribuneUsers()->with('user')->orderBy('position')->get();
         $apartiamentoUsers = $tribune->apartiamentoUsers()->with('user')->get();
 

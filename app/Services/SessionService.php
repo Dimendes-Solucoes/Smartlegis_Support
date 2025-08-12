@@ -123,9 +123,8 @@ class SessionService
     public function getTribunes(int $id)
     {
         $session = Session::findOrFail($id);
-        $tribune = $session->quorums()->first()->tribunes()->first();
 
-        return $this->tribuneService->getTribuneDetails($tribune);
+        return $this->tribuneService->findBySessionId($session->id);
     }
 
     public function clearTribunes(int $id)
@@ -147,9 +146,8 @@ class SessionService
     public function getDiscussions(int $id, int $discussion_id)
     {
         $session = Session::findOrFail($id);
-        $discussions = $session->quorums()->first()->discussions()->findOrFail($discussion_id);
 
-        return $this->discussionService->getDiscussionDetails($discussions);
+        return $this->discussionService->findBySessionId($session->id, $discussion_id);
     }
 
     public function clearDiscussions(int $id)
@@ -164,9 +162,8 @@ class SessionService
     public function getBigDiscussions(int $id)
     {
         $session = Session::findOrFail($id);
-        $big_discussion = $session->quorums()->first()->bigDiscussions()->first();
 
-        return $this->bigDiscussionService->getBigDiscussionDetails($big_discussion);
+        return $this->bigDiscussionService->findBySessionId($session->id);
     }
 
     public function clearBigDiscussions(int $id)
@@ -181,9 +178,8 @@ class SessionService
     public function getQuestionOrders(int $id)
     {
         $session = Session::findOrFail($id);
-        $question_order = $session->quorums()->first()->questionOrders()->first();
 
-        return $this->questionOrderService->getQuestionOrderDetails($question_order);
+        return $this->questionOrderService->findBySessionId($session->id);
     }
 
     public function clearQuestionOrders(int $id)

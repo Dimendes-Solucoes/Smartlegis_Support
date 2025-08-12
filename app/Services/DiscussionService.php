@@ -22,7 +22,7 @@ class DiscussionService
             ->latest('id')
             ->paginate(15);
 
-        $discussions->through(fn (Discussion $discussion) => [
+        $discussions->through(fn(Discussion $discussion) => [
             'id' => $discussion->id,
             'session_name' => $discussion->quorum->session->name ?? 'Sessão não encontrada',
             'document_name' => $discussion->document->name ?? 'Documento não encontrado',
@@ -35,8 +35,11 @@ class DiscussionService
         ];
     }
 
-    public function getDiscussionDetails(Discussion $discussion): array
+    public function findBySessionId(int $session_id, int $discussion_id): array
     {
+        $discussion = Discussion::where('discussion_id', $discussion_id)
+            ->whereHas('quorum', fn($q) => $q->where('session_id', $session_id))
+            ->first();
 
         $discussion->load('quorum.session', 'document');
         $users = $discussion->discussionUsers()->with('user')->get();
@@ -51,10 +54,5 @@ class DiscussionService
     {
         $user = DiscussionUsers::findOrFail($discussion_user_id);
         $user->delete();
-    }
-
-    public function destroyDiscussion(Discussion $discussion): void
-    {
-        $discussion->delete();
     }
 }
