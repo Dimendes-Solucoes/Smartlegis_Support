@@ -88,9 +88,6 @@ watch(showInactive, (value) => {
                                             Email</th>
                                         <th scope="col"
                                             class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
-                                            Categoria</th>
-                                        <th scope="col"
-                                            class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
                                             Obs.</th>
                                         <th scope="col"
                                             class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
@@ -111,11 +108,10 @@ watch(showInactive, (value) => {
                                         <td class="px-4 py-4 whitespace-nowrap">
                                             <div class="flex flex-col">
                                                 <span>{{ user.name }} ({{ user.party?.name_party || '-' }})</span>
-                                                <span class="text-gray-500 text-sm">{{ user.nickname || '-' }}</span>
+                                                <span class="text-gray-500 text-sm">{{ user.category?.name || '-' }} - {{ user.nickname || '-' }}</span>
                                             </div>
                                         </td>
                                         <td class="px-4 py-4 whitespace-nowrap">{{ user.email }}</td>
-                                        <td class="px-4 py-4 whitespace-nowrap">{{ user.category?.name || '-' }}</td>
                                         <td class="px-4 py-4 whitespace-nowrap">
                                             <span v-if="user.status_lider"
                                                 class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-gray-300 text-black mr-1">
