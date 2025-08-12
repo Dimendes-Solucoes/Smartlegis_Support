@@ -82,12 +82,22 @@ Route::middleware(['auth', 'tenant.connection'])
                 Route::put('/{id}/reordenar', 'updateOrder')->name('sessions.update_order');
 
                 Route::get('/{id}', 'talks')->name('sessions.talks');
+
                 Route::get('/{id}/quorums', 'quorums')->name('sessions.quorums');
+                Route::delete('/{id}/quorums/limpar', 'clearQuorums')->name('sessions.quorums.clear');
+
                 Route::get('/{id}/tribunas', 'tribunes')->name('sessions.tribunes');
+                Route::delete('/{id}/tribunas/limpar', 'clearTribunes')->name('sessions.tribunes.clear');
+
                 Route::get('/{id}/discussoes', 'listDiscussions')->name('sessions.list_discussions');
+                Route::delete('/{id}/discussoes/limpar', 'clearDiscussions')->name('sessions.discussions.clear');
                 Route::get('/{id}/discussoes/{discussion_id}', 'discussions')->name('sessions.discussions');
+
                 Route::get('/{id}/explanacoes-pessoais', 'bigDiscussions')->name('sessions.big_discussions');
+                Route::delete('/{id}/explanacoes-pessoais/limpar', 'clearBigDiscussions')->name('sessions.big_discussions.clear');
+
                 Route::get('/{id}/questoes-de-ordem', 'questionOrders')->name('sessions.questions_orders');
+                Route::delete('/{id}/questoes-de-ordem/limpar', 'clearQuestionOrders')->name('sessions.questions_orders.clear');
 
                 Route::delete('/{id}', 'destroy')->name('sessions.destroy');
             });

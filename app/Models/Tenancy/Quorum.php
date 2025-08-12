@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 
 class Quorum extends Model
 {
-    use SoftDeletes;
+    // use SoftDeletes;
 
     protected $fillable = [
         'session_id'

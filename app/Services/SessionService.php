@@ -44,7 +44,16 @@ class SessionService
 
     public function find(int $id): Session
     {
-        return Session::findOrFail($id);
+        return Session::with([
+            'quorums' => function ($query) {
+                $query->with([
+                    'tribunes',
+                    'discussions',
+                    'bigDiscussions',
+                    'questionOrders'
+                ]);
+            }
+        ])->findOrFail($id);
     }
 
     public function update(int $id, array $data): void
@@ -105,12 +114,27 @@ class SessionService
         return $this->quorumService->getQuorumDetails($quorum);
     }
 
+    public function clearQuorums(int $id)
+    {
+        $session = Session::findOrFail($id);
+        $session->quorums()->delete();
+    }
+
     public function getTribunes(int $id)
     {
         $session = Session::findOrFail($id);
         $tribune = $session->quorums()->first()->tribunes()->first();
 
         return $this->tribuneService->getTribuneDetails($tribune);
+    }
+
+    public function clearTribunes(int $id)
+    {
+        $session = Session::findOrFail($id);
+
+        foreach ($session->quorums as $quorum) {
+            $quorum->tribunes()->delete();
+        }
     }
 
     public function getAllDiscussionsBySession($id)
@@ -128,6 +152,15 @@ class SessionService
         return $this->discussionService->getDiscussionDetails($discussions);
     }
 
+    public function clearDiscussions(int $id)
+    {
+        $session = Session::findOrFail($id);
+
+        foreach ($session->quorums as $quorum) {
+            $quorum->discussions()->delete();
+        }
+    }
+
     public function getBigDiscussions(int $id)
     {
         $session = Session::findOrFail($id);
@@ -136,12 +169,30 @@ class SessionService
         return $this->bigDiscussionService->getBigDiscussionDetails($big_discussion);
     }
 
+    public function clearBigDiscussions(int $id)
+    {
+        $session = Session::findOrFail($id);
+
+        foreach ($session->quorums as $quorum) {
+            $quorum->bigDiscussions()->delete();
+        }
+    }
+
     public function getQuestionOrders(int $id)
     {
         $session = Session::findOrFail($id);
         $question_order = $session->quorums()->first()->questionOrders()->first();
 
         return $this->questionOrderService->getQuestionOrderDetails($question_order);
+    }
+
+    public function clearQuestionOrders(int $id)
+    {
+        $session = Session::findOrFail($id);
+
+        foreach ($session->quorums as $quorum) {
+            $quorum->questionOrders()->delete();
+        }
     }
 
     public function delete(int $id): void

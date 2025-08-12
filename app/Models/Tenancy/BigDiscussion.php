@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class BigDiscussion extends Model
 {
-    use SoftDeletes;
+    // use SoftDeletes;
 
     public const STATUS_SUBSCRIBE = 1;
     public const END_SUBSCRIBE = 2;
