@@ -4,13 +4,13 @@ namespace App\Services;
 
 use App\Models\Tenancy\Discussion;
 use App\Models\Tenancy\DiscussionUsers;
+use App\Models\Tenancy\Session;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
 
 class DiscussionService
 {
-
-    public function getAllDiscussions(?array $data = []): LengthAwarePaginator
+    public function getAllDiscussions(?array $data = []): array
     {
         $discussions = Discussion::query();
 
@@ -31,7 +31,10 @@ class DiscussionService
             'quorum' => $discussion->quorum
         ]);
 
-        return $discussions;
+        return [
+            'session' => Session::find($data['session_id']),
+            'discussions' => $discussions
+        ];
     }
 
     public function getDiscussionDetails(Discussion $discussion): array

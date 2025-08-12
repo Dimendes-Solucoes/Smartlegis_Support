@@ -10,6 +10,7 @@ use App\Http\Controllers\Tenancy\TribuneController;
 use App\Http\Controllers\Tenancy\BigDiscussionController;
 use App\Http\Controllers\Tenancy\DiscussionController;
 use App\Http\Controllers\Tenancy\QuestionOrderController;
+use App\Http\Controllers\Tenancy\QuorumController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'tenant.connection'])
@@ -79,16 +80,22 @@ Route::middleware(['auth', 'tenant.connection'])
 
                 Route::get('/{id}/reordenar', 'editOrder')->name('sessions.edit_order');
                 Route::put('/{id}/reordenar', 'updateOrder')->name('sessions.update_order');
-                
-                Route::get('/{id}/falas', 'talks')->name('sessions.talks');
+
+                Route::get('/{id}', 'talks')->name('sessions.talks');
                 Route::get('/{id}/quorums', 'quorums')->name('sessions.quorums');
                 Route::get('/{id}/tribunas', 'tribunes')->name('sessions.tribunes');
                 Route::get('/{id}/discussoes', 'listDiscussions')->name('sessions.list_discussions');
                 Route::get('/{id}/discussoes/{discussion_id}', 'discussions')->name('sessions.discussions');
                 Route::get('/{id}/explanacoes-pessoais', 'bigDiscussions')->name('sessions.big_discussions');
                 Route::get('/{id}/questoes-de-ordem', 'questionOrders')->name('sessions.questions_orders');
-                
+
                 Route::delete('/{id}', 'destroy')->name('sessions.destroy');
+            });
+
+        Route::prefix('quorums')
+            ->controller(QuorumController::class)
+            ->group(function () {
+                Route::delete('/{id}/inscricoes', 'removeUser')->name('quorums.users.destroy');
             });
 
         Route::prefix('tribunas')

@@ -90,40 +90,8 @@ export const staticNavigationLinks: NavigationLink[] = [
     {
         label: 'Sessões',
         icon: ClipboardDocumentListIcon,
-        type: 'group',
         route: 'sessions.index',
-        children: [
-            {
-                label: 'Lista de Sessões',
-                icon: ClipboardDocumentListIcon,
-                route: 'sessions.index',
-                type: 'link',
-            },
-            {
-                label: 'Tribunas',
-                icon: MicrophoneIcon,
-                route: 'tribunes.index',
-                type: 'link',
-            },
-            {
-                label: 'Discussões',
-                icon: ChatBubbleOvalLeftEllipsisIcon,
-                route: 'discussions.index',
-                type: 'link',
-            },
-            {
-                label: 'Explanações Pessoais',
-                icon: MegaphoneIcon,
-                route: 'big-discussions.index',
-                type: 'link',
-            },
-            {
-                label: 'Questões de Ordem',
-                icon: QuestionMarkCircleIcon,
-                route: 'question-orders.index',
-                type: 'link',
-            },
-        ]
+        type: 'link',
     },
 
     { type: 'separator' },

@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Tenancy\Quorum;
+use App\Models\Tenancy\QuorumUsers;
 
 class QuorumService
 {
@@ -15,5 +16,10 @@ class QuorumService
             'quorum' => $quorum,
             'quorum_users' => $users,
         ];
+    }
+
+    public function removeUserFromQuorum(QuorumUsers $quorumUsers): void
+    {
+        $quorumUsers->delete();
     }
 }

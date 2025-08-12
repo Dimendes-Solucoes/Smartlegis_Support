@@ -83,7 +83,7 @@ class SessionController extends Controller
     public function listDiscussions(Request $request, int $id)
     {
         return Inertia::render('Tenancy/Sessions/Discussions', [
-            'discussions' => $this->service->getAllDiscussionsBySession($id),
+            'discussionData' => $this->service->getAllDiscussionsBySession($id),
             'filters' => $request->only(['sort', 'direction', 'search']),
         ]);
     }

@@ -32,17 +32,6 @@ watch(search, debounce((value: string) => {
     router.get(route('question-orders.index'), { search: value }, { preserveState: true, replace: true });
 }, 300));
 
-const sortBy = (field: string) => {
-    let direction = 'asc';
-    if (props.filters.sort === field && props.filters.direction === 'asc') {
-        direction = 'desc';
-    }
-    router.get(route('question-orders.index'), { sort: field, direction, search: props.filters.search }, {
-        preserveState: true,
-        replace: true,
-    });
-};
-
 const confirmingDeletion = ref(false);
 const itemToDelete = ref<QuestionOrder | null>(null);
 

@@ -11,9 +11,9 @@ use Illuminate\Http\Request;
 
 class TribuneController extends Controller
 {
-    public function __construct(protected TribuneService $service)
-    {
-    }
+    public function __construct(
+        protected TribuneService $service
+    ) {}
 
     public function index(Request $request)
     {
@@ -26,7 +26,6 @@ class TribuneController extends Controller
     public function edit(int $id)
     {
         $tribune = Tribune::findOrFail($id);
-        
 
         return Inertia::render('Tenancy/Tribunes/EditMember', [
             'tribuneData' => $this->service->getTribuneDetails($tribune),
