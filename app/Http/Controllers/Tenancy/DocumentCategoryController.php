@@ -7,6 +7,7 @@ use App\Http\Requests\DocumentCategories\StoreDocumentCategoryRequest;
 use App\Http\Requests\DocumentCategories\UpdateDocumentCategoryRequest;
 use App\Services\DocumentCategoryService;
 use Inertia\Inertia;
+use Illuminate\Http\Request;
 
 class DocumentCategoryController extends Controller
 {
@@ -14,12 +15,16 @@ class DocumentCategoryController extends Controller
         protected DocumentCategoryService $service
     ) {}
 
-    public function index()
+    public function index(Request $request)
     {
-        $categories = $this->service->getAllCategories();
+        $showInactive = $request->boolean('show_inactive');
+        $categories = $this->service->getAllCategories($showInactive);
 
         return Inertia::render('Tenancy/DocumentCategories/Index', [
             'categories' => $categories,
+            'filters' => [
+                'show_inactive' => $showInactive,
+            ],
         ]);
     }
 
