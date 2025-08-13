@@ -9,7 +9,7 @@ class QuorumService
 {
     public function findBySessionId(int $session_id): array
     {
-        $quorum = Quorum::findOrFail('session_id', $session_id);
+        $quorum = Quorum::where('session_id', $session_id)->first();
         $quorum->load('session');
 
         $users = $quorum->quorumUsers()->with('user')->get();
