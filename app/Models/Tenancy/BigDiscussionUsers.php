@@ -3,12 +3,9 @@
 namespace App\Models\Tenancy;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class BigDiscussionUsers extends Model
 {
-    use SoftDeletes;
-
     public const AGUARDANDO = 1;
     public const FALANDO = 2;
     public const PAUSADO = 3;

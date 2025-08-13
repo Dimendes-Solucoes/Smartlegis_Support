@@ -10,7 +10,11 @@ import {
     ClockIcon,
     ClipboardDocumentListIcon,
     ShieldCheckIcon,
-    UserGroupIcon
+    UserGroupIcon,
+    MicrophoneIcon,
+    MegaphoneIcon,
+    QuestionMarkCircleIcon,
+    ChatBubbleOvalLeftEllipsisIcon,
 } from '@heroicons/vue/24/solid';
 
 interface NavigationLink {
@@ -22,7 +26,8 @@ interface NavigationLink {
     as?: string;
     textClass?: string;
     iconClass?: string;
-    type?: 'link' | 'separator';
+    type?: 'link' | 'separator' | 'group';
+    children?: NavigationLink[];
 }
 
 export const staticNavigationLinks: NavigationLink[] = [
@@ -76,16 +81,16 @@ export const staticNavigationLinks: NavigationLink[] = [
         route: 'document-categories.index',
         type: 'link',
     },
-        {
-        label: 'Sessões',
-        icon: ClipboardDocumentListIcon,
-        route: 'sessions.index',
-        type: 'link',
-    },
     {
         label: 'Tempos',
         icon: ClockIcon,
         route: 'timers.index',
+        type: 'link',
+    },
+    {
+        label: 'Sessões',
+        icon: ClipboardDocumentListIcon,
+        route: 'sessions.index',
         type: 'link',
     },
 

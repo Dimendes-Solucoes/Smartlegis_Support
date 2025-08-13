@@ -22,22 +22,22 @@ export default {
 
   safelist: [
     {
-      pattern: /bg-(indigo|red|yellow|orange|green)-500/,
+      pattern: /bg-(indigo|blue|red|yellow|orange|green|gray)-500/,
     },
     {
-      pattern: /border-(indigo|red|yellow|orange|green)-600/,
+      pattern: /border-(indigo|blue|red|yellow|orange|green|gray)-600/,
     },
     {
-      pattern: /hover:bg-(indigo|red|yellow|orange|green)-700/,
+      pattern: /hover:bg-(indigo|blue|red|yellow|orange|green|gray)-700/,
     },
     {
-      pattern: /active:bg-(indigo|red|yellow|orange|green)-900/,
+      pattern: /active:bg-(indigo|blue|red|yellow|orange|green|gray)-900/,
     },
     {
-      pattern: /focus:border-(indigo|red|yellow|orange|green)-900/,
+      pattern: /focus:border-(indigo|blue|red|yellow|orange|green|gray)-900/,
     },
     {
-      pattern: /focus:ring-(indigo|red|yellow|orange|green)-300/,
+      pattern: /focus:ring-(indigo|blue|red|yellow|orange|green|gray)-300/,
     },
   ],
 

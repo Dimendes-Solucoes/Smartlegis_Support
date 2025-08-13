@@ -5,8 +5,6 @@ namespace App\Http\Controllers\Tenancy;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Sessions\SessionUpdateOrderRequest;
 use App\Http\Requests\Sessions\SessionUpdateRequest;
-use App\Models\Tenancy\DocumentSession;
-use App\Models\Tenancy\Session;
 use App\Services\SessionService;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
@@ -55,6 +53,93 @@ class SessionController extends Controller
         $this->service->updateOrder($id, $request->validated());
 
         return back()->with('success', 'Ordem da pauta salva com sucesso!');
+    }
+
+    public function talks(int $id)
+    {
+        $session = $this->service->find($id);
+
+        return Inertia::render('Tenancy/Sessions/Talks', [
+            'session' => $session
+        ]);
+    }
+
+    public function quorums(int $id)
+    {
+        return Inertia::render('Tenancy/Quorums/EditMember', [
+            'quorumData' => $this->service->getQuorums($id),
+        ]);
+    }
+
+    public function clearQuorums(int $id)
+    {
+        $this->service->clearQuorums($id);
+
+        return back()->with('success', 'Quoruns da sessão foram excluídos!');
+    }
+
+    public function tribunes(int $id)
+    {
+        return Inertia::render('Tenancy/Tribunes/EditMember', [
+            'tribuneData' => $this->service->getTribunes($id),
+        ]);
+    }
+
+    public function clearTribunes(int $id)
+    {
+        $this->service->clearTribunes($id);
+
+        return back()->with('success', 'Tribunas da sessão foram excluídas!');
+    }
+
+    public function listDiscussions(Request $request, int $id)
+    {
+        return Inertia::render('Tenancy/Sessions/Discussions', [
+            'discussionData' => $this->service->getAllDiscussionsBySession($id),
+            'filters' => $request->only(['sort', 'direction', 'search']),
+        ]);
+    }
+
+    public function discussions(int $id, int $discussion_id)
+    {
+        return Inertia::render('Tenancy/Discussions/EditMember', [
+            'discussionData' => $this->service->getDiscussions($id, $discussion_id),
+        ]);
+    }
+
+    public function clearDiscussions(int $id)
+    {
+        $this->service->clearDiscussions($id);
+
+        return back()->with('success', 'Discussões da sessão foram excluídas!');
+    }
+
+    public function bigDiscussions(int $id)
+    {
+        return Inertia::render('Tenancy/BigDiscussions/EditMember', [
+            'discussionData' => $this->service->getBigDiscussions($id),
+        ]);
+    }
+
+    public function clearBigDiscussions(int $id)
+    {
+        $this->service->clearBigDiscussions($id);
+
+        return back()->with('success', 'Explanações pessoais da sessão foram excluídas!');
+    }
+
+    public function questionOrders(int $id)
+    {
+        return Inertia::render('Tenancy/QuestionOrders/EditMember', [
+            'questionOrderData' => $this->service->getQuestionOrders($id),
+        ]);
+    }
+
+    public function clearQuestionOrders(int $id)
+    {
+        $this->service->clearQuestionOrders($id);
+
+        return back()->with('success', 'Questões de ordem da sessão foram excluídas!');
     }
 
     public function destroy(int $id)

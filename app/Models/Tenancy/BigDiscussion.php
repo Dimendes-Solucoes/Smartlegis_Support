@@ -3,12 +3,9 @@
 namespace App\Models\Tenancy;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class BigDiscussion extends Model
 {
-    use SoftDeletes;
-
     public const STATUS_SUBSCRIBE = 1;
     public const END_SUBSCRIBE = 2;
     public const ENDING_BIG_DISCUSSION = 3;
@@ -32,12 +29,5 @@ class BigDiscussion extends Model
     public function bigDiscussionUsers()
     {
         return $this->hasMany(BigDiscussionUsers::class);
-    }
-
-    protected static function booted()
-    {
-        static::deleting(function ($big_discussion) {
-            $big_discussion->bigDiscussionUsers()->delete();
-        });
     }
 }

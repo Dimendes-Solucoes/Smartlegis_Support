@@ -61,14 +61,14 @@ const saveOrder = () => {
         <div class="py-12">
             <div class="mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
-                    <div class="flex items-center justify-end mb-6 border-b pb-4 border-gray-200 dark:border-gray-700">
+                    <div class="flex items-center justify-end">
                         <PrimaryButton @click="saveOrder" :disabled="isSaving" :class="{ 'opacity-25': isSaving }">
                             <span v-if="isSaving">Salvando...</span>
                             <span v-else>Salvar Ordem</span>
                         </PrimaryButton>
                     </div>
 
-                    <p class="mb-8 text-gray-700 dark:text-gray-300">
+                    <p class="mb-4 text-gray-700 dark:text-gray-300">
                         Arraste e solte os documentos para reordená-los dentro de cada seção.
                     </p>
 

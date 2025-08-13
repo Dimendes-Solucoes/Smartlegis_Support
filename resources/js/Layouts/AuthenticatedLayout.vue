@@ -2,7 +2,7 @@
 import { computed, ref, onMounted } from 'vue';
 import NavLink from '@/Components/NavLink.vue';
 import { Link, usePage } from '@inertiajs/vue3';
-import { SunIcon, MoonIcon, Bars3Icon } from '@heroicons/vue/24/solid';
+import { SunIcon, MoonIcon, Bars3Icon, ChevronDownIcon } from '@heroicons/vue/24/solid';
 import { staticNavigationLinks } from '@/data/navigationLinks';
 
 interface AuthUser {
@@ -59,6 +59,29 @@ const toggleSidebar = () => {
     localStorage.setItem("isSidebarOpen", isSidebarOpen.value.toString());
 };
 
+const expandedGroups = ref<string[]>([]);
+
+const isGroupActive = (children: any[]) => {
+    return children.some((child) => route().current(child.route));
+};
+
+const isGroupExpanded = (link: any) => {
+    if (link.children) {
+        return isGroupActive(link.children) || expandedGroups.value.includes(link.label!);
+    }
+    return false;
+};
+
+const toggleGroup = (label: string) => {
+    const index = expandedGroups.value.indexOf(label);
+    if (index > -1) {
+        expandedGroups.value.splice(index, 1);
+    } else {
+        expandedGroups.value.push(label);
+    }
+};
+
+
 onMounted(() => {
     const mediaQuery = window.matchMedia('(min-width: 1024px)');
     const handleMediaQueryChange = (e: MediaQueryListEvent) => {
@@ -87,15 +110,15 @@ const mainContentClasses = computed(() => {
 
         <aside v-if="isSidebarOpen"
             class="bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col fixed h-screen top-0 left-0 z-40 w-64 transition-all duration-300 ease-in-out">
-            <div class="flex items-center justify-center h-16 border-b border-gray-200 dark:border-gray-700 relative">
+            <div class="flex items-center justify-center h-16 border-b border-gray-200 dark:border-gray-700 relative flex-shrink-0">
                 <Link :href="route('tenant.settings')" class="flex items-center" v-show="isSidebarOpen">
-                <span class="text-md font-semibold text-gray-800 dark:text-gray-200">
-                    {{ currentTenantCityName }}
-                </span>
+                    <span class="text-md font-semibold text-gray-800 dark:text-gray-200">
+                        {{ currentTenantCityName }}
+                    </span>
                 </Link>
             </div>
 
-            <nav class="flex-1 px-2 py-1 space-y-1 flex flex-col" v-show="isSidebarOpen">
+            <nav class="flex-1 px-2 py-1 space-y-1 flex flex-col overflow-y-auto" v-show="isSidebarOpen">
                 <template v-for="(link, index) in filteredNavigationLinks" :key="index">
                     <template v-if="link.type === 'separator'">
                         <hr class="my-2 border-gray-200 dark:border-gray-700" />
@@ -108,6 +131,32 @@ const mainContentClasses = computed(() => {
                             </template>
                             <span :class="link.textClass">{{ link.label }}</span>
                         </NavLink>
+                    </template>
+                    <template v-else-if="link.type === 'group'">
+                        <button @click="toggleGroup(link.label!)"
+                            :class="[
+                                'inline-flex items-center w-full text-left px-4 py-2 text-sm font-medium leading-5 rounded-md transition duration-150 ease-in-out',
+                                // Removido: { 'bg-blue-700 text-white ...' : isGroupActive(link.children!) },
+                                { 'bg-blue-700 text-white focus:outline-none focus:bg-blue-700': expandedGroups.includes(link.label!) },
+                                { 'text-gray-700 hover:bg-gray-200 hover:text-gray-900 focus:outline-none focus:bg-gray-200 focus:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:bg-gray-700 dark:focus:text-white': !expandedGroups.includes(link.label!) }
+                            ]">
+                            <component :is="link.icon" :class="['h-5 w-5 mr-2']" />
+                            <span class="flex-1">{{ link.label }}</span>
+                            <ChevronDownIcon
+                                :class="['h-4 w-4 transform transition-transform duration-200', { 'rotate-180': isGroupExpanded(link) }]"
+                            />
+                        </button>
+
+                        <div v-if="isGroupExpanded(link)" class="pl-6 space-y-1">
+                            <NavLink v-for="(child, childIndex) in link.children" :key="childIndex"
+                                :href="route(child.route!)" :active="route().current(child.route!)"
+                                :method="child.method || 'get'" :as="child.as || 'a'">
+                                <template #icon>
+                                    <component :is="child.icon" :class="['h-5 w-5', child.iconClass]" />
+                                </template>
+                                <span :class="child.textClass">{{ child.label }}</span>
+                            </NavLink>
+                        </div>
                     </template>
                 </template>
 

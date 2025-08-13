@@ -10,8 +10,17 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
 
+
 class SessionService
 {
+    public function __construct(
+        protected QuorumService $quorumService,
+        protected TribuneService $tribuneService,
+        protected DiscussionService $discussionService,
+        protected BigDiscussionService $bigDiscussionService,
+        protected QuestionOrderService $questionOrderService
+    ) {}
+
     public function getAllSessions(): LengthAwarePaginator
     {
         $sort_field = Request::input('sort', 'datetime_start');
@@ -34,7 +43,16 @@ class SessionService
 
     public function find(int $id): Session
     {
-        return Session::findOrFail($id);
+        return Session::with([
+            'quorums' => function ($query) {
+                $query->with([
+                    'tribunes',
+                    'discussions',
+                    'bigDiscussions',
+                    'questionOrders'
+                ]);
+            }
+        ])->findOrFail($id);
     }
 
     public function update(int $id, array $data): void
@@ -80,6 +98,90 @@ class SessionService
         } catch (Exception $e) {
             DB::rollBack();
             throw new Exception("Erro ao atualizar ordem de documentos da sessão: " . $e->getMessage());
+        }
+    }
+
+    public function getQuorums(int $id)
+    {
+        $session = Session::findOrFail($id);
+
+        return $this->quorumService->findBySessionId($session->id);
+    }
+
+    public function clearQuorums(int $id)
+    {
+        $session = Session::findOrFail($id);
+        $session->quorums()->delete();
+    }
+
+    public function getTribunes(int $id)
+    {
+        $session = Session::findOrFail($id);
+
+        return $this->tribuneService->findBySessionId($session->id);
+    }
+
+    public function clearTribunes(int $id)
+    {
+        $session = Session::findOrFail($id);
+
+        foreach ($session->quorums as $quorum) {
+            $quorum->tribunes()->delete();
+        }
+    }
+
+    public function getAllDiscussionsBySession($id)
+    {
+        $data['session_id'] = $id;
+
+        return $this->discussionService->getAllDiscussions($data);
+    }
+
+    public function getDiscussions(int $id, int $discussion_id)
+    {
+        $session = Session::findOrFail($id);
+
+        return $this->discussionService->findBySessionId($session->id, $discussion_id);
+    }
+
+    public function clearDiscussions(int $id)
+    {
+        $session = Session::findOrFail($id);
+
+        foreach ($session->quorums as $quorum) {
+            $quorum->discussions()->delete();
+        }
+    }
+
+    public function getBigDiscussions(int $id)
+    {
+        $session = Session::findOrFail($id);
+
+        return $this->bigDiscussionService->findBySessionId($session->id);
+    }
+
+    public function clearBigDiscussions(int $id)
+    {
+        $session = Session::findOrFail($id);
+
+        foreach ($session->quorums as $quorum) {
+            $quorum->bigDiscussions()->delete();
+        }
+    }
+
+    public function getQuestionOrders(int $id)
+    {
+        $session = Session::findOrFail($id);
+
+        return $this->questionOrderService->findBySessionId($session->id);
+    }
+
+    public function clearQuestionOrders(int $id)
+    {
+        $session = Session::findOrFail($id);
+
+        foreach ($session->quorums as $quorum) {
+            $quorum->questionOrders()->delete();
         }
     }
 
