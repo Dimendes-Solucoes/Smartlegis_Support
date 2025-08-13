@@ -37,7 +37,7 @@ class DiscussionService
 
     public function findBySessionId(int $session_id, int $discussion_id): array
     {
-        $discussion = Discussion::where('discussion_id', $discussion_id)
+        $discussion = Discussion::where('id', $discussion_id)
             ->whereHas('quorum', fn($q) => $q->where('session_id', $session_id))
             ->first();
 
