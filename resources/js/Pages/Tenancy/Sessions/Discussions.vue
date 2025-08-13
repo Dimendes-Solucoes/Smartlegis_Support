@@ -108,7 +108,7 @@ const deleteItem = () => {
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
                                     <tr v-for="discussion in discussionData.discussions.data" :key="discussion.id">
-                                        <td class="px-6 py-4 whitespace-nowrap font-medium">
+                                        <td class="px-6 py-4 whitespace-normal font-medium">
                                             {{ discussion.document_name }}
                                         </td>
 
