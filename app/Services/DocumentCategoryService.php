@@ -7,11 +7,15 @@ use Illuminate\Support\Arr;
 
 class DocumentCategoryService
 {
-    public function getAllCategories()
+    public function getAllCategories(bool $showInactive = false)
     {
-        return DocumentCategory::orderBy('is_active', 'desc')
-            ->orderBy('name')
-            ->get();
+    return DocumentCategory::query()
+        ->when(!$showInactive, function ($query) {
+            $query->where('is_active', true);
+        })
+        ->orderBy('is_active', 'desc')
+        ->orderBy('name')
+        ->get();
     }
 
     public function createCategory(array $data): DocumentCategory
