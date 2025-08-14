@@ -86,7 +86,7 @@ const closeModal = () => {
         </div>
     </AuthenticatedLayout>
 
-    <ConfirmDeletionModal :show="confirmingCityDeletion" title="Excluir Sessão"
+    <ConfirmDeletionModal :show="confirmingCityDeletion" title="Limpar eventos clicksign"
         :message="`Tem certeza que deseja limpar os registros de eventos clicksign de '${cityToDelete?.tenant_city}'?`"
         @close="closeModal" @confirm="clearCity" />
 </template>
