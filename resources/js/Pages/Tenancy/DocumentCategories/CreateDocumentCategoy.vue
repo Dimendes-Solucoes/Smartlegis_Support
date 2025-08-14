@@ -9,7 +9,7 @@ import { Head, useForm } from '@inertiajs/vue3';
 const form = useForm({
     name: '',
     abbreviation: '',
-    order: '0',
+    min_protocol: 1
 });
 
 const submit = () => {
@@ -34,12 +34,20 @@ const submit = () => {
                                         required autofocus />
                                     <InputError class="mt-2" :message="form.errors.name" />
                                 </div>
+                                <div class="flex gap-6">
+                                    <div class="w-1/2">
+                                        <InputLabel for="abbreviation" value="Abreviação" />
+                                        <TextInput id="abbreviation" type="text" class="mt-1 block w-full"
+                                            v-model="form.abbreviation" />
+                                        <InputError class="mt-2" :message="form.errors.abbreviation" />
+                                    </div>
 
-                                <div>
-                                    <InputLabel for="abbreviation" value="Abreviação" />
-                                    <TextInput id="abbreviation" type="text" class="mt-1 block w-full"
-                                        v-model="form.abbreviation" />
-                                    <InputError class="mt-2" :message="form.errors.abbreviation" />
+                                    <div class="w-1/2">
+                                        <InputLabel for="min_protocol" value="Protocolo Mínimo" />
+                                        <TextInput id="min_protocol" type="number" class="mt-1 block w-full"
+                                            v-model.number="form.min_protocol" />
+                                        <InputError class="mt-2" :message="form.errors.min_protocol" />
+                                    </div>
                                 </div>
                             </div>
 

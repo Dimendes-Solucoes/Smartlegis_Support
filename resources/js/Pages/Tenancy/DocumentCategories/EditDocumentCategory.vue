@@ -10,6 +10,7 @@ interface Category {
     id: number;
     name: string;
     abbreviation: string | null;
+    min_protocol: number;
 }
 
 const props = defineProps<{
@@ -19,6 +20,7 @@ const props = defineProps<{
 const form = useForm({
     name: props.category.name,
     abbreviation: props.category.abbreviation || '',
+    min_protocol: props.category.min_protocol
 });
 
 const submit = () => {
@@ -43,15 +45,21 @@ const submit = () => {
                                         required autofocus />
                                     <InputError class="mt-2" :message="form.errors.name" />
                                 </div>
-
-                                <div>
-                                    <InputLabel for="abbreviation" value="Abreviação" />
-                                    <TextInput id="abbreviation" type="text" class="mt-1 block w-full"
-                                        v-model="form.abbreviation" />
-                                    <InputError class="mt-2" :message="form.errors.abbreviation" />
+                                <div class="flex gap-6">
+                                    <div class="w-1/2">
+                                        <InputLabel for="abbreviation" value="Abreviação" />
+                                        <TextInput id="abbreviation" type="text" class="mt-1 block w-full"
+                                            v-model="form.abbreviation" />
+                                        <InputError class="mt-2" :message="form.errors.abbreviation" />
+                                    </div>
+                                    <div class="w-1/2">
+                                        <InputLabel for="min_protocol" value="Protocolo Mínimo" />
+                                        <TextInput id="min_protocol" type="number" class="mt-1 block w-full"
+                                            v-model.number="form.min_protocol" />
+                                        <InputError class="mt-2" :message="form.errors.min_protocol" />
+                                    </div>
                                 </div>
                             </div>
-
                             <div class="flex items-center justify-end mt-6">
                                 <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
                                     Salvar

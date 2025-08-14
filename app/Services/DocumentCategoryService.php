@@ -62,6 +62,7 @@ class DocumentCategoryService
         $fields = [
             'name',
             'abbreviation',
+            'min_protocol',
             'is_active'
         ];
 

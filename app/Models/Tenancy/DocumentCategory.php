@@ -13,6 +13,7 @@ class DocumentCategory extends Model
         'name',
         'abbreviation',
         'order',
+        'min_protocol',
         'is_active',
     ];
 
