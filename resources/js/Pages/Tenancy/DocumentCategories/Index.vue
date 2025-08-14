@@ -13,7 +13,7 @@ interface DocumentCategory {
     name: string;
     abbreviation: string;
     min_protocol: number;
-    highest_protocol: number|null;
+    highest_protocol: number | null;
     is_active: boolean;
 }
 
@@ -47,6 +47,7 @@ watch(showInactive, (value) => {
 </script>
 
 <template>
+
     <Head title="Categorias de Documentos" />
 
     <AuthenticatedLayout>
@@ -73,6 +74,9 @@ watch(showInactive, (value) => {
                                     <tr>
                                         <th scope="col"
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
+                                            ID</th>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
                                             Nome</th>
                                         <th scope="col"
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
@@ -92,10 +96,12 @@ watch(showInactive, (value) => {
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
                                     <tr v-for="category in props.categories" :key="category.id">
+                                        <td class="px-6 py-4 whitespace-nowrap">{{ category.id }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap">{{ category.name }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap">{{ category.abbreviation }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap">{{ category.min_protocol }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ category.highest_protocol ?? '-' }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">{{ category.highest_protocol ?? '-' }}
+                                        </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <DocumentCategoryStatusBadge :status="category.is_active ? 1 : 0" />
                                         </td>
