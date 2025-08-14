@@ -31,6 +31,8 @@ class DocumentCategory extends Model
 
     public function getHighestProtocolAttribute()
     {
-        return $this->documents()->max('protocol_number') ?? null;
+        return $this->documents()
+            ->whereRaw("CAST(protocol_number AS TEXT) ~ '^[0-9]+$'")
+            ->max('protocol_number') ?? null;
     }
 }
