@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import SessionStatusBadge from '@/Components/Session/SessionStatusBadge.vue';
 import { Head, router, Link } from '@inertiajs/vue3';

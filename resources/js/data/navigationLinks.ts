@@ -11,10 +11,7 @@ import {
     ClipboardDocumentListIcon,
     ShieldCheckIcon,
     UserGroupIcon,
-    MicrophoneIcon,
-    MegaphoneIcon,
-    QuestionMarkCircleIcon,
-    ChatBubbleOvalLeftEllipsisIcon,
+    PencilSquareIcon,
 } from '@heroicons/vue/24/solid';
 
 interface NavigationLink {
@@ -53,6 +50,12 @@ export const staticNavigationLinks: NavigationLink[] = [
         label: 'Administradores',
         icon: ShieldCheckIcon,
         route: 'admin.index',
+        type: 'link',
+    },
+    {
+        label: 'Clicksign',
+        icon: PencilSquareIcon,
+        route: 'clicksign.index',
         type: 'link',
     },
 
