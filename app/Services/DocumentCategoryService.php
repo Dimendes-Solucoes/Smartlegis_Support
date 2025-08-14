@@ -10,9 +10,7 @@ class DocumentCategoryService
     public function getAllCategories(bool $showInactive = false)
     {
         return DocumentCategory::query()
-            ->when(!$showInactive, function ($query) {
-                $query->where('is_active', true);
-            })
+            ->when(!$showInactive, fn($q) => $q->where('is_active', true))
             ->orderBy('is_active', 'desc')
             ->orderBy('name')
             ->get();

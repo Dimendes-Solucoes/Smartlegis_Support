@@ -21,4 +21,16 @@ class DocumentCategory extends Model
         'order' => 'integer',
         'is_active' => 'boolean'
     ];
+
+    protected $appends = ['highest_protocol'];
+
+    public function documents()
+    {
+        return $this->hasMany(Document::class, 'document_category_id');
+    }
+
+    public function getHighestProtocolAttribute()
+    {
+        return $this->documents()->max('protocol_number') ?? null;
+    }
 }

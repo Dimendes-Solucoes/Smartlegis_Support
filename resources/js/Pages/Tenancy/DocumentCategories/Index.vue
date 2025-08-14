@@ -13,6 +13,7 @@ interface DocumentCategory {
     name: string;
     abbreviation: string;
     min_protocol: number;
+    highest_protocol: number|null;
     is_active: boolean;
 }
 
@@ -81,6 +82,9 @@ watch(showInactive, (value) => {
                                             Protocolo Mínimo</th>
                                         <th scope="col"
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
+                                            Protocolo Usado</th>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
                                             Status</th>
                                         <th scope="col" class="relative px-6 py-3"><span class="sr-only">Ações</span>
                                         </th>
@@ -91,6 +95,7 @@ watch(showInactive, (value) => {
                                         <td class="px-6 py-4 whitespace-nowrap">{{ category.name }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap">{{ category.abbreviation }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap">{{ category.min_protocol }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">{{ category.highest_protocol ?? '-' }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <DocumentCategoryStatusBadge :status="category.is_active ? 1 : 0" />
                                         </td>
