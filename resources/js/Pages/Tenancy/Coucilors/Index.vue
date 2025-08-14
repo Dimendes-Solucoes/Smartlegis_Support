@@ -108,7 +108,7 @@ watch(showInactive, (value) => {
                                         <td class="px-4 py-4 whitespace-nowrap">
                                             <div class="flex flex-col">
                                                 <span>{{ user.name }} ({{ user.party?.name_party || '-' }})</span>
-                                                <span class="text-gray-500 text-sm">{{ user.category?.name || '-' }} - {{ user.nickname || '-' }}</span>
+                                                <span class="text-gray-500 dark:text-gray-300 text-sm">{{ user.category?.name || '-' }} - {{ user.nickname || '-' }}</span>
                                             </div>
                                         </td>
                                         <td class="px-4 py-4 whitespace-nowrap">{{ user.email }}</td>
