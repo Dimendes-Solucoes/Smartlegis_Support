@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Tenancy;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Sessions\SessionStoreRequest;
 use App\Http\Requests\Sessions\SessionUpdateOrderRequest;
-use App\Http\Requests\Sessions\SessionUpdateRequest;
 use App\Services\SessionService;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
@@ -25,6 +25,20 @@ class SessionController extends Controller
         ]);
     }
 
+    public function create()
+    {
+        $data = $this->service->prepareForCreateSesssion();
+
+        return Inertia::render('Tenancy/Sessions/CreateSession', $data);
+    }
+
+    public function store(SessionStoreRequest $request)
+    {
+        $this->service->store($request->validated());
+
+        return redirect()->route('sessions.index')->with('success', 'Sessão cadastrada com sucesso!');
+    }
+
     public function edit(int $id)
     {
         $data = $this->service->prepareForEditSession($id);
@@ -32,11 +46,11 @@ class SessionController extends Controller
         return Inertia::render('Tenancy/Sessions/EditSession', $data);
     }
 
-    public function update(SessionUpdateRequest $request, int $id)
+    public function update(SessionStoreRequest $request, int $id)
     {
         $this->service->update($id, $request->validated());
 
-        return back()->with('success', 'Sessão atualizada com sucesso!');
+        return redirect()->route('sessions.index')->with('success', 'Sessão atualizada com sucesso!');
     }
 
     public function editOrder(int $id)

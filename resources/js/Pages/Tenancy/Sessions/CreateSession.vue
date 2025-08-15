@@ -4,15 +4,7 @@ import InputLabel from '@/Components/InputLabel.vue';
 import InputError from '@/Components/InputError.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { Head, useForm } from '@inertiajs/vue3';
-import { format } from 'date-fns';
 import TextInput from '@/Components/TextInput.vue';
-
-interface Session {
-    id: number;
-    name: string;
-    datetime_start: string;
-    session_status_id: number;
-}
 
 interface SessionStatus {
     id: number;
@@ -20,30 +12,22 @@ interface SessionStatus {
 }
 
 const props = defineProps<{
-    session: Session;
     session_statuses: SessionStatus[];
 }>();
 
-const formatForInput = (dateString: string) => {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    return format(date, "yyyy-MM-dd");
-};
-
 const form = useForm({
-    name: props.session.name,
-    datetime_start: formatForInput(props.session.datetime_start),
-    session_status_id: props.session.session_status_id
+    name: '',
+    datetime_start: '',
+    session_status_id: 1
 });
 
 const submit = () => {
-    form.put(route('sessions.update', props.session.id));
+    form.post(route('sessions.store'));
 };
 </script>
 
 <template>
-
-    <Head title="Editar Sessão" />
+    <Head title="Sessão" />
 
     <AuthenticatedLayout>
         <div class="py-12">
@@ -71,8 +55,8 @@ const submit = () => {
                                     <InputLabel for="session_status_id" value="Status" />
                                     <select id="session_status_id" v-model="form.session_status_id"
                                         class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
-                                        <option value="">Selecione o status</option>
-                                        <option v-for="session_status in session_statuses" :key="session_status.id" :value="session_status.id">
+                                        <option v-for="session_status in session_statuses" :key="session_status.id"
+                                            :value="session_status.id">
                                             {{ session_status.name }}
                                         </option>
                                     </select>
@@ -82,7 +66,7 @@ const submit = () => {
 
                             <div class="flex items-center justify-end mt-6">
                                 <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                                    Salvar
+                                    Criar
                                 </PrimaryButton>
                             </div>
                         </form>

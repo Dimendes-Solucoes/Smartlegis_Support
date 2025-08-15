@@ -6,6 +6,7 @@ import { Head, router, Link } from '@inertiajs/vue3';
 import { TrashIcon, ChevronUpIcon, ChevronDownIcon, PencilSquareIcon, ArrowsUpDownIcon, ChatBubbleLeftRightIcon } from '@heroicons/vue/24/solid';
 import IconButton from '@/Components/Itens/IconButton.vue';
 import ConfirmDeletionModal from '@/Components/ConfirmDeletionModal.vue';
+import TextButton from '@/Components/Itens/TextButton.vue';
 
 interface Session {
     id: number;
@@ -86,6 +87,12 @@ const deleteSession = () => {
             <div class="mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900 dark:text-gray-100">
+                        <div class="flex justify-end items-center mb-4">
+                            <TextButton :href="route('sessions.create')" class="p-4">
+                                Nova Sessão
+                            </TextButton>
+                        </div>
+
                         <div v-if="props.sessions.data.length > 0" class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
                                 <thead class="bg-gray-50 dark:bg-gray-700">

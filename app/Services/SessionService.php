@@ -56,6 +56,21 @@ class SessionService
         ])->findOrFail($id);
     }
 
+    public function prepareForCreateSesssion()
+    {
+        $session_statuses = SessionStatus::orderBy('id')->get();
+
+        return [
+            'session_statuses' => $session_statuses
+        ];
+    }
+
+    public function store(array $data): Session
+    {
+        $data['user_id'] = auth()->id();
+        return Session::create($data);
+    }
+
     public function prepareForEditSession(int $id)
     {
         $session = $this->find($id);
@@ -70,6 +85,11 @@ class SessionService
     public function update(int $id, array $data): void
     {
         $session = Session::findOrFail($id);
+
+        if ($data['session_status_id'] == 3) {
+            $data['datetime_end'] = now();
+        }
+
         $session->update($data);
     }
 

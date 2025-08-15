@@ -80,6 +80,8 @@ Route::middleware(['auth', 'tenant.connection'])
             ->controller(SessionController::class)
             ->group(function () {
                 Route::get('/', 'index')->name('index');
+                Route::get('/cadastrar', 'create')->name('create');
+                Route::post('/', 'store')->name('store');
                 Route::get('/{id}/editar', 'edit')->name('edit');
                 Route::put('/{id}', 'update')->name('update');
                 Route::get('/{id}/reordenar', 'editOrder')->name('edit_order');

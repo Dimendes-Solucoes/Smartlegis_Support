@@ -4,7 +4,7 @@ namespace App\Http\Requests\Sessions;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class SessionUpdateRequest extends FormRequest
+class SessionStoreRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

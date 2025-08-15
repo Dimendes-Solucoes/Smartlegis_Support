@@ -6,10 +6,8 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class SessionUpdateOrderRequest extends FormRequest
 {
-
     public function authorize(): bool
     {
-
         return auth()->check();
     }
 
