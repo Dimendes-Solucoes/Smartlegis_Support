@@ -27,11 +27,9 @@ class SessionController extends Controller
 
     public function edit(int $id)
     {
-        $session = $this->service->find($id);
+        $data = $this->service->prepareForEditSession($id);
 
-        return Inertia::render('Tenancy/Sessions/EditSession', [
-            'session' => $session
-        ]);
+        return Inertia::render('Tenancy/Sessions/EditSession', $data);
     }
 
     public function update(SessionUpdateRequest $request, int $id)

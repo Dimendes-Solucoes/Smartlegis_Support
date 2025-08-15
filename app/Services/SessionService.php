@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Tenancy\DocumentSession;
 use App\Models\Tenancy\Session;
+use App\Models\Tenancy\SessionStatus;
 use Exception;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -53,6 +54,17 @@ class SessionService
                 ]);
             }
         ])->findOrFail($id);
+    }
+
+    public function prepareForEditSession(int $id)
+    {
+        $session = $this->find($id);
+        $session_statuses = SessionStatus::orderBy('id')->get();
+
+        return [
+            'session' => $session,
+            'session_statuses' => $session_statuses
+        ];
     }
 
     public function update(int $id, array $data): void

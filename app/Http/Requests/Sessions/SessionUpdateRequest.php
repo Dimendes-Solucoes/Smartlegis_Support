@@ -23,7 +23,8 @@ class SessionUpdateRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string'],
-            'datetime_start' => ['required', 'date']
+            'datetime_start' => ['required', 'date'],
+            'session_status_id' => ['required', 'exists:session_statuses,id']
         ];
     }
 }
