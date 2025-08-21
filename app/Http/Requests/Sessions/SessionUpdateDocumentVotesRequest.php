@@ -24,7 +24,7 @@ class SessionUpdateDocumentVotesRequest extends FormRequest
         return [
             'votes' => ['required', 'array'],
             'votes.*.user_id' => ['required', 'exists:users,id'],
-            'votes.*.vote_category_id' => ['required', 'integer'],
+            'votes.*.vote_category_id' => ['nullable', 'integer'],
         ];
     }
 }

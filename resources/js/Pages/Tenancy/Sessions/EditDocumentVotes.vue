@@ -4,8 +4,9 @@ import { Head, router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import BackButton from '@/Components/BackButton.vue';
+import IconButton from '@/Components/Itens/IconButton.vue';
+import { TrashIcon } from '@heroicons/vue/24/solid';
 
-// Interfaces de Tipagem
 interface User {
     id: number;
     name: string;
@@ -37,51 +38,44 @@ const props = defineProps<{
     session: Session;
     document: Document;
     voteCategories: VoteCategory[];
-    // Estas propriedades podem vir como array ou objeto, então vamos tratá-las
     votes: any;
     notVotedUsers: any;
 }>();
 
 const isSaving = ref(false);
 
-// Converte os objetos `props` para arrays
 const votesArray = Array.isArray(props.votes) ? props.votes : Object.values(props.votes);
 const notVotedUsersArray = Array.isArray(props.notVotedUsers) ? props.notVotedUsers : Object.values(props.notVotedUsers);
 
 const unifiedVotes = computed(() => {
-    // Mapeia os votos existentes para um formato consistente
     const votedItems = votesArray.map(vote => ({
         id: vote.id,
         vote_category_id: vote.vote_category_id,
         user: vote.user,
     }));
 
-    // Mapeia os usuários que não votaram para o mesmo formato
     const notVotedItems = notVotedUsersArray.map(user => ({
         id: null,
         vote_category_id: null,
         user: user,
     }));
 
-    // Retorna uma nova coleção unificada e reativa
     return [...votedItems, ...notVotedItems];
 });
 
-// A coleção que será editável e enviada ao back-end
 const editableUnifiedVotes = ref(unifiedVotes.value);
 
 const saveVotes = () => {
     isSaving.value = true;
 
-    // Filtra apenas os itens com voto selecionado
-    const votesToSave = editableUnifiedVotes.value.filter(item => item.vote_category_id !== null);
+    const votesToSave = editableUnifiedVotes.value.map(item => ({
+        id: item.id,
+        user_id: item.user.id,
+        vote_category_id: item.vote_category_id,
+    }));
 
     const payload = {
-        votes: votesToSave.map(item => ({
-            id: item.id,
-            user_id: item.user.id,
-            vote_category_id: item.vote_category_id,
-        })),
+        votes: votesToSave
     };
 
     router.put(route('sessions.documents.update_votes', {
@@ -96,9 +90,11 @@ const saveVotes = () => {
         onFinish: () => isSaving.value = false,
     });
 };
-</script>
 
----
+const deleteVote = (item: Vote) => {
+    item.vote_category_id = null
+}
+</script>
 
 <template>
 
@@ -132,6 +128,11 @@ const saveVotes = () => {
                                         {{ category.name }}
                                     </option>
                                 </select>
+
+                                <IconButton v-if="item.id" @click="deleteVote(item)" color="red" title="Deletar"
+                                    class="ml-2">
+                                    <TrashIcon class="h-5 w-5" />
+                                </IconButton>
                             </div>
                         </div>
                     </div>

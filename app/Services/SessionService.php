@@ -171,30 +171,22 @@ class SessionService
 
     public function updateDocumentVotes(int $session_id, int $document_id, array $data)
     {
+        DB::beginTransaction();
+
         try {
-            DB::beginTransaction();
-
-            foreach ($data['votes'] as $dataVote) {
-                $findAttributes = [
-                    'session_id' => $session_id,
-                    'document_id' => $document_id,
-                    'user_id' => $dataVote['user_id'],
-                    'order' => $this->getOrder($document_id, $session_id)
-                ];
-
-                $updateAttributes = [
-                    'vote_category_id' => $dataVote['vote_category_id'],
-                ];
-
-                Vote::updateOrCreate($findAttributes, $updateAttributes);
+            foreach ($data['votes'] as $voteData) {
+                if ($voteData['vote_category_id'] === null) {
+                    $this->removeVote($session_id, $document_id, $voteData['user_id']);
+                } else {
+                    $this->createOrUpdateVote($session_id, $document_id, $voteData);
+                }
             }
 
             DB::commit();
 
-            if ($this->allQuorumMembersVoted($document_id, $session_id)) {
-                $this->updateVotationResult($document_id, $session_id);
-            }
+            $this->updateVotationResult($document_id, $session_id);
         } catch (\Exception $e) {
+            dd($e);
             DB::rollBack();
         }
     }
@@ -303,6 +295,30 @@ class SessionService
         }
     }
 
+    private function removeVote(int $session_id, int $document_id, int $user_id)
+    {
+        Vote::where('session_id', $session_id)
+            ->where('document_id', $document_id)
+            ->where('user_id', $user_id)
+            ->delete();
+    }
+
+    private function createOrUpdateVote(int $session_id, int $document_id, array $voteData)
+    {
+        $findAttributes = [
+            'session_id' => $session_id,
+            'document_id' => $document_id,
+            'user_id' => $voteData['user_id'],
+            'order' => $this->getOrder($document_id, $session_id)
+        ];
+
+        $updateAttributes = [
+            'vote_category_id' => $voteData['vote_category_id'],
+        ];
+
+        Vote::updateOrCreate($findAttributes, $updateAttributes);
+    }
+
     private static function getOrder(int $document_id, int $session_id): int
     {
         $sessionVoteOrder = Vote::where('document_id', $document_id)
@@ -345,29 +361,28 @@ class SessionService
 
         $last_order = $votes->max('order');
 
-        if ($last_order) {
+        if (!$last_order) {
+            return;
+        }
+
+        $votingResult = null;
+
+        if ($this->allQuorumMembersVoted($document_id, $session_id)) {
             $votesByOrder = $votes->where('order', $last_order);
 
-            $results = $votesByOrder->groupBy('vote_category_id')
-                ->map(fn($group) => $group->count());
+            $results = $votesByOrder->groupBy('vote_category_id')->map->count();
 
-            $winningCategoryId = 0;
-            $maxCount = 0;
+            $maxCount = $results->max();
+            $winnerCount = $results->filter(fn($count) => $count === $maxCount)->count();
 
-            foreach ($results as $categoryId => $count) {
-                if ($count > $maxCount) {
-                    $maxCount = $count;
-                    $winningCategoryId = $categoryId;
-                } else if ($count === $maxCount) {
-                    $winningCategoryId = 3;
-                }
+            if ($winnerCount > 1) {
+                $votingResult = 3;
+            } else {
+                $votingResult = $results->search($maxCount);
             }
-
-            $document = Document::findOrFail($document_id);
-
-            $data = ["voting_result_{$last_order}" => $winningCategoryId];
-
-            $document->update($data);
         }
+
+        $document = Document::findOrFail($document_id);
+        $document->update(["voting_result_{$last_order}" => $votingResult]);
     }
 }
