@@ -3,7 +3,7 @@ import { ref, watch } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
 import { getImageUrl } from '@/Utils/image';
-import { PencilSquareIcon, UserMinusIcon, UserPlusIcon } from '@heroicons/vue/24/solid';
+import { ClipboardDocumentListIcon, PencilSquareIcon, UserMinusIcon, UserPlusIcon } from '@heroicons/vue/24/solid';
 import TextButton from '@/Components/Itens/TextButton.vue';
 import IconButton from '@/Components/Itens/IconButton.vue';
 import UserStatusBadge from '@/Components/User/UserStatusBadge.vue';
@@ -42,6 +42,34 @@ const changeStatus = (userId: number): void => {
     }
 };
 
+const copyAllUsersToClipboard = (): void => {
+    const allUsersInfo = props.users.map(user => {
+        const name = user.name;
+        const category = user.category?.name || 'N/D';
+        const party = user.party?.name_party || 'N/D';
+        const email = user.email;
+
+        return `${category} - ${party}\n${name}\n${email}`;
+    });
+
+    const combinedString = allUsersInfo.join('\n\n');
+
+    navigator.clipboard.writeText(combinedString)
+        .then(() => {
+            alert('Informações de todos os vereadores copiadas para a área de transferência!');
+        })
+        .catch(err => {
+            console.error('Erro ao copiar para a área de transferência:', err);
+            const textarea = document.createElement('textarea');
+            textarea.value = combinedString;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            alert('Informações copiadas. Seu navegador não suporta a API nativa de cópia.');
+        });
+};
+
 const showInactive = ref(props.filters.show_inactive || false);
 watch(showInactive, (value) => {
     router.get(route('councilors.index'), { show_inactive: value }, {
@@ -68,9 +96,16 @@ watch(showInactive, (value) => {
                                 </label>
                             </div>
 
-                            <TextButton :href="route('councilors.create')" class="p-4">
-                                Novo Vereador
-                            </TextButton>
+                            <div class="flex items-center space-x-2">
+                                <TextButton @click="copyAllUsersToClipboard()" class="p-4" color="yellow"
+                                    :disabled="!props.users.length">
+                                    Copiar Vereadores
+                                </TextButton>
+
+                                <TextButton :href="route('councilors.create')" class="p-4">
+                                    Novo Vereador
+                                </TextButton>
+                            </div>
                         </div>
 
                         <div v-if="props.users.length > 0" class="overflow-x-auto">
@@ -108,7 +143,8 @@ watch(showInactive, (value) => {
                                         <td class="px-4 py-4 whitespace-nowrap">
                                             <div class="flex flex-col">
                                                 <span>{{ user.name }} ({{ user.party?.name_party || '-' }})</span>
-                                                <span class="text-gray-500 dark:text-gray-300 text-sm">{{ user.category?.name || '-' }} - {{ user.nickname || '-' }}</span>
+                                                <span class="text-gray-500 dark:text-gray-300 text-sm">{{
+                                                    user.category?.name || '-' }} - {{ user.nickname || '-' }}</span>
                                             </div>
                                         </td>
                                         <td class="px-4 py-4 whitespace-nowrap">{{ user.email }}</td>
