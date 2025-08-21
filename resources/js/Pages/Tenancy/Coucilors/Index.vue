@@ -87,14 +87,7 @@ watch(showInactive, (value) => {
             <div class="mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900 dark:text-gray-100">
-                        <div class="flex justify-between items-center mb-4">
-                            <div class="flex items-center">
-                                <Checkbox id="show_inactive" v-model:checked="showInactive" />
-                                <label for="show_inactive" class="ml-2 text-sm text-gray-600 dark:text-gray-400">
-                                    Exibir inativos
-                                </label>
-                            </div>
-
+                        <div class="flex justify-end items-center mb-4">
                             <div class="flex items-center space-x-2">
                                 <TextButton @click="copyAllUsersToClipboard()" class="p-4" color="yellow"
                                     :disabled="!props.users.length">
@@ -104,6 +97,15 @@ watch(showInactive, (value) => {
                                 <TextButton :href="route('councilors.create')" class="p-4">
                                     Novo Vereador
                                 </TextButton>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-start items-center mb-4">
+                            <div class="flex items-center">
+                                <Checkbox id="show_inactive" v-model:checked="showInactive" />
+                                <label for="show_inactive" class="ml-2 text-sm text-gray-600 dark:text-gray-400">
+                                    Exibir inativos
+                                </label>
                             </div>
                         </div>
 
