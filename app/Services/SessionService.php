@@ -179,6 +179,7 @@ class SessionService
                     'session_id' => $session_id,
                     'document_id' => $document_id,
                     'user_id' => $dataVote['user_id'],
+                    'order' => $this->getOrder($document_id, $session_id)
                 ];
 
                 $updateAttributes = [
@@ -189,6 +190,10 @@ class SessionService
             }
 
             DB::commit();
+
+            if ($this->allQuorumMembersVoted($document_id, $session_id)) {
+                $this->updateVotationResult($document_id, $session_id);
+            }
         } catch (\Exception $e) {
             DB::rollBack();
         }
@@ -295,6 +300,74 @@ class SessionService
                 ->where('document_id', $document_id)
                 ->where('ordem_do_dia', $ordem_do_dia)
                 ->update(['order' => $index + 1]);
+        }
+    }
+
+    private static function getOrder(int $document_id, int $session_id): int
+    {
+        $sessionVoteOrder = Vote::where('document_id', $document_id)
+            ->where('session_id', $session_id)
+            ->value('order');
+
+        if ($sessionVoteOrder) {
+            return $sessionVoteOrder;
+        }
+
+        $lastOrder = Vote::where('document_id', $document_id)
+            ->max('order');
+
+        return ($lastOrder ?? 0) + 1;
+    }
+
+    private function allQuorumMembersVoted(int $document_id, int $session_id): bool
+    {
+        $quorum = Quorum::where('session_id', $session_id)->first();
+
+        if (!$quorum) {
+            return false;
+        }
+
+        $votes = Vote::where('document_id', $document_id)
+            ->where('session_id', $session_id)
+            ->get();
+
+        $quorumUserIds = $quorum->users->pluck('id')->sort()->values();
+        $votedUserIds = $votes->pluck('user_id')->sort()->values();
+
+        return $quorumUserIds->diff($votedUserIds)->isEmpty() && $votedUserIds->diff($quorumUserIds)->isEmpty();
+    }
+
+    private function updateVotationResult(int $document_id, int $session_id)
+    {
+        $votes = Vote::where('document_id', $document_id)
+            ->where('session_id', $session_id)
+            ->get();
+
+        $last_order = $votes->max('order');
+
+        if ($last_order) {
+            $votesByOrder = $votes->where('order', $last_order);
+
+            $results = $votesByOrder->groupBy('vote_category_id')
+                ->map(fn($group) => $group->count());
+
+            $winningCategoryId = 0;
+            $maxCount = 0;
+
+            foreach ($results as $categoryId => $count) {
+                if ($count > $maxCount) {
+                    $maxCount = $count;
+                    $winningCategoryId = $categoryId;
+                } else if ($count === $maxCount) {
+                    $winningCategoryId = 3;
+                }
+            }
+
+            $document = Document::findOrFail($document_id);
+
+            $data = ["voting_result_{$last_order}" => $winningCategoryId];
+
+            $document->update($data);
         }
     }
 }
