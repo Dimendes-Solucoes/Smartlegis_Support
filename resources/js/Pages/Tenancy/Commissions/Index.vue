@@ -13,7 +13,6 @@ interface Commission {
 
 const props = defineProps<{
     commissions: Commission[];
-    selectedTenantId: string | null;
 }>();
 </script>
 

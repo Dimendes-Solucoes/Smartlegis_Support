@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import { PencilSquareIcon, TrashIcon } from '@heroicons/vue/24/solid';
+import { ref } from 'vue';
 import { Head, useForm } from '@inertiajs/vue3';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { getImageUrl } from '@/Utils/image'
 import TextButton from '@/Components/Itens/TextButton.vue';
 import IconButton from '@/Components/Itens/IconButton.vue';
-import { PencilSquareIcon, TrashIcon } from '@heroicons/vue/24/solid';
+import ConfirmDeletionModal from '@/Components/ConfirmDeletionModal.vue';
 
 interface User {
     id: number;
@@ -17,26 +19,29 @@ interface User {
 
 const props = defineProps<{
     users: User[];
-    selectedTenantId: string | null;
 }>();
 
 const getImage = (path: string): string => {
     return getImageUrl(path)
 }
 
+const userToDelete = ref<User | null>(null);
+
+const openConfirmDeleteModal = (user: User) => {
+    userToDelete.value = user;
+}
+
+const closeDeleteModal = () => {
+    userToDelete.value = null;
+}
+
 const form = useForm({});
 
-const deleteUser = (userId: number) => {
-    if (confirm('Tem certeza que deseja deletar este usuário?')) {
-        form.delete(route('users.destroy', userId), {
-            preserveScroll: true,
-            onSuccess: () => { },
-            onError: (errors) => {
-                console.error('Erro ao deletar usuário:', errors);
-                alert('Ocorreu um erro ao deletar o usuário.');
-            }
-        });
-    }
+const deleteUser = () => {
+    form.delete(route('users.destroy', userToDelete.value?.id), {
+        preserveScroll: true,
+        onSuccess: () => closeDeleteModal()
+    });
 };
 </script>
 
@@ -98,12 +103,14 @@ const deleteUser = (userId: number) => {
                                         <td class="px-6 py-4 whitespace-nowrap">{{ user.email }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap">{{ user.category?.name || '-' }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-left text-sm font-medium">
-                                            <IconButton :href="route('users.edit', user.id)" color="yellow" title="Editar">
+                                            <IconButton :href="route('users.edit', user.id)" color="yellow"
+                                                title="Editar">
                                                 <PencilSquareIcon class="h-5 w-5" />
                                             </IconButton>
 
-                                            <IconButton v-if="user.category.id !== 5" @click="deleteUser(user.id)" color="red" title="Deletar"
-                                                class="ml-2">
+                                            <IconButton v-if="user.category?.id !== 5"
+                                                @click="openConfirmDeleteModal(user)" color="red" title="Deletar"
+                                                class="ml-1">
                                                 <TrashIcon class="h-5 w-5" />
                                             </IconButton>
                                         </td>
@@ -119,4 +126,8 @@ const deleteUser = (userId: number) => {
             </div>
         </div>
     </AuthenticatedLayout>
+
+    <ConfirmDeletionModal :show="userToDelete !== null" title="Deletar usuário"
+        :message="`Tem certeza que deseja deletar o usuário '${userToDelete?.name}'?`" @close="closeDeleteModal"
+        @confirm="deleteUser" />
 </template>

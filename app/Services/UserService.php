@@ -99,6 +99,10 @@ class UserService
     {
         $userData = $this->prepareUpdateUserData($user, $data);
 
+        if ($user->user_category_id !== $userData['user_category_id']) {
+            $this->canChangeCategory($user);
+        }
+
         $user->update($userData);
 
         return $user;
@@ -128,24 +132,7 @@ class UserService
             throw new Exception("Não é possível deletar usuários prefeitura");
         }
 
-        if ($userToDelete->category->id == UserCategory::SECRETARIO) {
-            $otherSecretarios = User::where('id', '!=', $userToDelete->id)
-                ->where('user_category_id', UserCategory::SECRETARIO)
-                ->where('status_user', User::USUARIO_ENVIO_DOCUMENTO)
-                ->count();
-
-            if ($otherSecretarios == 0) {
-                throw new Exception("É necessário ter outro usuário secretário para este poder ser excluído");
-            }
-        }
-
-        $usersInSameCategory = User::where('id', '!=', $userToDelete->id)
-            ->where('user_category_id', $userToDelete->category->id)
-            ->count();
-
-        if ($usersInSameCategory == 0) {
-            throw new Exception("É necessário ter outro usuário dessa categoria para que este possa ser excluído");
-        }
+        $this->canChangeCategory($userToDelete);
 
         $userToDelete->delete();
 
@@ -225,5 +212,27 @@ class UserService
         }
 
         return User::USUARIO_INVISIVEL;
+    }
+
+    private function canChangeCategory($user)
+    {
+        if ($user->category->id == UserCategory::SECRETARIO) {
+            $otherSecretarios = User::where('id', '!=', $user->id)
+                ->where('user_category_id', UserCategory::SECRETARIO)
+                ->where('status_user', User::USUARIO_ENVIO_DOCUMENTO)
+                ->count();
+
+            if ($otherSecretarios == 0) {
+                throw new Exception("É necessário ter outro usuário secretário para este poder ser excluído");
+            }
+        }
+
+        $usersInSameCategory = User::where('id', '!=', $user->id)
+            ->where('user_category_id', $user->category->id)
+            ->count();
+
+        if ($usersInSameCategory == 0) {
+            throw new Exception("É necessário ter outro usuário dessa categoria para que este possa ser excluído");
+        }
     }
 }

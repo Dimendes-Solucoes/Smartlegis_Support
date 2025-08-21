@@ -34,7 +34,8 @@ class UserController extends Controller
     {
         $this->service->createUser($request->validated());
 
-        return redirect()->route('users.index')->with('success', 'Usuário cadastrado com sucesso!');
+        return redirect()->route('users.index')
+            ->with('success', 'Usuário cadastrado com sucesso!');
     }
 
     public function replaceMayor()
@@ -50,7 +51,8 @@ class UserController extends Controller
 
         $this->service->updateMayor($mayor);
 
-        return redirect()->route('users.index')->with('success', 'Prefeito atualizado com sucesso!');
+        return redirect()->route('users.index')
+            ->with('success', 'Prefeito atualizado com sucesso!');
     }
 
     public function edit(int $id)
@@ -66,13 +68,15 @@ class UserController extends Controller
 
         $this->service->updateUser($user, $request->validated());
 
-        return redirect()->route('users.index')->with('success', 'Usuário atualizado com sucesso!');
+        return redirect()->route('users.index')
+            ->with('success', 'Usuário atualizado com sucesso!');
     }
 
     public function destroy(int $id)
     {
         $this->service->delete($id);
 
-        return redirect()->route('users.index')->with('success', 'Usuário deletado com sucesso!');
+        return redirect()->route('users.index')
+            ->with('success', 'Usuário deletado com sucesso!');
     }
 }

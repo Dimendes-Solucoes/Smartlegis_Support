@@ -15,11 +15,7 @@ interface Admin {
 
 const props = defineProps<{
     admins: Admin[];
-    selectedTenantId: string | null;
 }>();
-
-const form = useForm({});
-const page = usePage();
 
 const adminToDelete = ref<Admin | null>(null);
 
@@ -31,14 +27,12 @@ const closeDeleteModal = () => {
     adminToDelete.value = null;
 }
 
+const form = useForm({});
+
 const deleteAdmin = () => {
     form.delete(route('admin.destroy', adminToDelete.value?.id), {
         preserveScroll: true,
-        onSuccess: () => closeDeleteModal(),
-        onError: (errors) => {
-            console.error('Erro ao deletar administrador:', errors);
-            alert('Ocorreu um erro ao deletar o administrador.');
-        }
+        onSuccess: () => closeDeleteModal()
     });
 };
 </script>

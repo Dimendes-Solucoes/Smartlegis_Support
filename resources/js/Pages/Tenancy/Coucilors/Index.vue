@@ -24,7 +24,6 @@ interface User {
 
 const props = defineProps<{
     users: User[];
-    selectedTenantId: string | null;
     filters: {
         show_inactive?: boolean;
     }
