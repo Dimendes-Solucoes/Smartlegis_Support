@@ -93,7 +93,7 @@ class SessionService
         $session->update($data);
     }
 
-    public function prepareForEditOrder(int $id): array
+    public function prepareForDocuments(int $id): array
     {
         $session = Session::with('documents')->findOrFail($id);
 
@@ -116,7 +116,7 @@ class SessionService
         ];
     }
 
-    public function updateOrder(int $id, array $data): void
+    public function updateDocuments(int $id, array $data): void
     {
         $session = Session::findOrFail($id);
 

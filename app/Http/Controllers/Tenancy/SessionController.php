@@ -53,16 +53,16 @@ class SessionController extends Controller
         return redirect()->route('sessions.index')->with('success', 'Sessão atualizada com sucesso!');
     }
 
-    public function editOrder(int $id)
+    public function documents(int $id)
     {
-        $data = $this->service->prepareForEditOrder($id);
+        $data = $this->service->prepareForDocuments($id);
 
         return Inertia::render('Tenancy/Sessions/EditOrder', $data);
     }
 
-    public function updateOrder(SessionUpdateOrderRequest $request, int $id)
+    public function updateDocuments(SessionUpdateOrderRequest $request, int $id)
     {
-        $this->service->updateOrder($id, $request->validated());
+        $this->service->updateDocuments($id, $request->validated());
 
         return back()->with('success', 'Ordem da pauta salva com sucesso!');
     }

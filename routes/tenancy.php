@@ -84,8 +84,8 @@ Route::middleware(['auth', 'tenant.connection'])
                 Route::post('/', 'store')->name('store');
                 Route::get('/{id}/editar', 'edit')->name('edit');
                 Route::put('/{id}', 'update')->name('update');
-                Route::get('/{id}/reordenar', 'editOrder')->name('edit_order');
-                Route::put('/{id}/reordenar', 'updateOrder')->name('update_order');
+                Route::get('/{id}/documentos', 'documents')->name('documents');
+                Route::put('/{id}/documentos', 'updateDocuments')->name('update_documents');
                 Route::get('/{id}', 'talks')->name('talks');
                 Route::delete('/{id}', 'destroy')->name('destroy');
 

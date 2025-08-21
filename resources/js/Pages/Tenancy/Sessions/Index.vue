@@ -3,7 +3,7 @@ import { ref } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import SessionStatusBadge from '@/Components/Session/SessionStatusBadge.vue';
 import { Head, router, Link } from '@inertiajs/vue3';
-import { TrashIcon, ChevronUpIcon, ChevronDownIcon, PencilSquareIcon, ArrowsUpDownIcon, ChatBubbleLeftRightIcon } from '@heroicons/vue/24/solid';
+import { TrashIcon, ChevronUpIcon, ChevronDownIcon, PencilSquareIcon, ArrowsUpDownIcon, ChatBubbleLeftRightIcon, DocumentArrowDownIcon, DocumentDuplicateIcon } from '@heroicons/vue/24/solid';
 import IconButton from '@/Components/Itens/IconButton.vue';
 import ConfirmDeletionModal from '@/Components/ConfirmDeletionModal.vue';
 import TextButton from '@/Components/Itens/TextButton.vue';
@@ -140,9 +140,9 @@ const deleteSession = () => {
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                             <div class="flex items-center justify-end space-x-1">
-                                                <IconButton :href="route('sessions.edit_order', session.id)" color="green"
-                                                    title="Ordenar Documentos">
-                                                    <ArrowsUpDownIcon class="h-5 w-5" />
+                                                <IconButton :href="route('sessions.documents', session.id)" color="green"
+                                                    title="Documentos">
+                                                    <DocumentDuplicateIcon class="h-5 w-5" />
                                                 </IconButton>
 
                                                 <IconButton :href="route('sessions.talks', session.id)" color="blue"
