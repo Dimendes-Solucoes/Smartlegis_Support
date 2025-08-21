@@ -27,4 +27,15 @@ class Handler extends ExceptionHandler
             //
         });
     }
+
+    public function render($request, Throwable $e)
+    {
+        if ($request->wantsJson()) {
+            return parent::render($request, $e);
+        }
+
+        $errorMessage = $e->getMessage();
+
+        return back()->with('error', $errorMessage);
+    }
 }
