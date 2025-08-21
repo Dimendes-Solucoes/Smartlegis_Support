@@ -3,7 +3,9 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import TextButton from '@/Components/Itens/TextButton.vue';
 import IconButton from '@/Components/Itens/IconButton.vue';
+import ConfirmDeletionModal from '@/Components/ConfirmDeletionModal.vue';
 import { PencilSquareIcon, TrashIcon } from '@heroicons/vue/24/solid';
+import { ref } from 'vue';
 
 interface Admin {
     id: number;
@@ -18,17 +20,25 @@ const props = defineProps<{
 
 const form = useForm({});
 
-const deleteAdmin = (adminId: number) => {
-    if (confirm('Tem certeza que deseja deletar este administrador?')) {
-        form.delete(route('admin.destroy', adminId), {
-            preserveScroll: true,
-            onSuccess: () => { },
-            onError: (errors) => {
-                console.error('Erro ao deletar administrador:', errors);
-                alert('Ocorreu um erro ao deletar o administrador.');
-            }
-        });
-    }
+const adminToDelete = ref<Admin | null>(null);
+
+const openConfirmDeleteModal = (admin: Admin) => {
+    adminToDelete.value = admin;
+}
+
+const closeDeleteModal = () => {
+    adminToDelete.value = null;
+}
+
+const deleteAdmin = () => {
+    form.delete(route('admin.destroy', adminToDelete.value?.id), {
+        preserveScroll: true,
+        onSuccess: () => closeDeleteModal(),
+        onError: (errors) => {
+            console.error('Erro ao deletar administrador:', errors);
+            alert('Ocorreu um erro ao deletar o administrador.');
+        }
+    });
 };
 </script>
 
@@ -70,8 +80,8 @@ const deleteAdmin = (adminId: number) => {
                                                 <PencilSquareIcon class="h-5 w-5" />
                                             </IconButton>
 
-                                            <IconButton @click="deleteAdmin(admin.id)" color="red" title="Deletar"
-                                                class="ml-2">
+                                            <IconButton @click="openConfirmDeleteModal(admin)" color="red"
+                                                title="Deletar" class="ml-2">
                                                 <TrashIcon class="h-5 w-5" />
                                             </IconButton>
                                         </td>
@@ -87,4 +97,8 @@ const deleteAdmin = (adminId: number) => {
             </div>
         </div>
     </AuthenticatedLayout>
+
+    <ConfirmDeletionModal :show="adminToDelete !== null" title="Deletar administrador"
+        :message="`Tem certeza que deseja deletar o administrador '${adminToDelete?.name}'?`" @close="closeDeleteModal"
+        @confirm="deleteAdmin" />
 </template>
