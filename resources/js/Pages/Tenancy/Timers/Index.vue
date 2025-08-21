@@ -64,17 +64,20 @@ const formatTimer = (timeString: string) => {
                                             Título</th>
                                         <th scope="col"
                                             class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
-                                            Referência</th>
-                                        <th scope="col"
-                                            class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
                                             Tempo</th>
                                         <th></th>
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
                                     <tr v-for="timer in props.timers" :key="timer.id">
-                                        <td class="px-4 py-4 whitespace-nowrap">{{ timer.title }}</td>
-                                        <td class="px-4 py-4 whitespace-nowrap">{{ timer.locale || '-' }}</td>
+                                        <td class="px-4 py-4 whitespace-nowrap">
+                                            <div class="flex flex-col">
+                                                <span>{{ timer.title }}</span>
+                                                <span class="text-gray-500 dark:text-gray-300 text-sm">
+                                                    {{ timer.locale || '-' }}
+                                                </span>
+                                            </div>
+                                        </td>
                                         <td class="px-4 py-4 whitespace-nowrap">{{ formatTimer(timer.timer) }}</td>
                                         <td class="px-4 py-4 whitespace-nowrap text-left text-sm font-medium">
                                             <IconButton :href="route('timers.edit', timer.id)" color="yellow"
