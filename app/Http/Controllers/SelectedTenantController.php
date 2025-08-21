@@ -23,8 +23,10 @@ class SelectedTenantController extends Controller
 
     public function change(TenantChangeRequest $request)
     {
-        $this->service->setSelectedTenant($request->input('tenant_id'));
-        
-        return redirect()->back();
+        $tenant = $this->service->setSelectedTenant($request->input('tenant_id'));
+        $city = tenant_city_name($tenant);
+
+        return redirect()->back()
+            ->with('success', "A cidade de $city foi selecionada");
     }
 }

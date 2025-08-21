@@ -23,3 +23,10 @@ if (!function_exists('current_tenant')) {
         return app(TenantService::class)->getCurrentTenant();
     }
 }
+
+if (!function_exists('tenant_city_name')) {
+    function tenant_city_name(Tenant $tenant)
+    {
+        return $tenant->credentials->first()->city_name ?? 'N/A';
+    }
+}
