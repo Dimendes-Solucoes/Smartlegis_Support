@@ -2,9 +2,13 @@
 
 namespace App\Services;
 
+use App\Models\Tenancy\Document;
 use App\Models\Tenancy\DocumentSession;
+use App\Models\Tenancy\Quorum;
 use App\Models\Tenancy\Session;
 use App\Models\Tenancy\SessionStatus;
+use App\Models\Tenancy\Vote;
+use App\Models\Tenancy\VoteCategory;
 use Exception;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -130,6 +134,63 @@ class SessionService
         } catch (Exception $e) {
             DB::rollBack();
             throw new Exception("Erro ao atualizar ordem de documentos da sessão: " . $e->getMessage());
+        }
+    }
+
+    public function prepareForDocumentVotes(int $session_id, int $document_id): array
+    {
+        $session = Session::findOrFail($session_id);
+
+        $document = Document::where('id', $document_id)
+            ->whereHas('sessions', fn($query) => $query->where('sessions.id', $session_id))
+            ->firstOrFail();
+
+        $votes = Vote::where('session_id', $session_id)
+            ->where('document_id', $document_id)
+            ->with('user')
+            ->get();
+
+        $voteCategories = VoteCategory::all();
+
+        $quorum = Quorum::where('session_id', $session_id)->first();
+
+        $quorumUsers = $quorum ? $quorum->users : collect();
+
+        $votedUserIds = $votes->pluck('user_id');
+
+        $notVotedUsers = $quorumUsers->whereNotIn('id', $votedUserIds);
+
+        return [
+            'session' => $session,
+            'document' => $document,
+            'votes' => $votes,
+            'voteCategories' => $voteCategories,
+            'notVotedUsers' => $notVotedUsers,
+        ];
+    }
+
+    public function updateDocumentVotes(int $session_id, int $document_id, array $data)
+    {
+        try {
+            DB::beginTransaction();
+
+            foreach ($data['votes'] as $dataVote) {
+                $findAttributes = [
+                    'session_id' => $session_id,
+                    'document_id' => $document_id,
+                    'user_id' => $dataVote['user_id'],
+                ];
+
+                $updateAttributes = [
+                    'vote_category_id' => $dataVote['vote_category_id'],
+                ];
+
+                Vote::updateOrCreate($findAttributes, $updateAttributes);
+            }
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
         }
     }
 

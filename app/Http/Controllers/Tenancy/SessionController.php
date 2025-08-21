@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Tenancy;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Sessions\SessionStoreRequest;
+use App\Http\Requests\Sessions\SessionUpdateDocumentVotesRequest;
 use App\Http\Requests\Sessions\SessionUpdateOrderRequest;
 use App\Services\SessionService;
 use Inertia\Inertia;
@@ -53,6 +54,15 @@ class SessionController extends Controller
         return redirect()->route('sessions.index')->with('success', 'Sessão atualizada com sucesso!');
     }
 
+    public function talks(int $id)
+    {
+        $session = $this->service->find($id);
+
+        return Inertia::render('Tenancy/Sessions/Talks', [
+            'session' => $session
+        ]);
+    }
+
     public function documents(int $id)
     {
         $data = $this->service->prepareForDocuments($id);
@@ -67,13 +77,18 @@ class SessionController extends Controller
         return back()->with('success', 'Ordem da pauta salva com sucesso!');
     }
 
-    public function talks(int $id)
+    public function documentVotes(int $id, int $document_id)
     {
-        $session = $this->service->find($id);
+        $data = $this->service->prepareForDocumentVotes($id, $document_id);
 
-        return Inertia::render('Tenancy/Sessions/Talks', [
-            'session' => $session
-        ]);
+        return Inertia::render('Tenancy/Sessions/EditDocumentVotes', $data);
+    }
+
+    public function updateDcumentVotes(SessionUpdateDocumentVotesRequest $request, int $id, int $document_id)
+    {
+        $this->service->updateDocumentVotes($id, $document_id, $request->validated());
+
+        return back()->with('success', 'Ordem da pauta salva com sucesso!');
     }
 
     public function quorums(int $id)

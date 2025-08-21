@@ -71,10 +71,12 @@ const saveOrder = () => {
                     <div class="gap-8">
                         <DocumentList title="Expediente do Dia"
                             description="Documentos que serão discutidos no início da sessão."
+                            :session="session"
                             :documents="expedienteList" />
 
                         <DocumentList title="Ordem do Dia"
                             description="Documentos principais a serem votados ou discutidos em profundidade."
+                            :session="session"
                             :documents="ordemDoDiaList" />
                     </div>
                 </div>

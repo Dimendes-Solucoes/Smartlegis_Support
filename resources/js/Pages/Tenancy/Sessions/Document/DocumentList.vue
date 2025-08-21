@@ -3,6 +3,13 @@ import { defineProps } from 'vue';
 import draggable from 'vuedraggable';
 import { Bars2Icon, EyeIcon, ExclamationCircleIcon } from '@heroicons/vue/24/outline';
 import LinkButton from '@/Components/LinkButton.vue';
+import IconButton from '@/Components/Itens/IconButton.vue';
+import { ClipboardDocumentListIcon } from '@heroicons/vue/24/solid';
+
+interface Session {
+    id: number;
+    name: string;
+}
 
 interface Document {
     id: number;
@@ -13,6 +20,7 @@ interface Document {
 const props = defineProps<{
     title: string;
     description: string;
+    session: Session;
     documents: Document[];
 }>();
 </script>
@@ -46,6 +54,11 @@ const props = defineProps<{
                     <LinkButton :link="element.attachment" title="Visualizar documento">
                         <EyeIcon class="h-5 w-5 text-white" />
                     </LinkButton>
+
+                    <IconButton :href="route('sessions.documents.votes', { id: session.id, document_id: element.id })"
+                        title="Votos" class="ml-1" color="green">
+                        <ClipboardDocumentListIcon class="h-5 w-5 text-white" />
+                    </IconButton>
                 </li>
             </template>
         </draggable>
