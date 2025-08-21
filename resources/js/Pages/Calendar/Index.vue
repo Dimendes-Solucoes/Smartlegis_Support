@@ -131,7 +131,8 @@ const getEventClasses = (statusId: number) => {
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-7 gap-1 text-center font-bold text-gray-600 dark:text-gray-300 mb-2">
+                        <div
+                            class="hidden sm:grid grid-cols-7 gap-1 text-center font-bold text-gray-600 dark:text-gray-300 mb-2">
                             <div>Dom</div>
                             <div>Seg</div>
                             <div>Ter</div>
@@ -141,7 +142,7 @@ const getEventClasses = (statusId: number) => {
                             <div>Sáb</div>
                         </div>
 
-                        <div class="grid grid-cols-7 gap-1">
+                        <div class="hidden sm:grid sm:grid-cols-7 gap-1">
                             <div v-for="(day, index) in daysInMonth" :key="index"
                                 class="border border-gray-200 dark:border-gray-700 rounded-lg p-2 min-h-[80px] flex flex-col"
                                 :class="{ 'bg-gray-50 dark:bg-gray-700': day === null, 'bg-white dark:bg-gray-800': day !== null }">
@@ -156,6 +157,31 @@ const getEventClasses = (statusId: number) => {
                                         :title="`${event.title}`">
                                         {{ event.tenant_city }}
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="sm:hidden">
+                            <div v-for="(day, index) in daysInMonth.filter(d => d !== null)" :key="index"
+                                class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 mb-2">
+                                <span class="font-bold text-lg mb-1"
+                                    :class="{ 'text-blue-600 dark:text-blue-400': day === new Date().getDate() && currentMonth === new Date().getMonth() + 1 && currentYear === new Date().getFullYear() }">
+                                    {{ day }} {{ props.calendarData?.monthName }}
+                                </span>
+                                <div class="mt-2 flex flex-col space-y-2">
+                                    <div v-for="event in getEventsForDay(day)" :key="event.id"
+                                        class="text-sm rounded-md p-2"
+                                        :class="getEventClasses(event.status_id).bg + ' ' + getEventClasses(event.status_id).text">
+                                        <h5 class="font-semibold">{{ event.title }}</h5>
+                                        <p class="text-xs mt-1">
+                                            Status: {{ getEventClasses(event.status_id).label }}
+                                        </p>
+                                        <p class="text-xs mt-1">
+                                            Local: {{ event.tenant_city }}
+                                        </p>
+                                    </div>
+                                    <p v-if="getEventsForDay(day).length === 0"
+                                        class="text-sm text-gray-500 dark:text-gray-400">Nenhum evento</p>
                                 </div>
                             </div>
                         </div>
