@@ -32,7 +32,8 @@ class AdminController extends Controller
     {
         $this->service->create($request->validated());
 
-        return redirect()->route('admin.index')->with('success', 'Administrador criado com sucesso!');
+        return redirect()->route('admin.index')
+            ->with('success', 'Administrador cadastrado com sucesso!');
     }
 
     public function edit(int $id)
@@ -48,13 +49,15 @@ class AdminController extends Controller
     {
         $this->service->update($id, $request->validated());
 
-        return redirect()->route('admin.index')->with('success', 'Administrador criado com sucesso!');
+        return redirect()->route('admin.index')
+            ->with('success', 'Administrador atualizado com sucesso!');
     }
 
     public function destroy(int $id)
     {
         $this->service->delete($id);
 
-        return redirect()->route('admin.index')->with('success', 'Administrador deletado com sucesso!');
+        return redirect()->route('admin.index')
+            ->with('success', 'Administrador deletado com sucesso!');
     }
 }

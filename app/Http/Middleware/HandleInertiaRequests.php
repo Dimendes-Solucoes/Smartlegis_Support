@@ -47,6 +47,10 @@ class HandleInertiaRequests extends Middleware
                 'name' => $tenant->name,
                 'city_name' => $tenant->credentials->first()->city_name ?? 'N/A',
             ] : null,
+            'flash' => [
+                'success' => fn() => $request->session()->get('success'),
+                'error' => fn() => $request->session()->get('error'),
+            ],
         ];
     }
 }

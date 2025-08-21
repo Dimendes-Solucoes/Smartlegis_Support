@@ -4,6 +4,7 @@ import NavLink from '@/Components/NavLink.vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import { SunIcon, MoonIcon, Bars3Icon, ChevronDownIcon } from '@heroicons/vue/24/solid';
 import { staticNavigationLinks } from '@/data/navigationLinks';
+import Alert from '@/Components/Alert.vue';
 
 interface AuthUser {
     id: number;
@@ -93,6 +94,20 @@ onMounted(() => {
 
     mediaQuery.addEventListener('change', handleMediaQueryChange);
     handleMediaQueryChange(mediaQuery as any);
+
+    // Pré-expande o grupo se a rota atual pertence a ele
+    const currentRouteName = route().current();
+    if (currentRouteName) {
+        filteredNavigationLinks.value.forEach(link => {
+            if (link.type === 'group' && link.children) {
+                if (link.children.some(child => route().current(child.route as string))) {
+                    if (!expandedGroups.value.includes(link.label!)) {
+                        expandedGroups.value.push(link.label!);
+                    }
+                }
+            }
+        });
+    }
 });
 
 const mainContentClasses = computed(() => {
@@ -110,11 +125,12 @@ const mainContentClasses = computed(() => {
 
         <aside v-if="isSidebarOpen"
             class="bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col fixed h-screen top-0 left-0 z-40 w-64 transition-all duration-300 ease-in-out">
-            <div class="flex items-center justify-center h-16 border-b border-gray-200 dark:border-gray-700 relative flex-shrink-0">
+            <div
+                class="flex items-center justify-center h-16 border-b border-gray-200 dark:border-gray-700 relative flex-shrink-0">
                 <Link :href="route('tenant.settings')" class="flex items-center" v-show="isSidebarOpen">
-                    <span class="text-md font-semibold text-gray-800 dark:text-gray-200">
-                        {{ currentTenantCityName }}
-                    </span>
+                <span class="text-md font-semibold text-gray-800 dark:text-gray-200">
+                    {{ currentTenantCityName }}
+                </span>
                 </Link>
             </div>
 
@@ -133,18 +149,15 @@ const mainContentClasses = computed(() => {
                         </NavLink>
                     </template>
                     <template v-else-if="link.type === 'group'">
-                        <button @click="toggleGroup(link.label!)"
-                            :class="[
-                                'inline-flex items-center w-full text-left px-4 py-2 text-sm font-medium leading-5 rounded-md transition duration-150 ease-in-out',
-                                // Removido: { 'bg-blue-700 text-white ...' : isGroupActive(link.children!) },
-                                { 'bg-blue-700 text-white focus:outline-none focus:bg-blue-700': expandedGroups.includes(link.label!) },
-                                { 'text-gray-700 hover:bg-gray-200 hover:text-gray-900 focus:outline-none focus:bg-gray-200 focus:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:bg-gray-700 dark:focus:text-white': !expandedGroups.includes(link.label!) }
-                            ]">
+                        <button @click="toggleGroup(link.label!)" :class="[
+                            'inline-flex items-center w-full text-left px-4 py-2 text-sm font-medium leading-5 rounded-md transition duration-150 ease-in-out',
+                            { 'bg-blue-700 text-white focus:outline-none focus:bg-blue-700': isGroupExpanded(link) },
+                            { 'text-gray-700 hover:bg-gray-200 hover:text-gray-900 focus:outline-none focus:bg-gray-200 focus:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:bg-gray-700 dark:focus:text-white': !isGroupExpanded(link) }
+                        ]">
                             <component :is="link.icon" :class="['h-5 w-5 mr-2']" />
                             <span class="flex-1">{{ link.label }}</span>
                             <ChevronDownIcon
-                                :class="['h-4 w-4 transform transition-transform duration-200', { 'rotate-180': isGroupExpanded(link) }]"
-                            />
+                                :class="['h-4 w-4 transform transition-transform duration-200', { 'rotate-180': isGroupExpanded(link) }]" />
                         </button>
 
                         <div v-if="isGroupExpanded(link)" class="pl-6 space-y-1">
@@ -187,4 +200,7 @@ const mainContentClasses = computed(() => {
             <slot />
         </main>
     </div>
+
+    <Alert :message="page.props.flash.success ?? null" type="success" />
+    <Alert :message="page.props.flash.error ?? null" type="error" />
 </template>

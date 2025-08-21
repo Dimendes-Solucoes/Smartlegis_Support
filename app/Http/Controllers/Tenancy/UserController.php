@@ -34,7 +34,7 @@ class UserController extends Controller
     {
         $this->service->createUser($request->validated());
 
-        return redirect()->route('users.index')->with('success', 'Usuário criado com sucesso!');
+        return redirect()->route('users.index')->with('success', 'Usuário cadastrado com sucesso!');
     }
 
     public function replaceMayor()

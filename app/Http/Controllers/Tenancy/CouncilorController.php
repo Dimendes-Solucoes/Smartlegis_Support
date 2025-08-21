@@ -38,7 +38,7 @@ class CouncilorController extends Controller
     {
         $this->service->createCouncilor($request->validated());
 
-        return redirect()->route('councilors.index')->with('success', 'Usuário criado com sucesso!');
+        return redirect()->route('councilors.index')->with('success', 'Usuário cadastrado com sucesso!');
     }
 
     public function edit(int $id)

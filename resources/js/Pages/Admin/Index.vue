@@ -1,11 +1,11 @@
 <script setup lang="ts">
+import { PencilSquareIcon, TrashIcon } from '@heroicons/vue/24/solid';
+import { ref } from 'vue';
+import { Head, useForm, usePage } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, useForm } from '@inertiajs/vue3';
 import TextButton from '@/Components/Itens/TextButton.vue';
 import IconButton from '@/Components/Itens/IconButton.vue';
 import ConfirmDeletionModal from '@/Components/ConfirmDeletionModal.vue';
-import { PencilSquareIcon, TrashIcon } from '@heroicons/vue/24/solid';
-import { ref } from 'vue';
 
 interface Admin {
     id: number;
@@ -19,6 +19,7 @@ const props = defineProps<{
 }>();
 
 const form = useForm({});
+const page = usePage();
 
 const adminToDelete = ref<Admin | null>(null);
 
