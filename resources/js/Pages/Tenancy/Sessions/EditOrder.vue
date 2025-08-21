@@ -37,13 +37,6 @@ const saveOrder = () => {
 
     router.put(route('sessions.update_documents', props.session.id), payload, {
         preserveScroll: true,
-        onSuccess: () => {
-            alert('Ordem salva com sucesso!');
-        },
-        onError: (errors) => {
-            console.error('Erro ao salvar ordem:', errors);
-            alert('Ocorreu um erro ao salvar a ordem. Verifique o console para mais detalhes.');
-        },
         onFinish: () => isSaving.value = false,
     });
 };
@@ -64,20 +57,18 @@ const saveOrder = () => {
                         </PrimaryButton>
                     </div>
 
-                    <p class="mb-4 text-gray-700 dark:text-gray-300">
+                    <p class="mt-4 mb-4 text-gray-700 dark:text-gray-300">
                         Arraste e solte os documentos para reordená-los dentro de cada seção.
                     </p>
 
                     <div class="gap-8">
                         <DocumentList title="Expediente do Dia"
-                            description="Documentos que serão discutidos no início da sessão."
-                            :session="session"
+                            description="Documentos que serão discutidos no início da sessão." :session="session"
                             :documents="expedienteList" />
 
                         <DocumentList title="Ordem do Dia"
                             description="Documentos principais a serem votados ou discutidos em profundidade."
-                            :session="session"
-                            :documents="ordemDoDiaList" />
+                            :session="session" :documents="ordemDoDiaList" />
                     </div>
                 </div>
             </div>

@@ -90,7 +90,7 @@ Route::middleware(['auth', 'tenant.connection'])
                 Route::get('/{id}/documentos', 'documents')->name('documents');
                 Route::put('/{id}/documentos', 'updateDocuments')->name('update_documents');
                 Route::get('/{id}/documentos/{document_id}/votos', 'documentVotes')->name('documents.votes');
-                Route::put('/{id}/documentos/{document_id}/votos', 'updateDcumentVotes')->name('documents.update_votes');
+                Route::put('/{id}/documentos/{document_id}/votos', 'updateDocumentVotes')->name('documents.update_votes');
 
                 Route::get('/{id}/quorums', 'quorums')->name('quorums');
                 Route::delete('/{id}/quorums/limpar', 'clearQuorums')->name('quorums.clear');

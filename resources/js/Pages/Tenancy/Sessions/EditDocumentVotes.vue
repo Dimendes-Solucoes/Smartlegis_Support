@@ -80,14 +80,6 @@ const saveVotes = () => {
         id: props.session.id,
         document_id: props.document.id
     }), payload, {
-        onSuccess: () => {
-            alert('Votos atualizados com sucesso!');
-            router.reload({ preserveState: true });
-        },
-        onError: (errors) => {
-            console.error('Erro ao atualizar votos:', errors);
-            alert('Ocorreu um erro ao atualizar os votos.');
-        },
         onFinish: () => isSaving.value = false,
     });
 };
@@ -137,16 +129,17 @@ const saveVotes = () => {
                                 <tr v-for="item in editableUnifiedVotes" :key="item.user.id"
                                     class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
                                     <td
-                                        class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
+                                        class="px-6 py-4 whitespace-norma text-sm font-medium text-gray-900 dark:text-gray-100">
                                         {{ item.user.name }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                                        <select v-model="item.vote_category_id" class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 w-1/3 md:w-1/3 lg:w-1/5">
+                                        <select v-model="item.vote_category_id" class="
+                                                mt-1 block px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm
                                                 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm
                                                 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-                                            <option :value="null">Nenhum voto</option>
+                                            <option :value="null">Nenhum</option>
                                             <option v-for="category in voteCategories" :key="category.id"
-                                                :value="category.id">
+                                                :value="category.id" class="whitespace-normal break-words">
                                                 {{ category.name }}
                                             </option>
                                         </select>

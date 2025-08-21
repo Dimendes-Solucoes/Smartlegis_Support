@@ -74,7 +74,7 @@ class SessionController extends Controller
     {
         $this->service->updateDocuments($id, $request->validated());
 
-        return back()->with('success', 'Ordem da pauta salva com sucesso!');
+        return back()->with('success', 'Ordem dos documentos salva com sucesso!');
     }
 
     public function documentVotes(int $id, int $document_id)
@@ -84,11 +84,11 @@ class SessionController extends Controller
         return Inertia::render('Tenancy/Sessions/EditDocumentVotes', $data);
     }
 
-    public function updateDcumentVotes(SessionUpdateDocumentVotesRequest $request, int $id, int $document_id)
+    public function updateDocumentVotes(SessionUpdateDocumentVotesRequest $request, int $id, int $document_id)
     {
         $this->service->updateDocumentVotes($id, $document_id, $request->validated());
 
-        return back()->with('success', 'Ordem da pauta salva com sucesso!');
+        return back()->with('success', 'Votos salvos com sucesso!');
     }
 
     public function quorums(int $id)
