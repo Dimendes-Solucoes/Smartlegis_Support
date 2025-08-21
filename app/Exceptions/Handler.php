@@ -34,8 +34,6 @@ class Handler extends ExceptionHandler
             return parent::render($request, $e);
         }
 
-        $errorMessage = $e->getMessage();
-
-        return back()->with('error', $errorMessage);
+        return back()->with('error', $e->getMessage() ?? 'Erro ao realizar requisição');
     }
 }
