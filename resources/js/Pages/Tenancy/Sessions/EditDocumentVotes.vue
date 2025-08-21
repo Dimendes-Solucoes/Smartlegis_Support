@@ -4,8 +4,6 @@ import { Head, router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import BackButton from '@/Components/BackButton.vue';
-import IconButton from '@/Components/Itens/IconButton.vue';
-import { TrashIcon } from '@heroicons/vue/24/solid';
 
 interface User {
     id: number;
@@ -48,13 +46,13 @@ const votesArray = Array.isArray(props.votes) ? props.votes : Object.values(prop
 const notVotedUsersArray = Array.isArray(props.notVotedUsers) ? props.notVotedUsers : Object.values(props.notVotedUsers);
 
 const unifiedVotes = computed(() => {
-    const votedItems = votesArray.map(vote => ({
+    const votedItems = votesArray.map((vote: any) => ({
         id: vote.id,
         vote_category_id: vote.vote_category_id,
         user: vote.user,
     }));
 
-    const notVotedItems = notVotedUsersArray.map(user => ({
+    const notVotedItems = notVotedUsersArray.map((user: any) => ({
         id: null,
         vote_category_id: null,
         user: user,
@@ -68,7 +66,7 @@ const editableUnifiedVotes = ref(unifiedVotes.value);
 const saveVotes = () => {
     isSaving.value = true;
 
-    const votesToSave = editableUnifiedVotes.value.map(item => ({
+    const votesToSave = editableUnifiedVotes.value.map((item: any) => ({
         id: item.id,
         user_id: item.user.id,
         vote_category_id: item.vote_category_id,
@@ -82,7 +80,10 @@ const saveVotes = () => {
         id: props.session.id,
         document_id: props.document.id
     }), payload, {
-        onSuccess: () => alert('Votos atualizados com sucesso!'),
+        onSuccess: () => {
+            alert('Votos atualizados com sucesso!');
+            router.reload({ preserveState: true });
+        },
         onError: (errors) => {
             console.error('Erro ao atualizar votos:', errors);
             alert('Ocorreu um erro ao atualizar os votos.');
@@ -91,9 +92,6 @@ const saveVotes = () => {
     });
 };
 
-const deleteVote = (item: Vote) => {
-    item.vote_category_id = null
-}
 </script>
 
 <template>
@@ -101,44 +99,67 @@ const deleteVote = (item: Vote) => {
     <Head title="Votos" />
 
     <AuthenticatedLayout>
-        <div class="py-12">
+        <div class="py-12 bg-gray-100 dark:bg-gray-900 min-h-screen">
             <div class="mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <BackButton :href="route('sessions.documents', session.id)" />
-                        <PrimaryButton @click="saveVotes" :disabled="isSaving" :class="{ 'opacity-25': isSaving }">
-                            <span v-if="isSaving">Salvando...</span>
-                            <span v-else>Salvar Votos</span>
-                        </PrimaryButton>
+                <div class="bg-white dark:bg-gray-800 shadow-xl sm:rounded-lg p-6">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                        <div class="flex items-center gap-2">
+                            <BackButton :href="route('sessions.documents', session.id)" />
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <PrimaryButton @click="saveVotes" :disabled="isSaving"
+                                :class="{ 'opacity-50 cursor-not-allowed': isSaving }">
+                                <span v-if="isSaving">Salvando...</span>
+                                <span v-else>Salvar Votos</span>
+                            </PrimaryButton>
+                        </div>
                     </div>
 
                     <p class="mb-4 text-gray-700 dark:text-gray-300">
                         Edite os votos registrados para este documento.
                     </p>
 
-                    <div v-if="editableUnifiedVotes.length > 0" class="space-y-4">
-                        <div v-for="item in editableUnifiedVotes" :key="item.user.id"
-                            class="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg shadow-sm">
-                            <div class="flex flex-col md:flex-row md:items-center justify-between">
-                                <span class="font-medium text-gray-800 dark:text-gray-200">{{ item.user.name }}</span>
-                                <select v-model="item.vote_category_id"
-                                    class="mt-2 md:mt-0 px-3 py-2 border rounded-md text-sm dark:bg-gray-900 dark:text-gray-300 dark:border-gray-600">
-                                    <option :value="null" disabled>Selecione um voto</option>
-                                    <option v-for="category in voteCategories" :key="category.id" :value="category.id">
-                                        {{ category.name }}
-                                    </option>
-                                </select>
-
-                                <IconButton v-if="item.id" @click="deleteVote(item)" color="red" title="Deletar"
-                                    class="ml-2">
-                                    <TrashIcon class="h-5 w-5" />
-                                </IconButton>
-                            </div>
-                        </div>
+                    <div v-if="editableUnifiedVotes.length > 0" class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                            <thead class="bg-gray-50 dark:bg-gray-700">
+                                <tr>
+                                    <th scope="col"
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        Membro
+                                    </th>
+                                    <th scope="col"
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        Voto
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                <tr v-for="item in editableUnifiedVotes" :key="item.user.id"
+                                    class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
+                                    <td
+                                        class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
+                                        {{ item.user.name }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                                        <select v-model="item.vote_category_id" class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm
+                                                focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm
+                                                bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+                                            <option :value="null">Nenhum voto</option>
+                                            <option v-for="category in voteCategories" :key="category.id"
+                                                :value="category.id">
+                                                {{ category.name }}
+                                            </option>
+                                        </select>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
+
                     <div v-else
-                        class="text-center text-gray-500 dark:text-gray-400 p-6 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg">
-                        Nenhum membro no quórum para este documento.
+                        class="text-center p-10 text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700 border-4 border-dashed border-gray-400 dark:border-gray-600 rounded-lg">
+                        <p class="font-bold text-xl mb-2">Nenhum membro para votar.</p>
+                        <p>A lista de quórum para este documento está vazia.</p>
                     </div>
                 </div>
             </div>
