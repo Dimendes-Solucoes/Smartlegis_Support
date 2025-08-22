@@ -48,7 +48,7 @@ const props = defineProps<{
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
                                     <tr v-for="commission in props.commissions" :key="commission.id">
-                                        <td class="px-4 py-4 whitespace-nowrap">{{ commission.comission_name }}</td>
+                                        <td class="px-4 py-4 whitespace-normal">{{ commission.comission_name }}</td>
                                         <td class="px-4 py-4 whitespace-nowrap">{{ commission.type_description }}</td>
                                         <td class="px-4 py-4 whitespace-nowrap text-left text-sm font-medium">
                                             <IconButton :href="route('commissions.edit', commission.id)" color="yellow"
