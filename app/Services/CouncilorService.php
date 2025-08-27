@@ -3,18 +3,15 @@
 namespace App\Services;
 
 use App\Libraries\ClicksignApi;
-use App\Libraries\StorageCustom;
+use App\Libraries\ImageUploader;
 use App\Models\Tenancy\CategoryParty;
 use App\Models\Tenancy\User;
 use App\Models\Tenancy\UserCategory;
 use App\Models\Tenancy\UserTerm;
 use Exception;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
-use Intervention\Image\Laravel\Facades\Image;
 
 class CouncilorService
 {
@@ -186,7 +183,7 @@ class CouncilorService
         $data['status_lider'] = $data['is_leader'] ?? false;
 
         if (isset($data['path_image']) && !empty($data['path_image'])) {
-            $data['path_image'] = $this->handleImageUpload($data['path_image']);
+            $data['path_image'] = ImageUploader::handleImageUpload($data['path_image']);
         } else {
             unset($data['path_image']);
         }
@@ -212,26 +209,6 @@ class CouncilorService
         ];
 
         return Arr::except($data, $fieldsToRemove);
-    }
-
-    private function handleImageUpload(?UploadedFile $imageFile): ?string
-    {
-        if ($imageFile instanceof UploadedFile) {
-            $image = Image::read($imageFile);
-            if ($image->width() > 500 || $image->height() > 500) {
-                $image->resize(500, 500, function ($constraint) {
-                    $constraint->aspectRatio();
-                    $constraint->upsize(); 
-                });
-            }
-            $extension = $imageFile->getClientOriginalExtension();
-            $fileName = Str::random(40) . '.' . $extension;
-            $file = 'imagens_user/' . $fileName;
-            $path = StorageCustom::put($file, (string) $image->encode());
-
-            return "/" . $path;
-        }
-        return null;
     }
 
     private function createSignerKey(string $email, string $name): string

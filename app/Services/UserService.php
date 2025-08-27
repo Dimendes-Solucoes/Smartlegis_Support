@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Libraries\ImageUploader;
 use App\Libraries\StorageCustom;
 use App\Models\Tenancy\CategoryParty;
 use App\Models\Tenancy\User;
@@ -11,8 +12,6 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
-use Intervention\Image\Laravel\Facades\Image;
 
 class UserService
 {
@@ -144,7 +143,7 @@ class UserService
     {
         $data['password'] = Hash::make($data['password']);
 
-        $data['path_image'] = $this->handleImageUpload(Arr::get($data, 'path_image'));
+        $data['path_image'] = ImageUploader::handleImageUpload(Arr::get($data, 'path_image'));
         $data['status_user'] = $this->determineUserStatus(Arr::get($data, 'category_id'));
         $data['user_category_id'] = Arr::get($data, 'category_id');
 
@@ -170,7 +169,7 @@ class UserService
             if ($user->path_image) {
                 StorageCustom::delete($user->path_image);
             }
-            $data['path_image'] = $this->handleImageUpload(Arr::get($data, 'path_image'));
+            $data['path_image'] = ImageUploader::handleImageUpload(Arr::get($data, 'path_image'));
         } elseif (Arr::get($data, 'path_image') === null && !empty($user->path_image) && !Arr::get($data, 'existing_path_image')) {
             StorageCustom::delete($user->path_image);
             $data['path_image'] = null;
@@ -192,26 +191,6 @@ class UserService
         ];
 
         return Arr::except($data, $fieldsToRemove);
-    }
-
-    private function handleImageUpload(?UploadedFile $imageFile): ?string
-    {
-        if ($imageFile instanceof UploadedFile) {
-            $image = Image::read($imageFile);
-            if ($image->width() > 500 || $image->height() > 500) {
-                $image->resize(500, 500, function ($constraint) {
-                    $constraint->aspectRatio();
-                    $constraint->upsize();
-                });
-            }
-            $extension = $imageFile->getClientOriginalExtension();
-            $fileName = Str::random(40) . '.' . $extension;
-            $file = 'imagens_user/' . $fileName;
-            $path = StorageCustom::put($file, (string) $image->encode());
-
-            return "/" . $path;
-        }
-        return null;
     }
 
     private function determineUserStatus(?int $categoryId): int
