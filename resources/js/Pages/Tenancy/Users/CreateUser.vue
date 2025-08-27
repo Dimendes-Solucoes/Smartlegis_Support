@@ -5,6 +5,7 @@ import { Head, useForm } from '@inertiajs/vue3';
 
 import ImageUploadWithCropper from '@/Components/User/ImageUploadWithCropper.vue';
 import UserForm from '@/Components/User/UserForm.vue';
+import BackButtonRow from '@/Components/BackButtonRow.vue';
 
 interface Category {
     id: number;
@@ -40,26 +41,20 @@ const submit = () => {
     <Head title="Adicionar Usuário" />
 
     <AuthenticatedLayout>
-        <div class="py-12">
-            <div class="mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900 dark:text-gray-100">
-                        <form @submit.prevent="submit">
-                            <div class="mb-4">
-                                <ImageUploadWithCropper v-model="form.path_image" :error="form.errors.path_image" />
-                            </div>
+        <BackButtonRow :href="route('users.index')" />
 
-                            <UserForm :form="form" :categories="props.categories" :isCreating="true" />
-
-                            <div class="flex items-center justify-end">
-                                <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                                    Adicionar Usuário
-                                </PrimaryButton>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+        <form @submit.prevent="submit">
+            <div class="mb-4">
+                <ImageUploadWithCropper v-model="form.path_image" :error="form.errors.path_image" />
             </div>
-        </div>
+
+            <UserForm :form="form" :categories="props.categories" :isCreating="true" />
+
+            <div class="flex items-center justify-end">
+                <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                    Adicionar Usuário
+                </PrimaryButton>
+            </div>
+        </form>
     </AuthenticatedLayout>
 </template>

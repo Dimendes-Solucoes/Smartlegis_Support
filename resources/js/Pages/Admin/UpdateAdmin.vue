@@ -5,7 +5,7 @@ import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 import InputError from '@/Components/InputError.vue';
 import { Head, useForm } from '@inertiajs/vue3';
-import BackButton from '@/Components/BackButton.vue';
+import BackButtonRow from '@/Components/BackButtonRow.vue';
 
 interface Admin {
     id: number;
@@ -32,11 +32,7 @@ const submit = () => {
     <Head title="Adicionar Administrador" />
 
     <AuthenticatedLayout>
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-            <div class="flex items-center gap-2">
-                <BackButton :href="route('admin.index')" />
-            </div>
-        </div>
+        <BackButtonRow :href="route('users.index')" />
 
         <form @submit.prevent="submit">
             <div class="md:flex md:space-x-4 mb-4">

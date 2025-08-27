@@ -7,8 +7,8 @@ const props = defineProps<{
 </script>
 
 <template>
-    <a :href="href" class="flex items-center text-gray-600 dark:text-gray-400 hover:text-gray-900 transition-colors">
+    <a :href="props.href" class="flex items-center text-gray-600 dark:text-gray-400 hover:text-gray-900 transition-colors text-sm">
         <ChevronLeftIcon class="h-5 w-5 mr-1" />
-        <slot>Voltar</slot>
+        <span style="margin-top: 2px;">Voltar</span>
     </a>
 </template>
