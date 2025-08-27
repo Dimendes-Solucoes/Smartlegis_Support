@@ -3,11 +3,24 @@ import Modal from '@/Components/Modal.vue';
 import DangerButton from '@/Components/DangerButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 
-const props = defineProps<{
-    show: boolean;
-    title: string;
-    message: string;
-}>();
+const props = defineProps({
+    show: {
+        type: Boolean,
+        required: true,
+    },
+    title: {
+        type: String,
+        required: true,
+    },
+    message: {
+        type: String,
+        required: true,
+    },
+    buttonText: {
+        type: String,
+        default: 'Excluir'
+    },
+});
 
 const emit = defineEmits(['close', 'confirm']);
 
@@ -28,7 +41,7 @@ const emit = defineEmits(['close', 'confirm']);
                 <SecondaryButton @click="$emit('close')"> Cancelar </SecondaryButton>
 
                 <DangerButton class="ml-3" @click="$emit('confirm')">
-                    Excluir
+                    {{ buttonText }}
                 </DangerButton>
             </div>
         </div>
