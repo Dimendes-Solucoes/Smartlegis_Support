@@ -141,7 +141,7 @@ const mainContentClasses = computed(() => {
             <div class="py-12">
                 <div class="mx-auto">
                     <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                        <div class="px-2 py-3 text-gray-900 dark:text-gray-100">
+                        <div class="px-2 py-3 md:p-4 text-gray-900 dark:text-gray-100">
                             <slot />
                         </div>
                     </div>
