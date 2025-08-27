@@ -4,6 +4,7 @@ import { Head, router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import BackButton from '@/Components/BackButton.vue';
+import BackButtonRow from '@/Components/BackButtonRow.vue';
 
 interface User {
     id: number;
@@ -91,71 +92,57 @@ const saveVotes = () => {
     <Head title="Votos" />
 
     <AuthenticatedLayout>
-        <div class="py-12 bg-gray-100 dark:bg-gray-900 min-h-screen">
-            <div class="mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white dark:bg-gray-800 shadow-xl sm:rounded-lg p-6">
-                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-                        <div class="flex items-center gap-2">
-                            <BackButton :href="route('sessions.documents', session.id)" />
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <PrimaryButton @click="saveVotes" :disabled="isSaving"
-                                :class="{ 'opacity-50 cursor-not-allowed': isSaving }">
-                                <span v-if="isSaving">Salvando...</span>
-                                <span v-else>Salvar Votos</span>
-                            </PrimaryButton>
-                        </div>
-                    </div>
+        <BackButtonRow :href="route('sessions.index')" />
 
-                    <p class="mb-4 text-gray-700 dark:text-gray-300">
-                        Edite os votos registrados para este documento.
-                    </p>
+        <div class="flex items-center justify-end mb-4">
+            <PrimaryButton @click="saveVotes" :disabled="isSaving" :class="{ 'opacity-25': isSaving }">
+                <span v-if="isSaving">Salvando...</span>
+                <span v-else>Salvar Ordem</span>
+            </PrimaryButton>
+        </div>
 
-                    <div v-if="editableUnifiedVotes.length > 0" class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                            <thead class="bg-gray-50 dark:bg-gray-700">
-                                <tr>
-                                    <th scope="col"
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                        Membro
-                                    </th>
-                                    <th scope="col"
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                        Voto
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                                <tr v-for="item in editableUnifiedVotes" :key="item.user.id"
-                                    class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
-                                    <td
-                                        class="px-6 py-4 whitespace-norma text-sm font-medium text-gray-900 dark:text-gray-100">
-                                        {{ item.user.name }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 w-1/3 md:w-1/3 lg:w-1/5">
-                                        <select v-model="item.vote_category_id" class="
+        <div v-if="editableUnifiedVotes.length > 0" class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead class="bg-gray-50 dark:bg-gray-700">
+                    <tr>
+                        <th scope="col"
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            Membro
+                        </th>
+                        <th scope="col"
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            Voto
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                    <tr v-for="item in editableUnifiedVotes" :key="item.user.id"
+                        class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
+                        <td class="px-6 py-4 whitespace-norma text-sm font-medium text-gray-900 dark:text-gray-100">
+                            {{ item.user.name }}
+                        </td>
+                        <td
+                            class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 w-1/3 md:w-1/3 lg:w-1/5">
+                            <select v-model="item.vote_category_id" class="
                                                 mt-1 block px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm
                                                 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm
                                                 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-                                            <option :value="null">Nenhum</option>
-                                            <option v-for="category in voteCategories" :key="category.id"
-                                                :value="category.id" class="whitespace-normal break-words">
-                                                {{ category.name }}
-                                            </option>
-                                        </select>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                                <option :value="null">Nenhum</option>
+                                <option v-for="category in voteCategories" :key="category.id" :value="category.id"
+                                    class="whitespace-normal break-words">
+                                    {{ category.name }}
+                                </option>
+                            </select>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
-                    <div v-else
-                        class="text-center p-10 text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700 border-4 border-dashed border-gray-400 dark:border-gray-600 rounded-lg">
-                        <p class="font-bold text-xl mb-2">Nenhum membro para votar.</p>
-                        <p>A lista de quórum para este documento está vazia.</p>
-                    </div>
-                </div>
-            </div>
+        <div v-else
+            class="text-center p-10 text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700 border-4 border-dashed border-gray-400 dark:border-gray-600 rounded-lg">
+            <p class="font-bold text-xl mb-2">Nenhum membro para votar.</p>
+            <p>A lista de quórum para este documento está vazia.</p>
         </div>
     </AuthenticatedLayout>
 </template>

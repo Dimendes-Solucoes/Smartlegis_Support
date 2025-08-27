@@ -49,7 +49,7 @@ const props = defineProps<{
                         <Bars2Icon class="h-5 w-5" />
                     </button>
 
-                    <span class="flex-1 mx-4 font-medium text-gray-800 dark:text-gray-200">{{ element.name }}</span>
+                    <span class="flex-1 mx-2 font-medium text-gray-800 dark:text-gray-200">{{ element.name }}</span>
 
                     <LinkButton :link="element.attachment" title="Visualizar documento">
                         <EyeIcon class="h-5 w-5 text-white" />

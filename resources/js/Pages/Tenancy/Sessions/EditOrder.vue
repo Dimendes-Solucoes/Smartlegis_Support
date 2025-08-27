@@ -4,6 +4,7 @@ import { Head, router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import DocumentList from './Document/DocumentList.vue';
+import BackButtonRow from '@/Components/BackButtonRow.vue';
 
 interface Session {
     id: number;
@@ -47,31 +48,22 @@ const saveOrder = () => {
     <Head title="Documentos" />
 
     <AuthenticatedLayout>
-        <div class="py-12">
-            <div class="mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
-                    <div class="flex items-center justify-end">
-                        <PrimaryButton @click="saveOrder" :disabled="isSaving" :class="{ 'opacity-25': isSaving }">
-                            <span v-if="isSaving">Salvando...</span>
-                            <span v-else>Salvar Ordem</span>
-                        </PrimaryButton>
-                    </div>
+        <BackButtonRow :href="route('sessions.index')" />
 
-                    <p class="mt-4 mb-4 text-gray-700 dark:text-gray-300">
-                        Arraste e solte os documentos para reordená-los dentro de cada seção.
-                    </p>
+        <div class="flex items-center justify-end mb-4">
+            <PrimaryButton @click="saveOrder" :disabled="isSaving" :class="{ 'opacity-25': isSaving }">
+                <span v-if="isSaving">Salvando...</span>
+                <span v-else>Salvar Ordem</span>
+            </PrimaryButton>
+        </div>
 
-                    <div class="gap-8">
-                        <DocumentList title="Expediente do Dia"
-                            description="Documentos que serão discutidos no início da sessão." :session="session"
-                            :documents="expedienteList" />
+        <div class="gap-8">
+            <DocumentList title="Expediente do Dia" description="Documentos que serão discutidos no início da sessão."
+                :session="session" :documents="expedienteList" />
 
-                        <DocumentList title="Ordem do Dia"
-                            description="Documentos principais a serem votados ou discutidos em profundidade."
-                            :session="session" :documents="ordemDoDiaList" />
-                    </div>
-                </div>
-            </div>
+            <DocumentList title="Ordem do Dia"
+                description="Documentos principais a serem votados ou discutidos em profundidade." :session="session"
+                :documents="ordemDoDiaList" />
         </div>
     </AuthenticatedLayout>
 </template>
