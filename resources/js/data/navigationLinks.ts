@@ -23,7 +23,7 @@ interface NavigationLink {
     as?: string;
     textClass?: string;
     iconClass?: string;
-    type?: 'link' | 'separator' | 'group';
+    type?: 'link' | 'separator';
     children?: NavigationLink[];
 }
 
