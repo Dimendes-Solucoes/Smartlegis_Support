@@ -7,7 +7,7 @@ import TextInput from '@/Components/TextInput.vue';
 import { UsersIcon, TrashIcon } from '@heroicons/vue/24/solid';
 import { debounce } from 'lodash';
 import ConfirmDeletionModal from '@/Components/ConfirmDeletionModal.vue';
-import TextButton from '@/Components/Itens/TextButton.vue';
+import BackButtonRow from '@/Components/BackButtonRow.vue';
 
 interface Quorum {
     session_id: number
@@ -74,17 +74,15 @@ const deleteItem = () => {
     <Head title="Discussões de Documentos" />
 
     <AuthenticatedLayout>
+        <BackButtonRow :href="route('sessions.talks', discussionData.session.id)" />
+
         <div class="flex items-center justify-between mb-3">
             <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 px-2">
                 <span>{{ discussionData.session.name }}</span>
             </h2>
-
-            <TextButton :href="route('sessions.talks', discussionData.session.id)" color="gray">
-                Voltar
-            </TextButton>
         </div>
 
-        <div class="mb-6">
+        <div class="my-4">
             <TextInput type="text" v-model="search" placeholder="Buscar por documento..." class="w-full" />
         </div>
 
