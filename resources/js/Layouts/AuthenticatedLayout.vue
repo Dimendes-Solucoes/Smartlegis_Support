@@ -201,6 +201,5 @@ const mainContentClasses = computed(() => {
         </main>
     </div>
 
-    <Alert :message="page.props.flash.success ?? null" type="success" />
-    <Alert :message="page.props.flash.error ?? null" type="error" />
+    <Alert :flash-message="page.props.flash ?? null" />
 </template>
