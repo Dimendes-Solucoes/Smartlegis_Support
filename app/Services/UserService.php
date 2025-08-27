@@ -12,7 +12,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-use Intervention\Image\Facades\Image;
+use Intervention\Image\Laravel\Facades\Image;
 
 class UserService
 {
@@ -197,17 +197,18 @@ class UserService
     private function handleImageUpload(?UploadedFile $imageFile): ?string
     {
         if ($imageFile instanceof UploadedFile) {
-            $image = Image::make($imageFile);
+            $image = Image::read($imageFile);
             if ($image->width() > 500 || $image->height() > 500) {
                 $image->resize(500, 500, function ($constraint) {
                     $constraint->aspectRatio();
-                    $constraint->upsize(); 
+                    $constraint->upsize();
                 });
             }
             $extension = $imageFile->getClientOriginalExtension();
             $fileName = Str::random(40) . '.' . $extension;
-            $path = 'imagens_user/' . $fileName;
-            StorageCustom::put($path, (string) $image->encode());
+            $file = 'imagens_user/' . $fileName;
+            $path = StorageCustom::put($file, (string) $image->encode());
+
             return "/" . $path;
         }
         return null;
