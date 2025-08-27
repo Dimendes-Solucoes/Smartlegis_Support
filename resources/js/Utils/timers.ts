@@ -1,20 +1,16 @@
 export const applyTimerMask = (value: string): string => {
-    let cleanedValue = value.replace(/\D/g, '');
+    const cleanedValue = value.replace(/\D/g, '').substring(0, 6);
 
-    if (cleanedValue.length > 6) {
-        cleanedValue = cleanedValue.substring(0, 6);
-    }
-
-    let formattedValue = '';
-    if (cleanedValue.length > 0) {
-        formattedValue += cleanedValue.substring(0, 2);
-    }
-    if (cleanedValue.length > 2) {
-        formattedValue += ':' + cleanedValue.substring(2, 4);
-    }
-    if (cleanedValue.length > 4) {
-        formattedValue += ':' + cleanedValue.substring(4, 6);
-    }
+    const formattedValue = cleanedValue.replace(/^(\d{2})(\d{2})?(\d{2})?$/, (match, p1, p2, p3) => {
+        let result = p1;
+        if (p2) {
+            result += `:${p2}`;
+        }
+        if (p3) {
+            result += `:${p3}`;
+        }
+        return result;
+    });
 
     return formattedValue;
 };
@@ -24,26 +20,25 @@ export const formatTimer = (timeString: string): string => {
         return '';
     }
 
-    const parts = timeString.split(':');
-    if (parts.length !== 3) {
+    const parts = timeString.split(':').map(part => parseInt(part, 10));
+
+    const [hours, minutes, seconds] = parts;
+
+    if (parts.length !== 3 || parts.some(isNaN)) {
         return '';
     }
 
-    const hours = parseInt(parts[0], 10);
-    const minutes = parseInt(parts[1], 10);
-    const seconds = parseInt(parts[2], 10);
-
     const totalSeconds = (hours * 3600) + (minutes * 60) + seconds;
-
     const displayMinutes = Math.floor(totalSeconds / 60);
     const displaySeconds = totalSeconds % 60;
 
-    let formattedParts = [];
+    const formattedParts = [];
 
     if (displayMinutes > 0) {
         formattedParts.push(`${displayMinutes} min`);
     }
-    if (displaySeconds > 0 || (displayMinutes === 0 && displaySeconds === 0)) {
+
+    if (displaySeconds > 0 || totalSeconds === 0) {
         formattedParts.push(`${displaySeconds} seg`);
     }
 
