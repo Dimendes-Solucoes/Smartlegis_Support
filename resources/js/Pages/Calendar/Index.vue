@@ -108,96 +108,78 @@ const getEventClasses = (statusId: number) => {
     <Head :title="`Calendário - ${props.calendarData?.monthName || 'Mês'} ${props.calendarData?.year || 'Ano'}`" />
 
     <AuthenticatedLayout>
-        <template #header>
-            Calendário de Sessões
-        </template>
+        <div class="flex justify-center items-center mb-4">
+            <div class="flex items-center space-x-4">
+                <TextButton @click="goToPreviousMonth" color="gray">
+                    <ChevronLeftIcon class="h-4 w-5" />
+                </TextButton>
+                <h3 class="text-xl font-semibold capitalize px-2">
+                    {{ props.calendarData?.monthName || 'Carregando...' }} {{ props.calendarData?.year || '' }}
+                </h3>
+                <TextButton @click="goToNextMonth" color="gray">
+                    <ChevronRightIcon class="h-4 w-5" />
+                </TextButton>
+            </div>
+        </div>
 
-        <div class="py-12">
-            <div class="mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900 dark:text-gray-100">
-                        <div class="flex justify-between items-center mb-6">
-                            <div class="flex items-center space-x-4">
-                                <TextButton @click="goToPreviousMonth" color="gray">
-                                    <ChevronLeftIcon class="h-5 w-5" />
-                                </TextButton>
-                                <h3 class="text-2xl font-semibold capitalize">
-                                    {{ props.calendarData?.monthName || 'Carregando...' }} {{ props.calendarData?.year
-                                        || '' }}
-                                </h3>
-                                <TextButton @click="goToNextMonth" color="gray">
-                                    <ChevronRightIcon class="h-5 w-5" />
-                                </TextButton>
-                            </div>
-                        </div>
+        <div class="hidden sm:grid grid-cols-7 gap-1 text-center font-bold text-gray-600 dark:text-gray-300 mb-2">
+            <div>Dom</div>
+            <div>Seg</div>
+            <div>Ter</div>
+            <div>Qua</div>
+            <div>Qui</div>
+            <div>Sex</div>
+            <div>Sáb</div>
+        </div>
 
-                        <div
-                            class="hidden sm:grid grid-cols-7 gap-1 text-center font-bold text-gray-600 dark:text-gray-300 mb-2">
-                            <div>Dom</div>
-                            <div>Seg</div>
-                            <div>Ter</div>
-                            <div>Qua</div>
-                            <div>Qui</div>
-                            <div>Sex</div>
-                            <div>Sáb</div>
-                        </div>
-
-                        <div class="hidden sm:grid sm:grid-cols-7 gap-1">
-                            <div v-for="(day, index) in daysInMonth" :key="index"
-                                class="border border-gray-200 dark:border-gray-700 rounded-lg p-2 min-h-[80px] flex flex-col"
-                                :class="{ 'bg-gray-50 dark:bg-gray-700': day === null, 'bg-white dark:bg-gray-800': day !== null }">
-                                <span v-if="day" class="font-bold text-lg mb-1"
-                                    :class="{ 'text-blue-600 dark:text-blue-400': day === new Date().getDate() && currentMonth === new Date().getMonth() + 1 && currentYear === new Date().getFullYear() }">
-                                    {{ day }}
-                                </span>
-                                <div v-if="day" class="flex flex-col space-y-1">
-                                    <div v-for="event in getEventsForDay(day)" :key="event.id"
-                                        class="text-xs rounded-md p-1 truncate"
-                                        :class="getEventClasses(event.status_id).bg + ' ' + getEventClasses(event.status_id).text"
-                                        :title="`${event.title}`">
-                                        {{ event.tenant_city }}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="sm:hidden">
-                            <div v-for="(day, index) in daysInMonth.filter(d => d !== null)" :key="index"
-                                class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 mb-2">
-                                <span class="font-bold text-lg mb-1"
-                                    :class="{ 'text-blue-600 dark:text-blue-400': day === new Date().getDate() && currentMonth === new Date().getMonth() + 1 && currentYear === new Date().getFullYear() }">
-                                    {{ day }} {{ props.calendarData?.monthName }}
-                                </span>
-                                <div class="mt-2 flex flex-col space-y-2">
-                                    <div v-for="event in getEventsForDay(day)" :key="event.id"
-                                        class="text-sm rounded-md p-2"
-                                        :class="getEventClasses(event.status_id).bg + ' ' + getEventClasses(event.status_id).text">
-                                        <h5 class="font-semibold">{{ event.title }}</h5>
-                                        <p class="text-xs mt-1">
-                                            Status: {{ getEventClasses(event.status_id).label }}
-                                        </p>
-                                        <p class="text-xs mt-1">
-                                            Local: {{ event.tenant_city }}
-                                        </p>
-                                    </div>
-                                    <p v-if="getEventsForDay(day).length === 0"
-                                        class="text-sm text-gray-500 dark:text-gray-400">Nenhum evento</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
-                            <h4 class="font-semibold text-lg mb-2">Legenda:</h4>
-                            <div class="flex flex-wrap gap-4">
-                                <div v-for="(status, id) in eventStatusColors" :key="id"
-                                    class="flex items-center space-x-2">
-                                    <span class="w-4 h-4 rounded-full"
-                                        :class="status.bg.replace(/-\d{2,3}/g, '-500')"></span>
-                                    <span class="text-sm text-gray-700 dark:text-gray-300">{{ status.label }}</span>
-                                </div>
-                            </div>
-                        </div>
+        <div class="hidden sm:grid sm:grid-cols-7 gap-1">
+            <div v-for="(day, index) in daysInMonth" :key="index"
+                class="border border-gray-200 dark:border-gray-700 rounded-lg p-2 min-h-[80px] flex flex-col"
+                :class="{ 'bg-gray-50 dark:bg-gray-700': day === null, 'bg-white dark:bg-gray-800': day !== null }">
+                <span v-if="day" class="font-bold text-lg mb-1"
+                    :class="{ 'text-blue-600 dark:text-blue-400': day === new Date().getDate() && currentMonth === new Date().getMonth() + 1 && currentYear === new Date().getFullYear() }">
+                    {{ day }}
+                </span>
+                <div v-if="day" class="flex flex-col space-y-1">
+                    <div v-for="event in getEventsForDay(day)" :key="event.id" class="text-xs rounded-md p-1 truncate"
+                        :class="getEventClasses(event.status_id).bg + ' ' + getEventClasses(event.status_id).text"
+                        :title="`${event.title}`">
+                        {{ event.tenant_city }}
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sm:hidden">
+            <div v-for="(day, index) in daysInMonth.filter(d => d !== null)" :key="index"
+                class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 mb-2">
+                <span class="font-bold text-lg mb-1"
+                    :class="{ 'text-blue-600 dark:text-blue-400': day === new Date().getDate() && currentMonth === new Date().getMonth() + 1 && currentYear === new Date().getFullYear() }">
+                    {{ day }} {{ props.calendarData?.monthName }}
+                </span>
+                <div class="mt-2 flex flex-col space-y-2">
+                    <div v-for="event in getEventsForDay(day)" :key="event.id" class="text-sm rounded-md p-2"
+                        :class="getEventClasses(event.status_id).bg + ' ' + getEventClasses(event.status_id).text">
+                        <h5 class="font-semibold">{{ event.title }}</h5>
+                        <p class="text-xs mt-1">
+                            Status: {{ getEventClasses(event.status_id).label }}
+                        </p>
+                        <p class="text-xs mt-1">
+                            Local: {{ event.tenant_city }}
+                        </p>
+                    </div>
+                    <p v-if="getEventsForDay(day).length === 0" class="text-sm text-gray-500 dark:text-gray-400">Nenhum
+                        evento</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+            <h4 class="font-semibold text-lg mb-2">Legenda:</h4>
+            <div class="flex flex-wrap gap-4">
+                <div v-for="(status, id) in eventStatusColors" :key="id" class="flex items-center space-x-2">
+                    <span class="w-4 h-4 rounded-full" :class="status.bg.replace(/-\d{2,3}/g, '-500')"></span>
+                    <span class="text-sm text-gray-700 dark:text-gray-300">{{ status.label }}</span>
                 </div>
             </div>
         </div>
