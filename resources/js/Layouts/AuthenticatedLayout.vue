@@ -89,7 +89,7 @@ const mainContentClasses = computed(() => {
         <aside v-if="isSidebarOpen"
             class="bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col fixed h-screen top-0 left-0 z-40 w-64 transition-all duration-300 ease-in-out">
             <div
-                class="flex items-center justify-center h-16 border-b border-gray-200 dark:border-gray-700 relative flex-shrink-0">
+                class="flex items-center justify-center h-14 border-b border-gray-200 dark:border-gray-700 relative flex-shrink-0">
                 <Link :href="route('tenant.settings')" class="flex items-center" v-show="isSidebarOpen">
                 <span class="text-md font-semibold text-gray-800 dark:text-gray-200">
                     {{ currentTenantCityName }}
@@ -129,15 +129,24 @@ const mainContentClasses = computed(() => {
             </nav>
         </aside>
 
-        <div class="fixed top-3 left-1 z-50">
-            <button @click="toggleSidebar" class="p-2 rounded-md text-gray-400 hover:text-gray-500 focus:outline-none bg-white border shadow-md"
+        <div class="fixed top-2 left-2 z-50">
+            <button @click="toggleSidebar"
+                class="p-2 rounded-md text-gray-400 hover:text-gray-500 focus:outline-none border bg-white dark:bg-gray-800 dark:border-gray-800 shadow-md"
                 aria-label="Toggle sidebar">
-                <Bars3Icon class="h-6 w-6" />
+                <Bars3Icon class="h-5 w-5 dark:text-gray-100" />
             </button>
         </div>
 
-        <main class="flex-1 overflow-auto p-4" :class="mainContentClasses">
-            <slot />
+        <main class="flex-1 overflow-auto p-2" :class="mainContentClasses">
+            <div class="py-12">
+                <div class="mx-auto">
+                    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                        <div class="px-2 py-3 text-gray-900 dark:text-gray-100">
+                            <slot />
+                        </div>
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
 
