@@ -19,7 +19,7 @@ class CouncilorController extends Controller
         $showInactive = request()->boolean('show_inactive');
         $users = $this->service->list($showInactive);
 
-        return Inertia::render('Tenancy/Coucilors/Index', [
+        return Inertia::render('Tenancy/Councilors/Index', [
             'users' => $users,
             'filters' => [
                 'show_inactive' => $showInactive,
@@ -31,34 +31,34 @@ class CouncilorController extends Controller
     {
         $formData = $this->service->getCreationFormData();
 
-        return Inertia::render('Tenancy/Coucilors/CreateConcilor', $formData);
+        return Inertia::render('Tenancy/Councilors/CreateCouncilor', $formData);
     }
 
     public function store(CouncilorStoreRequest $request)
     {
         $this->service->createCouncilor($request->validated());
 
-        return redirect()->route('councilors.index')->with('success', 'Usuário cadastrado com sucesso!');
+        return redirect()->route('councilors.index')->with('success', 'Vereador cadastrado com sucesso!');
     }
 
     public function edit(int $id)
     {
         $data = $this->service->getUserForEdit($id);
 
-        return Inertia::render('Tenancy/Coucilors/EditConcilor', $data);
+        return Inertia::render('Tenancy/Councilors/EditCouncilor', $data);
     }
 
     public function update(CouncilorUpdateRequest $request, int $id)
     {
         $this->service->updateUser($id, $request->validated());
 
-        return redirect()->route('councilors.index')->with('success', 'Usuário atualizado com sucesso!');
+        return redirect()->route('councilors.index')->with('success', 'Vereador atualizado com sucesso!');
     }
 
     public function changeStatus(int $id)
     {
         $this->service->changeStatus($id);
 
-        return redirect()->route('councilors.index')->with('success', 'Usuário atualizado com sucesso!');
+        return redirect()->route('councilors.index')->with('success', 'Vereador atualizado com sucesso!');
     }
 }

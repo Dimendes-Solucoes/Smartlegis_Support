@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
-
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import ImageUploadWithCropper from '@/Components/User/ImageUploadWithCropper.vue';
 import UserForm from '@/Components/User/UserForm.vue';
-import ConcilorForm from '@/Components/User/ConcilorForm.vue';
+import BackButtonRow from '@/Components/BackButtonRow.vue';
+import CouncilorForm from './CouncilorForm.vue';
 
 interface Category {
     id: number;
@@ -65,29 +65,23 @@ const submit = () => {
     <Head title="Editar Vereador" />
 
     <AuthenticatedLayout>
-        <div class="py-12">
-            <div class="mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900 dark:text-gray-100">
-                        <form @submit.prevent="submit">
-                            <div class="mb-4">
-                                <ImageUploadWithCropper v-model="form.path_image" :error="form.errors.path_image"
-                                    :initial-image-url="form.existing_path_image" />
-                                <input type="hidden" name="existing_path_image" :value="form.existing_path_image" />
-                            </div>
+        <BackButtonRow :href="route('councilors.index')" />
 
-                            <UserForm :form="form" :categories="props.categories" />
-                            <ConcilorForm :form="form" :parties="props.parties" />
-
-                            <div class="flex items-center justify-end">
-                                <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                                    Salvar
-                                </PrimaryButton>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+        <form @submit.prevent="submit">
+            <div class="mb-4">
+                <ImageUploadWithCropper v-model="form.path_image" :error="form.errors.path_image"
+                    :initial-image-url="form.existing_path_image" />
+                <input type="hidden" name="existing_path_image" :value="form.existing_path_image" />
             </div>
-        </div>
+
+            <UserForm :form="form" :categories="props.categories" />
+            <CouncilorForm :form="form" :parties="props.parties" />
+
+            <div class="flex items-center justify-end">
+                <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                    Salvar
+                </PrimaryButton>
+            </div>
+        </form>
     </AuthenticatedLayout>
 </template>
