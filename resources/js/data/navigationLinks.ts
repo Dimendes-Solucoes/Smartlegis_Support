@@ -12,6 +12,7 @@ import {
     ShieldCheckIcon,
     UserGroupIcon,
     PencilSquareIcon,
+    DocumentTextIcon,
 } from '@heroicons/vue/24/solid';
 
 interface NavigationLink {
@@ -78,6 +79,12 @@ export const staticNavigationLinks: NavigationLink[] = [
         route: 'commissions.index',
         type: 'link',
     },
+        {
+        label: 'Tempos',
+        icon: ClockIcon,
+        route: 'timers.index',
+        type: 'link',
+    },
     {
         label: 'Categorias de Documentos',
         icon: NewspaperIcon,
@@ -85,9 +92,9 @@ export const staticNavigationLinks: NavigationLink[] = [
         type: 'link',
     },
     {
-        label: 'Tempos',
-        icon: ClockIcon,
-        route: 'timers.index',
+        label: 'Documentos',
+        icon: DocumentTextIcon,
+        route: 'documents.index',
         type: 'link',
     },
     {
