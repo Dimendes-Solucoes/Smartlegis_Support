@@ -1,0 +1,1 @@
+import{_ as o}from"./DocumentList.vue_vue_type_script_setup_true_lang-BGS1dg-A.js";import"./app-fd9APL3o.js";/* empty css            */import"./IconButton-CaV5Z5UQ.js";import"./BaseButtonLink-B2sJy0-j.js";import"./ClipboardDocumentListIcon-BSLqYE-r.js";export{o as default};
