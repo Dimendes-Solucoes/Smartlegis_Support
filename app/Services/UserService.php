@@ -99,7 +99,7 @@ class UserService
     {
         $userData = $this->prepareUpdateUserData($user, $data);
 
-        if ($user->user_category_id !== $userData['user_category_id']) {
+        if ($user->user_category_id !== (int) $userData['user_category_id']) {
             $this->canChangeCategory($user);
         }
 
