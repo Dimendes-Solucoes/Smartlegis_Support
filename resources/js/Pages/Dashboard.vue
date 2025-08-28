@@ -24,7 +24,7 @@ const authUser = usePage().props.auth.user;
                         Bem-vindo(a) ao Smartlegis, {{ authUser.name }}!
                     </h1>
                     <p class="mt-2 text-gray-600 dark:text-gray-400">
-                        Este é o seu painel de controle. A partir daqui, você pode gerenciar todas as atividades legislativas.
+                        Este é o seu painel de controle. A partir daqui, você pode gerenciar as atividades legislativas.
                     </p>
                 </div>
 

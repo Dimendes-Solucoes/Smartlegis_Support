@@ -6,7 +6,7 @@ const props = defineProps<{
 </script>
 
 <template>
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+    <div class="bg-white dark:bg-gray-800 dark:border dark:border-gray-700 rounded-lg shadow p-6 flex flex-col justify-between">
         <div class="flex items-center">
             <div class="p-3 bg-indigo-100 dark:bg-indigo-900/50 rounded-lg">
                 <component :is="icon" class="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
