@@ -66,6 +66,15 @@ Route::middleware(['auth', 'tenant.connection'])
                 Route::patch('/{id}/status', 'changeStatus')->name('change_status');
             });
 
+        Route::prefix('documentos')
+            ->name('documents.')
+            ->controller(TimerController::class)
+            ->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/{id}/editar', 'edit')->name('edit');
+                Route::put('/{id}', 'update')->name('update');
+            });
+
         Route::prefix('tempos')
             ->name('timers.')
             ->controller(TimerController::class)

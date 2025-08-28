@@ -48,4 +48,14 @@ class Document extends Model
             ->withPivot('ordem_do_dia', 'order')
             ->withTimestamps();
     }
+
+    public function voteStatus()
+    {
+        return $this->belongsTo(DocumentStatusVote::class, 'document_status_vote_id');
+    }
+
+    public function movementStatus()
+    {
+        return $this->belongsTo(DocumentStatusMovement::class, 'document_status_movement_id');
+    }
 }
