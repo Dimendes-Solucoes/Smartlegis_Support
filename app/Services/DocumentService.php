@@ -3,8 +3,11 @@
 namespace App\Services;
 
 use App\Models\Tenancy\Document;
+use App\Models\Tenancy\DocumentStatusMovement;
+use App\Models\Tenancy\DocumentStatusVote;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Storage;
 
 class DocumentService
@@ -26,5 +29,36 @@ class DocumentService
         ]);
 
         return $documents;
+    }
+
+    public function getDocumentForEdit(int $id): array
+    {
+        return [
+            'document' => Document::findOrFail($id),
+            'vote_statuses' => DocumentStatusVote::all(),
+            'movement_statuses' => DocumentStatusMovement::all(),
+        ];
+    }
+
+    public function updateDocument(int $id, array $data): Document
+    {
+        $document = Document::findOrFail($id);
+
+        $fieldsToUpdate = Arr::only($data, [
+            'name',
+            'protocol_number',
+            'document_status_vote_id',
+            'document_status_movement_id',
+        ]);
+
+        $document->update($fieldsToUpdate);
+
+        return $document;
+    }
+
+    public function destroyDocument(int $id): void
+    {
+        $document = Document::findOrFail($id);
+        $document->delete();
     }
 }

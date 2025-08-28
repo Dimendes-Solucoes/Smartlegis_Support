@@ -1,29 +1,33 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link } from '@inertiajs/vue3';
-// 1. Importe o LinkButton e remova o IconButton se não for mais usado para outras ações
+import { Head, Link, router } from '@inertiajs/vue3';
+import IconButton from '@/Components/Itens/IconButton.vue';
 import LinkButton from '@/Components/LinkButton.vue';
-import { EyeIcon } from '@heroicons/vue/24/solid';
+import ConfirmDeletionModal from '@/Components/ConfirmDeletionModal.vue';
+import { EyeIcon, PencilSquareIcon, TrashIcon } from '@heroicons/vue/24/solid';
 
+// --- INTERFACES ---
 interface Document {
     id: number;
     name: string;
-    attachment_url: string;
+    attachment_url: string | null;
     category_name: string;
     vote_status_name: string;
     movement_status_name: string;
     status_sign: number;
 }
-
 interface PaginatedDocuments {
     data: Document[];
     links: { url: string | null; label: string; active: boolean; }[];
 }
 
+// --- PROPS ---
 const props = defineProps<{
     documents: PaginatedDocuments;
 }>();
 
+// --- FUNÇÕES AUXILIARES ---
 const getSignatureStatusText = (status: number) => {
     const statuses: { [key: number]: string } = {
         0: 'Pendente',
@@ -32,7 +36,6 @@ const getSignatureStatusText = (status: number) => {
     };
     return statuses[status] || 'Desconhecido';
 };
-
 const getSignatureStatusColor = (status: number) => {
     const colors: { [key: number]: string } = {
         0: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
@@ -41,6 +44,28 @@ const getSignatureStatusColor = (status: number) => {
     };
     return colors[status] || 'bg-gray-100 text-gray-800';
 };
+
+// --- LÓGICA DE EXCLUSÃO ---
+const confirmingDeletion = ref(false);
+const itemToDelete = ref<Document | null>(null);
+
+const openConfirmDeleteModal = (item: Document) => {
+    itemToDelete.value = item;
+    confirmingDeletion.value = true;
+};
+
+const closeModal = () => {
+    confirmingDeletion.value = false;
+    itemToDelete.value = null;
+};
+
+const deleteItem = () => {
+    if (!itemToDelete.value) return;
+    router.delete(route('documents.destroy', itemToDelete.value.id), {
+        preserveScroll: true,
+        onSuccess: () => closeModal(),
+    });
+};
 </script>
 
 <template>
@@ -48,7 +73,8 @@ const getSignatureStatusColor = (status: number) => {
 
     <AuthenticatedLayout>
         <div class="py-12">
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+            <div class="mx-auto sm:px-6 lg:px-8">
+
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900 dark:text-gray-100">
                         <div v-if="props.documents.data.length > 0" class="overflow-x-auto">
@@ -75,9 +101,17 @@ const getSignatureStatusColor = (status: number) => {
                                             </span>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            <LinkButton :link="doc.attachment_url" title="Visualizar documento">
-                                                <EyeIcon class="h-5 w-5 text-white" />
-                                            </LinkButton>
+                                            <div class="flex items-center justify-end space-x-1">
+                                                <LinkButton v-if="doc.attachment_url" :link="doc.attachment_url" title="Visualizar documento">
+                                                    <EyeIcon class="h-5 w-5 text-white" />
+                                                </LinkButton>
+                                                <IconButton :href="route('documents.edit', doc.id)" color="yellow" title="Editar">
+                                                    <PencilSquareIcon class="h-5 w-5" />
+                                                </IconButton>
+                                                <IconButton as="button" color="red" title="Excluir" @click.stop="openConfirmDeleteModal(doc)">
+                                                    <TrashIcon class="h-5 w-5" />
+                                                </IconButton>
+                                            </div>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -94,4 +128,12 @@ const getSignatureStatusColor = (status: number) => {
             </div>
         </div>
     </AuthenticatedLayout>
+
+    <ConfirmDeletionModal 
+        :show="confirmingDeletion"
+        title="Excluir Documento"
+        :message="`Tem certeza que deseja mover o documento '${itemToDelete?.name}' para a lixeira?`"
+        @close="closeModal"
+        @confirm="deleteItem"
+    />
 </template>
