@@ -29,6 +29,7 @@ const getSignatureStatusText = (status: number) => {
         0: 'Pendente',
         1: 'Assinado',
         2: 'Assinado',
+        3: 'Expirado',
     };
     return statuses[status] || 'Desconhecido';
 };
@@ -37,6 +38,7 @@ const getSignatureStatusColor = (status: number) => {
         0: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
         1: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
         2: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+        3: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
     };
     return colors[status] || 'bg-gray-100 text-gray-800';
 };
