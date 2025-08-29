@@ -7,11 +7,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class DocumentStatusVote extends Model
 {
-    public const AGUARDANDO_MOVIMENTACAO = 1;
-    public const AGUARDANDO_VOTACAO = 2;
+    public const PENDENTE = 1;
+    public const AGUARDANDO = 2;
     public const EM_VISTA = 3;
     public const EM_VOTACAO = 4;
-    public const VOTACAO_CONCLUIDA = 5;
+    public const CONCLUIDO = 5;
     public const LEITURA = 6;
 
     use SoftDeletes;

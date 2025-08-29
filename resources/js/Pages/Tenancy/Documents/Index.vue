@@ -7,14 +7,12 @@ import LinkButton from '@/Components/LinkButton.vue';
 import ConfirmDeletionModal from '@/Components/ConfirmDeletionModal.vue';
 import { EyeIcon, PencilSquareIcon, TrashIcon } from '@heroicons/vue/24/solid';
 
-// --- INTERFACES ---
 interface Document {
     id: number;
     name: string;
     attachment_url: string | null;
-    category_name: string;
-    vote_status_name: string;
-    movement_status_name: string;
+    document_status_vote_id: number;
+    document_status_movement_id: number;
     status_sign: number;
 }
 interface PaginatedDocuments {
@@ -22,17 +20,15 @@ interface PaginatedDocuments {
     links: { url: string | null; label: string; active: boolean; }[];
 }
 
-// --- PROPS ---
 const props = defineProps<{
     documents: PaginatedDocuments;
 }>();
 
-// --- FUNÇÕES AUXILIARES ---
 const getSignatureStatusText = (status: number) => {
     const statuses: { [key: number]: string } = {
         0: 'Pendente',
         1: 'Assinado',
-        2: 'Já Assinado',
+        2: 'Assinado',
     };
     return statuses[status] || 'Desconhecido';
 };
@@ -40,12 +36,37 @@ const getSignatureStatusColor = (status: number) => {
     const colors: { [key: number]: string } = {
         0: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
         1: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-        2: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+        2: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
     };
     return colors[status] || 'bg-gray-100 text-gray-800';
 };
 
-// --- LÓGICA DE EXCLUSÃO ---
+const getVoteStatusText = (statusId: number) => {
+    const statuses: { [key: number]: string } = {
+        1: 'Pendente',
+        2: 'Aguardando',
+        3: 'Em vista',
+        4: 'Em votação',
+        5: 'Concluído',
+        6: 'Leitura',
+    };
+    return statuses[statusId] || 'N/A';
+};
+
+const getMovementStatusText = (statusId: number) => {
+    const statuses: { [key: number]: string } = {
+        1: 'Secretario',
+        2: 'Em sessão',
+        3: 'Procurador',
+        4: 'Comissão Justiça',
+        5: 'Comissões',
+        6: 'Prefeitura',
+        7: 'Em analise',
+        8: 'Reprovado',
+    };
+    return statuses[statusId] || 'N/A';
+};
+
 const confirmingDeletion = ref(false);
 const itemToDelete = ref<Document | null>(null);
 
@@ -74,7 +95,6 @@ const deleteItem = () => {
     <AuthenticatedLayout>
         <div class="py-12">
             <div class="mx-auto sm:px-6 lg:px-8">
-
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900 dark:text-gray-100">
                         <div v-if="props.documents.data.length > 0" class="overflow-x-auto">
@@ -82,19 +102,17 @@ const deleteItem = () => {
                                 <thead class="bg-gray-50 dark:bg-gray-700">
                                     <tr>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Nome</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Categoria</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Status Votação</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Status Movimentação</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Status Assinatura</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Votação</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Movimentação</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Assinatura</th>
                                         <th class="relative px-6 py-3"><span class="sr-only">Ações</span></th>
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
                                     <tr v-for="doc in props.documents.data" :key="doc.id">
                                         <td class="px-6 py-4 whitespace-nowrap font-medium">{{ doc.name }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ doc.category_name }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ doc.vote_status_name }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ doc.movement_status_name }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">{{ getVoteStatusText(doc.document_status_vote_id) }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">{{ getMovementStatusText(doc.document_status_movement_id) }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full" :class="getSignatureStatusColor(doc.status_sign)">
                                                 {{ getSignatureStatusText(doc.status_sign) }}

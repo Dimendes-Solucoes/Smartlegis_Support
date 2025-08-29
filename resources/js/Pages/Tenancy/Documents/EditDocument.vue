@@ -13,20 +13,35 @@ interface Document {
     document_status_vote_id: number;
     document_status_movement_id: number;
 }
-interface Status {
-    id: number;
-    name: string;
-}
 interface EditData {
     document: Document;
-    vote_statuses: Status[];
-    movement_statuses: Status[];
 }
 
 const props = defineProps<{
     data: EditData;
 }>();
 
+const voteStatuses = [
+    { id: 1, name: 'Pendente' },
+    { id: 2, name: 'Aguardando' },
+    { id: 3, name: 'Em vista' },
+    { id: 4, name: 'Em votação' },
+    { id: 5, name: 'Concluído' },
+    { id: 6, name: 'Leitura' },
+];
+
+const movementStatuses = [
+    { id: 1, name: 'Secretario' },
+    { id: 2, name: 'Em sessão' },
+    { id: 3, name: 'Procurador' },
+    { id: 4, name: 'Comissão Justiça' },
+    { id: 5, name: 'Comissões' },
+    { id: 6, name: 'Prefeitura' },
+    { id: 7, name: 'Em analise' },
+    { id: 8, name: 'Reprovado' },
+];
+
+// --- FORMULÁRIO ---
 const form = useForm({
     _method: 'put', 
     name: props.data.document.name,
@@ -69,7 +84,7 @@ const submit = () => {
                                 <div>
                                     <InputLabel for="vote_status" value="Status de Votação" />
                                     <select v-model="form.document_status_vote_id" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm">
-                                        <option v-for="status in data.vote_statuses" :key="status.id" :value="status.id">{{ status.name }}</option>
+                                        <option v-for="status in voteStatuses" :key="status.id" :value="status.id">{{ status.name }}</option>
                                     </select>
                                     <InputError class="mt-2" :message="form.errors.document_status_vote_id" />
                                 </div>
@@ -77,7 +92,7 @@ const submit = () => {
                                 <div>
                                     <InputLabel for="movement_status" value="Status de Movimentação" />
                                     <select v-model="form.document_status_movement_id" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm">
-                                        <option v-for="status in data.movement_statuses" :key="status.id" :value="status.id">{{ status.name }}</option>
+                                        <option v-for="status in movementStatuses" :key="status.id" :value="status.id">{{ status.name }}</option>
                                     </select>
                                     <InputError class="mt-2" :message="form.errors.document_status_movement_id" />
                                 </div>

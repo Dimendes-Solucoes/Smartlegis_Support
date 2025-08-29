@@ -8,27 +8,25 @@ use App\Models\Tenancy\DocumentStatusVote;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class DocumentService
 {
-    public function getAllDocuments(Request $request): LengthAwarePaginator
+        public function getAllDocuments(Request $request): LengthAwarePaginator
     {
-        $documents = Document::with(['category', 'voteStatus', 'movementStatus'])
+        $documents = Document::query()
             ->latest('id')
             ->paginate(15);
 
-        $documents->through(fn (Document $document) => [
+        return $documents->through(fn (Document $document) => [
             'id' => $document->id,
             'name' => $document->name,
             'attachment_url' => $document->attachment ? Storage::url($document->attachment) : null,
-            'category_name' => $document->category->name ?? 'N/A',
-            'vote_status_name' => $document->voteStatus->name ?? 'N/A',
-            'movement_status_name' => $document->movementStatus->name ?? 'N/A',
             'status_sign' => $document->status_sign,
+            'document_status_vote_id' => $document->document_status_vote_id,
+            'document_status_movement_id' => $document->document_status_movement_id,
         ]);
-
-        return $documents;
     }
 
     public function getDocumentForEdit(int $id): array

@@ -7,14 +7,14 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class DocumentStatusMovement extends Model
 {
-    public const ENVIADO_SECRETARIA = 1;
+    public const SECRETARIO = 1;
     public const EM_SESSAO = 2;
-    public const ENVIADO_PROCURADOR = 3;
-    public const ENVIADO_COMISSAO_JUSTICA = 4;
-    public const ENVIADO_COMISSOES = 5;
-    public const ENVIADO_PREFEITURA = 6;
+    public const PROCURADOR = 3;
+    public const COMISSAO_JUSTICA = 4;
+    public const COMISSOES = 5;
+    public const PREFEITURA = 6;
     public const EM_ANALISE = 7;
-    public const ANALISE_REPROVADA = 8;
+    public const REPROVADO = 8;
 
     use SoftDeletes;
 
