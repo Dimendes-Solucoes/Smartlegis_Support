@@ -119,7 +119,7 @@ const deleteItem = () => {
                 <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
                     <tr v-for="doc in props.documents.data" :key="doc.id">
                         <td class="px-6 py-4 whitespace-nowrap font-medium">{{ doc.id }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap font-medium">{{ doc.name }}</td>
+                        <td class="px-6 py-4 whitespace-normal font-medium">{{ doc.name }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ getVoteStatusText(doc.document_status_vote_id) }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">{{
