@@ -90,68 +90,80 @@ const deleteItem = () => {
 </script>
 
 <template>
+
     <Head title="Documentos" />
 
     <AuthenticatedLayout>
-        <div class="py-12">
-            <div class="mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900 dark:text-gray-100">
-                        <div v-if="props.documents.data.length > 0" class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
-                                <thead class="bg-gray-50 dark:bg-gray-700">
-                                    <tr>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Nome</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Votação</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Movimentação</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Assinatura</th>
-                                        <th class="relative px-6 py-3"><span class="sr-only">Ações</span></th>
-                                    </tr>
-                                </thead>
-                                <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
-                                    <tr v-for="doc in props.documents.data" :key="doc.id">
-                                        <td class="px-6 py-4 whitespace-nowrap font-medium">{{ doc.name }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ getVoteStatusText(doc.document_status_vote_id) }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ getMovementStatusText(doc.document_status_movement_id) }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full" :class="getSignatureStatusColor(doc.status_sign)">
-                                                {{ getSignatureStatusText(doc.status_sign) }}
-                                            </span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            <div class="flex items-center justify-end space-x-1">
-                                                <LinkButton v-if="doc.attachment_url" :link="doc.attachment_url" title="Visualizar documento">
-                                                    <EyeIcon class="h-5 w-5 text-white" />
-                                                </LinkButton>
-                                                <IconButton :href="route('documents.edit', doc.id)" color="yellow" title="Editar">
-                                                    <PencilSquareIcon class="h-5 w-5" />
-                                                </IconButton>
-                                                <IconButton as="button" color="red" title="Excluir" @click.stop="openConfirmDeleteModal(doc)">
-                                                    <TrashIcon class="h-5 w-5" />
-                                                </IconButton>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div v-else>
-                            <p>Nenhum documento encontrado.</p>
-                        </div>
-                        <div v-if="props.documents.data.length > 0 && props.documents.links.length > 3" class="mt-6 flex justify-center">
-                            <Link v-for="(link, index) in props.documents.links" :key="index" :href="link.url || ''" class="px-4 py-2 text-sm" :class="{'bg-indigo-500 text-white rounded-md': link.active, 'text-gray-500 hover:text-gray-800': !link.active, 'cursor-not-allowed text-gray-400': !link.url}" v-html="link.label" />
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div v-if="props.documents.data.length > 0" class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
+                <thead class="bg-gray-50 dark:bg-gray-700">
+                    <tr>
+                        <th
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
+                            Prot.</th>
+                        <th
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
+                            Título</th>
+                        <th
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
+                            Votação</th>
+                        <th
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
+                            Movimentação</th>
+                        <th
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
+                            Assinatura</th>
+                        <th class="relative px-6 py-3"><span class="sr-only">Ações</span></th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
+                    <tr v-for="doc in props.documents.data" :key="doc.id">
+                        <td class="px-6 py-4 whitespace-nowrap font-medium">{{ doc.id }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap font-medium">{{ doc.name }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ getVoteStatusText(doc.document_status_vote_id) }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{
+                            getMovementStatusText(doc.document_status_movement_id) }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
+                                :class="getSignatureStatusColor(doc.status_sign)">
+                                {{ getSignatureStatusText(doc.status_sign) }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <div class="flex items-center justify-end space-x-1">
+                                <LinkButton v-if="doc.attachment_url" :link="doc.attachment_url"
+                                    title="Visualizar documento">
+                                    <EyeIcon class="h-5 w-5 text-white" />
+                                </LinkButton>
+                                <IconButton :href="route('documents.edit', doc.id)" color="yellow" title="Editar">
+                                    <PencilSquareIcon class="h-5 w-5" />
+                                </IconButton>
+                                <IconButton as="button" color="red" title="Excluir"
+                                    @click.stop="openConfirmDeleteModal(doc)">
+                                    <TrashIcon class="h-5 w-5" />
+                                </IconButton>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div v-else>
+            <p>Nenhum documento encontrado.</p>
+        </div>
+
+        <div v-if="props.documents.data.length > 0 && props.documents.links.length > 3"
+            class="mt-6 flex justify-center">
+            <Link v-for="(link, index) in props.documents.links" :key="index" :href="link.url || ''"
+                class="px-4 py-2 text-sm"
+                :class="{ 'bg-indigo-500 text-white rounded-md': link.active, 'text-gray-500 hover:text-gray-800': !link.active, 'cursor-not-allowed text-gray-400': !link.url }"
+                v-html="link.label" />
         </div>
     </AuthenticatedLayout>
 
-    <ConfirmDeletionModal 
-        :show="confirmingDeletion"
-        title="Excluir Documento"
+    <ConfirmDeletionModal :show="confirmingDeletion" title="Excluir Documento"
         :message="`Tem certeza que deseja mover o documento '${itemToDelete?.name}' para a lixeira?`"
-        @close="closeModal"
-        @confirm="deleteItem"
-    />
+        @close="closeModal" @confirm="deleteItem" />
 </template>
