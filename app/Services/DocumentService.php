@@ -8,18 +8,17 @@ use App\Models\Tenancy\DocumentStatusVote;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class DocumentService
 {
-        public function getAllDocuments(Request $request): LengthAwarePaginator
+    public function getAllDocuments(Request $request): LengthAwarePaginator
     {
         $documents = Document::query()
             ->latest('id')
             ->paginate(15);
 
-        return $documents->through(fn (Document $document) => [
+        return $documents->through(fn(Document $document) => [
             'id' => $document->id,
             'name' => $document->name,
             'attachment_url' => $document->attachment ? Storage::url($document->attachment) : null,

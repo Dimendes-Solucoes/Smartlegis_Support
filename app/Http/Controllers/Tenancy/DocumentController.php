@@ -3,16 +3,16 @@
 namespace App\Http\Controllers\Tenancy;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Documents\UpdateDocumentRequest; // Usaremos o FormRequest para a atualização
+use App\Http\Requests\Documents\UpdateDocumentRequest;
 use App\Services\DocumentService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class DocumentController extends Controller
 {
-    public function __construct(protected DocumentService $service)
-    {
-    }
+    public function __construct(
+        protected DocumentService $service
+    ) {}
 
     public function index(Request $request)
     {
