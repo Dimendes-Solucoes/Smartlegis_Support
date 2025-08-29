@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import Alert from '@/Components/Alert.vue';
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
+
+const page = usePage();
 </script>
 
 <template>
@@ -19,4 +22,6 @@ import { Link } from '@inertiajs/vue3';
             <slot />
         </div>
     </div>
+
+    <Alert :flash-message="page.props.flash ?? null" />
 </template>

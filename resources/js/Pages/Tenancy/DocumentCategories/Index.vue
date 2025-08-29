@@ -95,10 +95,10 @@ const closeDeleteModal = () => {
                             Abreviação</th>
                         <th scope="col"
                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
-                            Protocolo Mínimo</th>
+                            Prot. Mínimo</th>
                         <th scope="col"
                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
-                            Protocolo Usado</th>
+                            Prot. Usado</th>
                         <th scope="col"
                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
                             Status</th>

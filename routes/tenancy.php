@@ -5,6 +5,7 @@ use App\Http\Controllers\Tenancy\CommissionController;
 use App\Http\Controllers\Tenancy\CouncilorController;
 use App\Http\Controllers\Tenancy\DiscussionController;
 use App\Http\Controllers\Tenancy\DocumentCategoryController;
+use App\Http\Controllers\Tenancy\DocumentController;
 use App\Http\Controllers\Tenancy\QuestionOrderController;
 use App\Http\Controllers\Tenancy\QuorumController;
 use App\Http\Controllers\Tenancy\SessionController;
@@ -64,6 +65,16 @@ Route::middleware(['auth', 'tenant.connection'])
                 Route::put('/{id}', 'update')->name('update');
                 Route::delete('/{id}', 'destroy')->name('destroy');
                 Route::patch('/{id}/status', 'changeStatus')->name('change_status');
+            });
+
+        Route::prefix('documentos')
+            ->name('documents.')
+            ->controller(DocumentController::class)
+            ->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/{id}/editar', 'edit')->name('edit');
+                Route::put('/{id}', 'update')->name('update');
+                Route::delete('/{id}', 'destroy')->name('destroy');
             });
 
         Route::prefix('tempos')
