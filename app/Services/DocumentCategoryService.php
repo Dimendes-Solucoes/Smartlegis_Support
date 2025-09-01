@@ -26,6 +26,12 @@ class DocumentCategoryService
         return DocumentCategory::create($categoryData);
     }
 
+    public function resetOrder(): void
+    {
+        DocumentCategory::where('id', '!=', 0)
+            ->update(['order' => 1]);
+    }
+
     public function getCategoryForEdit(int $id): array
     {
         $category = DocumentCategory::findOrFail($id);

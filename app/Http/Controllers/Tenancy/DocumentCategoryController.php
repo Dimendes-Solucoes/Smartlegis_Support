@@ -41,6 +41,14 @@ class DocumentCategoryController extends Controller
             ->with('success', 'Categoria de documento criada com sucesso!');
     }
 
+    public function resetOrder()
+    {
+        $this->service->resetOrder();
+
+        return redirect()->route('document-categories.index')
+            ->with('success', 'Ordem das categorias resetada com sucesso!');
+    }
+
     public function edit(int $id)
     {
         $data = $this->service->getCategoryForEdit($id);

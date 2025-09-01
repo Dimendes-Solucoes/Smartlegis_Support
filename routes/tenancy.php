@@ -61,6 +61,7 @@ Route::middleware(['auth', 'tenant.connection'])
                 Route::get('/', 'index')->name('index');
                 Route::get('/cadastrar', 'create')->name('create');
                 Route::post('/', 'store')->name('store');
+                Route::put('resetar_ordem', 'resetOrder')->name('reset_order');
                 Route::get('/{id}/editar', 'edit')->name('edit');
                 Route::put('/{id}', 'update')->name('update');
                 Route::delete('/{id}', 'destroy')->name('destroy');

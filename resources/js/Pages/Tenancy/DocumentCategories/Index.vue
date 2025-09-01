@@ -61,6 +61,23 @@ const closeDeleteModal = () => {
     categoryToInactive.value = null;
 }
 
+const confirmResetModal = ref(false);
+
+const openConfirmResetModal = () => {
+    confirmResetModal.value = true;
+};
+
+const closeResetModal = () => {
+    confirmResetModal.value = false;
+};
+
+const resetOrder = () => {
+    router.put(route('document-categories.reset_order'), {}, {
+        preserveScroll: true,
+        onSuccess: () => closeResetModal()
+    });
+};
+
 </script>
 
 <template>
@@ -76,9 +93,16 @@ const closeDeleteModal = () => {
                 </label>
             </div>
 
-            <TextButton :href="route('document-categories.create')" class="p-4">
-                Nova Categoria
-            </TextButton>
+            <div class="flex items-center space-x-2">
+                <TextButton @click="openConfirmResetModal"
+                    class="p-4 bg-gray-200 hover:bg-gray-300 text-gray-800 dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-gray-200">
+                    Resetar Ordem
+                </TextButton>
+
+                <TextButton :href="route('document-categories.create')" class="p-4">
+                    Nova Categoria
+                </TextButton>
+            </div>
         </div>
 
         <div v-if="props.categories.length > 0" class="overflow-x-auto">
@@ -113,7 +137,9 @@ const closeDeleteModal = () => {
                         <td class="px-6 py-4 whitespace-normal">{{ category.name }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ category.abbreviation }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ category.order }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ Math.max(category.min_protocol, category.highest_protocol ?? 0 + 1) }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            {{ Math.max(Number(category.min_protocol), (Number(category.highest_protocol) ?? 0) + 1) }}
+                        </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <DocumentCategoryStatusBadge :status="category.is_active ? 1 : 0" />
                         </td>
@@ -146,4 +172,8 @@ const closeDeleteModal = () => {
     <ConfirmDeletionModal :show="categoryToInactive !== null" title="Inativar categoria"
         :message="`Tem certeza que deseja desativar a categoria '${categoryToInactive?.name}'?`"
         @close="closeDeleteModal" @confirm="inactiveCategory" button-text="Desativar" />
+
+    <ConfirmDeletionModal :show="confirmResetModal" title="Resetar Ordem"
+        message="Tem certeza que deseja resetar a ordem de todas as categorias? Essa ação não pode ser desfeita."
+        @close="closeResetModal" @confirm="resetOrder" button-text="Resetar" />
 </template>
