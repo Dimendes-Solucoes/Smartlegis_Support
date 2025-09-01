@@ -13,6 +13,7 @@ interface DocumentCategory {
     id: number;
     name: string;
     abbreviation: string;
+    order: number;
     min_protocol: number;
     highest_protocol: number | null;
     is_active: boolean;
@@ -95,10 +96,10 @@ const closeDeleteModal = () => {
                             Abreviação</th>
                         <th scope="col"
                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
-                            Prot. Mínimo</th>
+                            Ordem</th>
                         <th scope="col"
                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
-                            Prot. Usado</th>
+                            Prox Prot.</th>
                         <th scope="col"
                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
                             Status</th>
@@ -111,9 +112,8 @@ const closeDeleteModal = () => {
                         <td class="px-6 py-4 whitespace-nowrap">{{ category.id }}</td>
                         <td class="px-6 py-4 whitespace-normal">{{ category.name }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ category.abbreviation }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ category.min_protocol }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ category.highest_protocol ?? '-' }}
-                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ category.order }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ Math.max(category.min_protocol, category.highest_protocol ?? 0 + 1) }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <DocumentCategoryStatusBadge :status="category.is_active ? 1 : 0" />
                         </td>

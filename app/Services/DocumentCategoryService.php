@@ -18,7 +18,11 @@ class DocumentCategoryService
 
     public function createCategory(array $data): DocumentCategory
     {
+        $maxOrder = DocumentCategory::max('order') ?? 0;
+        $data['order'] = $maxOrder + 1;
+
         $categoryData = $this->prepareCategoryData($data);
+
         return DocumentCategory::create($categoryData);
     }
 
@@ -60,8 +64,9 @@ class DocumentCategoryService
         $fields = [
             'name',
             'abbreviation',
+            'order',
             'min_protocol',
-            'is_active'
+            'is_active',
         ];
 
         return Arr::only($data, $fields);

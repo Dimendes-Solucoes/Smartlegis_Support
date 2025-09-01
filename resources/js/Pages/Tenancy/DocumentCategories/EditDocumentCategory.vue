@@ -12,6 +12,7 @@ interface Category {
     name: string;
     abbreviation: string | null;
     min_protocol: number;
+    order: number;
 }
 
 const props = defineProps<{
@@ -21,7 +22,8 @@ const props = defineProps<{
 const form = useForm({
     name: props.category.name,
     abbreviation: props.category.abbreviation || '',
-    min_protocol: props.category.min_protocol
+    min_protocol: props.category.min_protocol,
+    order: props.category.order || 0
 });
 
 const submit = () => {
@@ -43,14 +45,22 @@ const submit = () => {
                     <TextInput id="name" type="text" class="mt-1 block w-full" v-model="form.name" required autofocus />
                     <InputError class="mt-2" :message="form.errors.name" />
                 </div>
-                <div class="flex gap-6">
-                    <div class="w-1/2">
+
+                <div class="flex flex-col sm:flex-row sm:gap-4">
+                    <div class="w-full sm:w-1/3">
                         <InputLabel for="abbreviation" value="Abreviação" />
                         <TextInput id="abbreviation" type="text" class="mt-1 block w-full"
                             v-model="form.abbreviation" />
                         <InputError class="mt-2" :message="form.errors.abbreviation" />
                     </div>
-                    <div class="w-1/2">
+
+                    <div class="mt-4 sm:mt-0 w-full sm:w-1/3">
+                        <InputLabel for="order" value="Ordem" />
+                        <TextInput id="order" type="number" class="mt-1 block w-full" v-model.number="form.order" />
+                        <InputError class="mt-2" :message="form.errors.order" />
+                    </div>
+
+                    <div class="mt-4 sm:mt-0 w-full sm:w-1/3">
                         <InputLabel for="min_protocol" value="Protocolo Mínimo" />
                         <TextInput id="min_protocol" type="number" class="mt-1 block w-full"
                             v-model.number="form.min_protocol" />

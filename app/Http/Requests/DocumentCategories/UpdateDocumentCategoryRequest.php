@@ -17,14 +17,10 @@ class UpdateDocumentCategoryRequest extends FormRequest
         $categoryId = $this->route('id');
 
         return [
-            'name' => [
-                'required',
-                'string',
-                'max:255',
-                Rule::unique('document_categories')->ignore($categoryId)
-            ],
+            'name' => ['required', 'string', 'max:255', Rule::unique('document_categories')->ignore($categoryId)],
             'abbreviation' => ['nullable', 'string', 'max:50'],
-            'min_protocol' => ['required', 'integer', 'min:1']
+            'min_protocol' => ['required', 'integer', 'min:1'],
+            'order' => ['nullable', 'integer', 'min:1']
         ];
     }
 }
