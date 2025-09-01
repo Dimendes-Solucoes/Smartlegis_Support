@@ -419,4 +419,35 @@ class SessionService
             return $document;
         });
     }
+
+    public function resetSession(int $id): void
+    {
+        $session = Session::with('quorums', 'documents')->findOrFail($id);
+
+        // transação dada a complexidade da função
+        DB::transaction(function () use ($session) {
+            $this->clearQuorums($session->id);
+            $this->clearTribunes($session->id);
+            $this->clearDiscussions($session->id);
+            $this->clearBigDiscussions($session->id);
+            $this->clearQuestionOrders($session->id);
+
+            $documentIds = $session->documents()->pluck('documents.id');
+
+            if ($documentIds->isNotEmpty()) {
+                Vote::where('session_id', $session->id)
+                    ->whereIn('document_id', $documentIds)
+                    ->delete();
+
+                Document::whereIn('id', $documentIds)->update([
+                    'document_status_vote_id' => 2, // "aguardando votação"
+                    'document_status_movement_id' => 2, // "em sessão"
+                    'voting_result_1' => null,
+                    'voting_result_2' => null,
+                ]);
+            }
+
+            $session->update(['session_status_id' => 1]); // "aguardando votação"
+        });
+    }
 }

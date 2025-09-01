@@ -3,7 +3,7 @@ import { ref } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import SessionStatusBadge from '@/Components/Session/SessionStatusBadge.vue';
 import { Head, router, Link } from '@inertiajs/vue3';
-import { TrashIcon, ChevronUpIcon, ChevronDownIcon, PencilSquareIcon, ArrowsUpDownIcon, ChatBubbleLeftRightIcon, DocumentArrowDownIcon, DocumentDuplicateIcon } from '@heroicons/vue/24/solid';
+import { TrashIcon, ChevronUpIcon, ChevronDownIcon, PencilSquareIcon, ChatBubbleLeftRightIcon, DocumentDuplicateIcon, ArrowPathIcon } from '@heroicons/vue/24/solid';
 import IconButton from '@/Components/Itens/IconButton.vue';
 import ConfirmDeletionModal from '@/Components/ConfirmDeletionModal.vue';
 import TextButton from '@/Components/Itens/TextButton.vue';
@@ -63,11 +63,6 @@ const openConfirmDeleteModal = (session: Session) => {
     confirmingSessionDeletion.value = true;
 };
 
-const closeModal = () => {
-    confirmingSessionDeletion.value = false;
-    sessionToDelete.value = null;
-};
-
 const deleteSession = () => {
     if (!sessionToDelete.value) return;
 
@@ -75,6 +70,29 @@ const deleteSession = () => {
         preserveScroll: true,
         onSuccess: () => closeModal(),
     });
+};
+
+const confirmingSessionReset = ref(false);
+const sessionToReset = ref<Session | null>(null);
+
+const openConfirmResetModal = (session: Session) => {
+    sessionToReset.value = session;
+    confirmingSessionReset.value = true;
+};
+
+const resetSession = () => {
+    if (!sessionToReset.value) return;
+    router.post(route('sessions.reset', sessionToReset.value.id), {}, {
+        preserveScroll: true,
+        onSuccess: () => closeModal(),
+    });
+};
+
+const closeModal = () => {
+    confirmingSessionDeletion.value = false;
+    sessionToDelete.value = null;
+    confirmingSessionReset.value = false;
+    sessionToReset.value = null;
 };
 </script>
 
@@ -118,7 +136,9 @@ const deleteSession = () => {
                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
                             Status
                         </th>
-                        <th scope="col"></th>
+                        <th scope="col" class="relative px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
+                            Ações
+                        </th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
@@ -131,19 +151,19 @@ const deleteSession = () => {
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                             <div class="flex items-center justify-end space-x-1">
+                                <IconButton as="button" color="orange" title="Resetar Sessão" @click.stop="openConfirmResetModal(session)">
+                                    <ArrowPathIcon class="h-5 w-5" />
+                                </IconButton>
                                 <IconButton :href="route('sessions.documents', session.id)" color="green"
                                     title="Documentos">
                                     <DocumentDuplicateIcon class="h-5 w-5" />
                                 </IconButton>
-
                                 <IconButton :href="route('sessions.talks', session.id)" color="blue" title="Falas">
                                     <ChatBubbleLeftRightIcon class="h-5 w-5" />
                                 </IconButton>
-
                                 <IconButton :href="route('sessions.edit', session.id)" color="yellow" title="Editar">
                                     <PencilSquareIcon class="h-5 w-5" />
                                 </IconButton>
-
                                 <IconButton as="button" color="red" title="Excluir Sessão"
                                     @click.stop="openConfirmDeleteModal(session)">
                                     <TrashIcon class="h-5 w-5" />
@@ -172,4 +192,12 @@ const deleteSession = () => {
     <ConfirmDeletionModal :show="confirmingSessionDeletion" title="Excluir Sessão"
         :message="`Tem certeza que deseja mover a sessão '${sessionToDelete?.name}' para a lixeira?`"
         @close="closeModal" @confirm="deleteSession" />
+    
+    <ConfirmDeletionModal 
+        :show="confirmingSessionReset" 
+        title="Resetar Sessão"
+        :message="`Tem certeza que deseja resetar a sessão '${sessionToReset?.name}'? Esta ação limpará quóruns, votos e falas, retornando a sessão ao seu estado inicial. A ação não pode ser desfeita.`"
+        @close="closeModal" 
+        @confirm="resetSession" 
+    />
 </template>

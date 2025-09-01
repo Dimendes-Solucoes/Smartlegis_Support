@@ -182,4 +182,11 @@ class SessionController extends Controller
 
         return back()->with('success', 'Sessão movida para a lixeira com sucesso!');
     }
+
+    public function reset(int $id)
+    {
+        $this->service->resetSession($id);
+
+        return back()->with('success', 'Sessão resetada com sucesso!');
+    }
 }
