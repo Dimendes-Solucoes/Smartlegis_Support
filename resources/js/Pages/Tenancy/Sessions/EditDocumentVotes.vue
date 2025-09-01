@@ -97,7 +97,7 @@ const saveVotes = () => {
         <div class="flex items-center justify-end mb-4">
             <PrimaryButton @click="saveVotes" :disabled="isSaving" :class="{ 'opacity-25': isSaving }">
                 <span v-if="isSaving">Salvando...</span>
-                <span v-else>Salvar Ordem</span>
+                <span v-else>Salvar Votos</span>
             </PrimaryButton>
         </div>
 

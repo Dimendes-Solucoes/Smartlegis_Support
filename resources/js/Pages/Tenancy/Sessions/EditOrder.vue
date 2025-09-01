@@ -41,6 +41,15 @@ const saveOrder = () => {
         onFinish: () => isSaving.value = false,
     });
 };
+
+const resetOrder = () => {
+    isSaving.value = true;
+
+    router.put(route('sessions.reset_documents', props.session.id), {}, {
+        preserveScroll: true,
+        onFinish: () => isSaving.value = false,
+    });
+}
 </script>
 
 <template>
@@ -51,7 +60,12 @@ const saveOrder = () => {
         <BackButtonRow :href="route('sessions.index')" />
 
         <div class="flex items-center justify-end mb-4">
-            <PrimaryButton @click="saveOrder" :disabled="isSaving" :class="{ 'opacity-25': isSaving }">
+            <PrimaryButton @click="resetOrder" :disabled="isSaving" :class="{ 'opacity-25': isSaving }">
+                <span v-if="isSaving">Salvando...</span>
+                <span v-else>Resetar</span>
+            </PrimaryButton>
+
+            <PrimaryButton @click="saveOrder" :disabled="isSaving" :class="{ 'opacity-25': isSaving, 'ml-1': true }">
                 <span v-if="isSaving">Salvando...</span>
                 <span v-else>Salvar Ordem</span>
             </PrimaryButton>

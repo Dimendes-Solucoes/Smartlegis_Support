@@ -132,6 +132,14 @@ class SessionService
         }
     }
 
+    public function resetDocuments(int $id): void
+    {
+        $session = Session::findOrFail($id);
+
+        DocumentSession::where('session_id', $session->id)
+            ->update(['order' => 0]);
+    }
+
     public function prepareForDocumentVotes(int $session_id, int $document_id): array
     {
         $session = Session::findOrFail($session_id);

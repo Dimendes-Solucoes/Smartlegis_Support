@@ -77,6 +77,13 @@ class SessionController extends Controller
         return back()->with('success', 'Ordem dos documentos salva com sucesso!');
     }
 
+    public function resetDocuments(int $id)
+    {
+        $this->service->resetDocuments($id);
+
+        return back()->with('success', 'Ordem dos documentos resetada com sucesso!');
+    }
+
     public function documentVotes(int $id, int $document_id)
     {
         $data = $this->service->prepareForDocumentVotes($id, $document_id);
