@@ -73,11 +73,11 @@ const resetOrder = () => {
 
         <div class="gap-8">
             <DocumentList title="Expediente do Dia" description="Documentos que serão discutidos no início da sessão."
-                :session="session" :documents="expedienteList" />
+                :session="session" :documents="expedienteList" @update:documents="expedienteList = $event" />
 
             <DocumentList title="Ordem do Dia"
                 description="Documentos principais a serem votados ou discutidos em profundidade." :session="session"
-                :documents="ordemDoDiaList" />
+                :documents="ordemDoDiaList" @update:documents="ordemDoDiaList = $event" />
         </div>
     </AuthenticatedLayout>
 </template>

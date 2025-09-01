@@ -1,10 +1,8 @@
 <script setup lang="ts">
-import { defineProps } from 'vue';
-import draggable from 'vuedraggable';
-import { Bars2Icon, EyeIcon, ExclamationCircleIcon } from '@heroicons/vue/24/outline';
+import { defineProps, defineEmits } from 'vue';
+import { EyeIcon, ExclamationCircleIcon, ChevronDownIcon, ChevronUpIcon, ClipboardDocumentListIcon } from '@heroicons/vue/24/outline';
 import LinkButton from '@/Components/LinkButton.vue';
 import IconButton from '@/Components/Itens/IconButton.vue';
-import { ClipboardDocumentListIcon } from '@heroicons/vue/24/solid';
 
 interface Session {
     id: number;
@@ -23,6 +21,34 @@ const props = defineProps<{
     session: Session;
     documents: Document[];
 }>();
+
+const emit = defineEmits(['update:documents']);
+
+/**
+ * Move um documento uma posição para cima na lista.
+ * @param {number} index - O índice do documento a ser movido.
+ */
+const moveUp = (index: number) => {
+    if (index > 0) {
+        const newDocuments = [...props.documents];
+        const itemToMove = newDocuments.splice(index, 1)[0];
+        newDocuments.splice(index - 1, 0, itemToMove);
+        emit('update:documents', newDocuments);
+    }
+};
+
+/**
+ * Move um documento uma posição para baixo na lista.
+ * @param {number} index - O índice do documento a ser movido.
+ */
+const moveDown = (index: number) => {
+    if (index < props.documents.length - 1) {
+        const newDocuments = [...props.documents];
+        const itemToMove = newDocuments.splice(index, 1)[0];
+        newDocuments.splice(index + 1, 0, itemToMove);
+        emit('update:documents', newDocuments);
+    }
+};
 </script>
 
 <template>
@@ -38,29 +64,34 @@ const props = defineProps<{
             <p>Nenhum documento no {{ title.toLowerCase() }}.</p>
         </div>
 
-        <draggable :list="documents" item-key="id" tag="ul" handle=".drag-handle" ghost-class="ghost-item"
-            class="space-y-3">
-            <template #item="{ element }">
-                <li
-                    class="flex items-center p-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 transition-all duration-200 ease-in-out">
-                    <button
-                        class="drag-handle p-2 text-gray-500 dark:text-gray-400 hover:text-indigo-600 rounded-full cursor-grab flex-shrink-0 transition-colors duration-200"
-                        title="Mover">
-                        <Bars2Icon class="h-5 w-5" />
+        <ul v-else class="space-y-3">
+            <li v-for="(element, index) in documents" :key="element.id"
+                class="flex items-center p-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 transition-all duration-200 ease-in-out">
+
+                <div class="flex flex-col items-center mr-2">
+                    <button @click="moveUp(index)" :disabled="index === 0"
+                        class="px-1 text-gray-500 dark:text-gray-400 hover:text-indigo-600 rounded-full disabled:opacity-30 disabled:cursor-not-allowed transition-colors duration-200"
+                        title="Mover para cima">
+                        <ChevronUpIcon class="h-5 w-5" />
                     </button>
+                    <button @click="moveDown(index)" :disabled="index === documents.length - 1"
+                        class="px-1 text-gray-500 dark:text-gray-400 hover:text-indigo-600 rounded-full disabled:opacity-30 disabled:cursor-not-allowed transition-colors duration-200"
+                        title="Mover para baixo">
+                        <ChevronDownIcon class="h-5 w-5" />
+                    </button>
+                </div>
 
-                    <span class="flex-1 mx-2 font-medium text-gray-800 dark:text-gray-200">{{ element.name }}</span>
+                <span class="flex-1 mx-2 font-medium text-gray-800 dark:text-gray-200">{{ element.name }}</span>
 
-                    <LinkButton :link="element.attachment" title="Visualizar documento">
-                        <EyeIcon class="h-5 w-5 text-white" />
-                    </LinkButton>
+                <LinkButton :link="element.attachment" title="Visualizar documento">
+                    <EyeIcon class="h-5 w-5 text-white" />
+                </LinkButton>
 
-                    <IconButton :href="route('sessions.documents.votes', { id: session.id, document_id: element.id })"
-                        title="Votos" class="ml-1" color="green">
-                        <ClipboardDocumentListIcon class="h-5 w-5 text-white" />
-                    </IconButton>
-                </li>
-            </template>
-        </draggable>
+                <IconButton :href="route('sessions.documents.votes', { id: session.id, document_id: element.id })"
+                    title="Votos" class="ml-1" color="green">
+                    <ClipboardDocumentListIcon class="h-5 w-5 text-white" />
+                </IconButton>
+            </li>
+        </ul>
     </div>
 </template>
