@@ -11,6 +11,7 @@ use App\Models\Tenancy\Vote;
 use App\Models\Tenancy\VoteCategory;
 use Exception;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
@@ -99,24 +100,18 @@ class SessionService
 
     public function prepareForDocuments(int $id): array
     {
-        $session = Session::with('documents')->findOrFail($id);
-
+        $session = Session::with('documents.category')->findOrFail($id);
         $documents = $session->documents;
 
-        $documents->transform(function ($document) {
-            $document->attachment = Storage::url($document->attachment);
-            $document->ordem_do_dia = $document->pivot->ordem_do_dia;
-            $document->order = $document->pivot->order;
+        [$agendaDocuments, $extraDocuments] = $documents->partition(fn($document) => $document->pivot->ordem_do_dia == 1);
 
-            return $document;
-        });
-
-        [$agendaDocuments, $extraDocuments] = $documents->partition(fn($document) => $document->ordem_do_dia == 1);
+        $sortedAgendaDocuments = $this->sortAndTransform($agendaDocuments);
+        $sortedExtraDocuments = $this->sortAndTransform($extraDocuments);
 
         return [
             'session' => $session,
-            'agendaDocuments' => $agendaDocuments->values(),
-            'extraDocuments' => $extraDocuments->values(),
+            'agendaDocuments' => $sortedAgendaDocuments,
+            'extraDocuments' => $sortedExtraDocuments,
         ];
     }
 
@@ -384,5 +379,36 @@ class SessionService
 
         $document = Document::findOrFail($document_id);
         $document->update(["voting_result_{$last_order}" => $votingResult]);
+    }
+
+    private function sortAndTransform(Collection $documents): Collection
+    {
+        $sorted = $documents->sort(function ($a, $b) {
+            $orderComparison = $a->pivot->order <=> $b->pivot->order;
+
+            if ($orderComparison !== 0) {
+                return $orderComparison;
+            }
+
+            $categoryOrderComparison = $a->category->order <=> $b->category->order;
+
+            if ($categoryOrderComparison !== 0) {
+                return $categoryOrderComparison;
+            }
+
+            $categoryIdComparison = $a->category_id <=> $b->category_id;
+
+            if ($categoryIdComparison !== 0) {
+                return $categoryIdComparison;
+            }
+
+            return $a->protocol_number <=> $b->protocol_number;
+        })->values();
+
+        return $sorted->map(function ($document) {
+            $document->attachment = Storage::url($document->attachment);
+            $document->protocol_number = (int) $document->protocol_number;
+            return $document;
+        });
     }
 }
