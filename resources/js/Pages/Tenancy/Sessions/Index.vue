@@ -151,7 +151,7 @@ const closeModal = () => {
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                             <div class="flex items-center justify-end space-x-1">
-                                <IconButton as="button" color="pink" title="Resetar Sessão" @click.stop="openConfirmResetModal(session)">
+                                <IconButton as="button" color="pink" title="Restaurar Sessão" @click.stop="openConfirmResetModal(session)">
                                     <ArrowPathIcon class="h-5 w-5" />
                                 </IconButton>
                                 <IconButton :href="route('sessions.documents', session.id)" color="green"
@@ -196,7 +196,7 @@ const closeModal = () => {
     <ConfirmDeletionModal 
         :show="confirmingSessionReset" 
         title="Resetar Sessão"
-        :message="`Tem certeza que deseja resetar a sessão '${sessionToReset?.name}'? Esta ação limpará quóruns, votos e falas, retornando a sessão ao seu estado inicial. A ação não pode ser desfeita.`"
+        :message="`Tem certeza que deseja restaurar a sessão '${sessionToReset?.name}' para o estado original? Esta ação limpará quóruns, votos e falas e <strong>NÃO poderá ser desfeita.</strong>`"
         @close="closeModal" 
         @confirm="resetSession" 
     />

@@ -27,6 +27,7 @@ const expedienteList = ref(props.extraDocuments);
 const ordemDoDiaList = ref(props.agendaDocuments);
 
 const isSaving = ref(false);
+const isReseting = ref(false);
 
 const saveOrder = () => {
     isSaving.value = true;
@@ -43,11 +44,11 @@ const saveOrder = () => {
 };
 
 const resetOrder = () => {
-    isSaving.value = true;
+    isReseting.value = true;
 
     router.put(route('sessions.reset_documents', props.session.id), {}, {
         preserveScroll: true,
-        onFinish: () => isSaving.value = false,
+        onFinish: () => isReseting.value = false,
     });
 }
 </script>
@@ -60,9 +61,9 @@ const resetOrder = () => {
         <BackButtonRow :href="route('sessions.index')" />
 
         <div class="flex items-center justify-end mb-4">
-            <PrimaryButton @click="resetOrder" :disabled="isSaving" :class="{ 'opacity-25': isSaving }">
-                <span v-if="isSaving">Salvando...</span>
-                <span v-else>Resetar</span>
+            <PrimaryButton @click="resetOrder" :disabled="isReseting" :class="{ 'opacity-25': isReseting }">
+                <span v-if="isReseting">Salvando...</span>
+                <span v-else>Restaurar Ordem</span>
             </PrimaryButton>
 
             <PrimaryButton @click="saveOrder" :disabled="isSaving" :class="{ 'opacity-25': isSaving, 'ml-1': true }">
