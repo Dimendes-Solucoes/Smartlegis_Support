@@ -151,7 +151,7 @@ const closeModal = () => {
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                             <div class="flex items-center justify-end space-x-1">
-                                <IconButton as="button" color="orange" title="Resetar Sessão" @click.stop="openConfirmResetModal(session)">
+                                <IconButton as="button" color="pink" title="Resetar Sessão" @click.stop="openConfirmResetModal(session)">
                                     <ArrowPathIcon class="h-5 w-5" />
                                 </IconButton>
                                 <IconButton :href="route('sessions.documents', session.id)" color="green"
