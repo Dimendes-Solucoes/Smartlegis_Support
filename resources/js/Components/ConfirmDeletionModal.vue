@@ -33,9 +33,7 @@ const emit = defineEmits(['close', 'confirm']);
                 {{ title }}
             </h2>
 
-            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                {{ message }}
-            </p>
+        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400" v-html="message"></p>
 
             <div class="mt-6 flex justify-end">
                 <SecondaryButton @click="$emit('close')"> Cancelar </SecondaryButton>

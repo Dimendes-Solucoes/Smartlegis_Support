@@ -75,18 +75,23 @@ const props = defineProps<{
             </div>
         </div>
 
-        <div class="md:flex md:space-x-4 mb-4" v-if="props.isCreating">
-            <div class="flex-1 mb-4 md:mb-0">
-                <InputLabel for="password" value="Senha" />
-                <TextInput id="password" type="password" class="mt-1 block w-full" v-model="form.password"
-                    :required="isCreating" autocomplete="new-password" />
-                <InputError class="mt-2" :message="form.errors.password" />
-            </div>
-            <div class="flex-1">
-                <InputLabel for="password_confirmation" value="Confirmar Senha" />
-                <TextInput id="password_confirmation" type="password" class="mt-1 block w-full"
-                    v-model="form.password_confirmation" :required="isCreating" autocomplete="new-password" />
-                <InputError class="mt-2" :message="form.errors.password_confirmation" />
+        <div class="border-t border-gray-200 dark:border-gray-700 pt-6 mt-6">
+            <p v-if="!props.isCreating" class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                Preencha os campos abaixo apenas se desejar alterar a senha.
+            </p>
+            <div class="md:flex md:space-x-4">
+                <div class="flex-1 mb-4 md:mb-0">
+                    <InputLabel for="password" :value="props.isCreating ? 'Senha' : 'Nova Senha'" />
+                    <TextInput id="password" type="password" class="mt-1 block w-full" v-model="form.password"
+                        :required="props.isCreating" autocomplete="new-password" />
+                    <InputError class="mt-2" :message="form.errors.password" />
+                </div>
+                <div class="flex-1">
+                    <InputLabel for="password_confirmation" value="Confirmar Senha" />
+                    <TextInput id="password_confirmation" type="password" class="mt-1 block w-full"
+                        v-model="form.password_confirmation" :required="props.isCreating" autocomplete="new-password" />
+                    <InputError class="mt-2" :message="form.errors.password_confirmation" />
+                </div>
             </div>
         </div>
     </div>
