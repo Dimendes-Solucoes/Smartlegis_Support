@@ -422,9 +422,8 @@ class SessionService
 
     public function resetSession(int $id): void
     {
-        $session = Session::with('quorums', 'documents')->findOrFail($id);
+        $session = Session::with('documents')->findOrFail($id);
 
-        // transação dada a complexidade da função
         DB::transaction(function () use ($session) {
             $this->clearQuorums($session->id);
             $this->clearTribunes($session->id);
@@ -432,19 +431,28 @@ class SessionService
             $this->clearBigDiscussions($session->id);
             $this->clearQuestionOrders($session->id);
 
-            $documentIds = $session->documents()->pluck('documents.id');
+            $documentIds = $session->documents->pluck('id');
 
             if ($documentIds->isNotEmpty()) {
                 Vote::where('session_id', $session->id)
                     ->whereIn('document_id', $documentIds)
                     ->delete();
 
-                Document::whereIn('id', $documentIds)->update([
-                    'document_status_vote_id' => 2, // "aguardando votação"
-                    'document_status_movement_id' => 2, // "em sessão"
-                    'voting_result_1' => null,
-                    'voting_result_2' => null,
-                ]);
+                foreach ($session->documents as $document) {
+                    $lastVoteOrder = Vote::where('document_id', $document->id)
+                                         ->max('order');
+                    $updateData = [
+                        'document_status_vote_id' => 2, // "Aguardando Votação"
+                        'document_status_movement_id' => 2, // "Em Sessão"
+                    ];
+                    if ($lastVoteOrder == 1) {
+                        $updateData['voting_result_1'] = null;
+                    } elseif ($lastVoteOrder == 2) {
+                        $updateData['voting_result_2'] = null;
+                    } 
+
+                    $document->update($updateData);
+                }
             }
 
             $session->update(['session_status_id' => 1]); // "aguardando votação"
