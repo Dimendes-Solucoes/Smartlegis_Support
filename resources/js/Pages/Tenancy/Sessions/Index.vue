@@ -212,12 +212,14 @@ const closeModal = () => {
 
     <ConfirmDeletionModal :show="confirmingSessionDeletion" title="Excluir Sessão"
         :message="`Tem certeza que deseja mover a sessão '${sessionToDelete?.name}' para a lixeira?`"
+        :buttonText="'Excluir'"
         @close="closeModal" @confirm="deleteSession" />
     
     <ConfirmDeletionModal 
         :show="confirmingSessionReset" 
         title="Resetar Sessão"
         :message="`Tem certeza que deseja restaurar a sessão '${sessionToReset?.name}' para o estado original? Esta ação limpará quóruns, votos e falas e <strong>NÃO poderá ser desfeita.</strong>`"
+        :buttonText="'Confirmar'"
         @close="closeModal" 
         @confirm="resetSession" 
     />
@@ -226,6 +228,7 @@ const closeModal = () => {
         :show="confirmingSessionDuplication" 
         title="Duplicar Sessão"
         :message="`Tem certeza que deseja criar uma cópia da sessão '${sessionToDuplicate?.name}' e de toda a sua pauta?`"
+        :buttonText="'Confirmar'"
         @close="closeModal" 
         @confirm="duplicateSession" 
     />

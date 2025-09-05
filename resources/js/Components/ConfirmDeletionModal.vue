@@ -18,7 +18,7 @@ const props = defineProps({
     },
     buttonText: {
         type: String,
-        default: 'Excluir'
+        required: true
     },
 });
 
