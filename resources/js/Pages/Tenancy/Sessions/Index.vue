@@ -3,7 +3,7 @@ import { ref } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import SessionStatusBadge from '@/Components/Session/SessionStatusBadge.vue';
 import { Head, router, Link } from '@inertiajs/vue3';
-import { TrashIcon, ChevronUpIcon, ChevronDownIcon, PencilSquareIcon, ChatBubbleLeftRightIcon, DocumentDuplicateIcon, ArrowPathIcon } from '@heroicons/vue/24/solid';
+import { TrashIcon, ChevronUpIcon, ChevronDownIcon, PencilSquareIcon, ChatBubbleLeftRightIcon, DocumentDuplicateIcon, ArrowPathIcon, DocumentIcon } from '@heroicons/vue/24/solid';
 import IconButton from '@/Components/Itens/IconButton.vue';
 import ConfirmDeletionModal from '@/Components/ConfirmDeletionModal.vue';
 import TextButton from '@/Components/Itens/TextButton.vue';
@@ -169,20 +169,20 @@ const closeModal = () => {
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                             <div class="flex items-center justify-end space-x-1">
-                                <IconButton as="button" color="blue" title="Duplicar Sessão" @click.stop="openConfirmDuplicateModal(session)">
+                                <IconButton as="button" color="indigo" title="Duplicar Sessão" @click.stop="openConfirmDuplicateModal(session)">
                                     <DocumentDuplicateIcon class="h-5 w-5" />
                                 </IconButton>
-                                <IconButton as="button" color="pink" title="Resetar Sessão" @click.stop="openConfirmResetModal(session)">
+                                <IconButton as="button" color="indigo" title="Resetar Sessão" @click.stop="openConfirmResetModal(session)">
                                     <ArrowPathIcon class="h-5 w-5" />
                                 </IconButton>
-                                <IconButton :href="route('sessions.documents', session.id)" color="green"
-                                    title="Documentos">
-                                    <DocumentDuplicateIcon class="h-5 w-5" />
+                                <IconButton :href="route('sessions.documents', session.id)" color="indigo"
+                                    title="Documentos da Sessão">
+                                    <DocumentIcon class="h-5 w-5" />
                                 </IconButton>
-                                <IconButton :href="route('sessions.talks', session.id)" color="blue" title="Falas">
+                                <IconButton :href="route('sessions.talks', session.id)" color="indigo" title="Falas da Sessão">
                                     <ChatBubbleLeftRightIcon class="h-5 w-5" />
                                 </IconButton>
-                                <IconButton :href="route('sessions.edit', session.id)" color="yellow" title="Editar">
+                                <IconButton :href="route('sessions.edit', session.id)" color="yellow" title="Editar Sesssão">
                                     <PencilSquareIcon class="h-5 w-5" />
                                 </IconButton>
                                 <IconButton as="button" color="red" title="Excluir Sessão"
@@ -218,7 +218,7 @@ const closeModal = () => {
     <ConfirmDeletionModal 
         :show="confirmingSessionReset" 
         title="Resetar Sessão"
-        :message="`Tem certeza que deseja restaurar a sessão '${sessionToReset?.name}' para o estado original? Esta ação limpará quóruns, votos e falas e <strong>NÃO poderá ser desfeita.</strong>`"
+        :message="`Tem certeza que deseja restaurar a sessão '${sessionToReset?.name}' para o estado original? <strong>ESTA AÇÃO LIMPARÁ QUÓRUNS, VOTOS E FALAS; E NÃO PODERÁ SER DESFEITA</strong>`"
         :buttonText="'Confirmar'"
         @close="closeModal" 
         @confirm="resetSession" 
@@ -227,7 +227,7 @@ const closeModal = () => {
     <ConfirmDeletionModal 
         :show="confirmingSessionDuplication" 
         title="Duplicar Sessão"
-        :message="`Tem certeza que deseja criar uma cópia da sessão '${sessionToDuplicate?.name}' e de toda a sua pauta?`"
+        :message="`Tem certeza que deseja criar uma réplica da sessão '${sessionToDuplicate?.name}' e de toda a sua pauta?`"
         :buttonText="'Confirmar'"
         @close="closeModal" 
         @confirm="duplicateSession" 
