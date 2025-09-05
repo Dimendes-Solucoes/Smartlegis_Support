@@ -88,11 +88,29 @@ const resetSession = () => {
     });
 };
 
+const confirmingSessionDuplication = ref(false);
+const sessionToDuplicate = ref<Session | null>(null);
+
+const openConfirmDuplicateModal = (session: Session) => {
+    sessionToDuplicate.value = session;
+    confirmingSessionDuplication.value = true;
+};
+
+const duplicateSession = () => {
+    if (!sessionToDuplicate.value) return;
+    router.post(route('sessions.duplicate', sessionToDuplicate.value.id), {}, {
+        preserveScroll: true,
+        onSuccess: () => closeModal(),
+    });
+};
+
 const closeModal = () => {
     confirmingSessionDeletion.value = false;
     sessionToDelete.value = null;
     confirmingSessionReset.value = false;
     sessionToReset.value = null;
+    confirmingSessionDuplication.value = false;
+    sessionToDuplicate.value = null;
 };
 </script>
 
@@ -151,7 +169,10 @@ const closeModal = () => {
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                             <div class="flex items-center justify-end space-x-1">
-                                <IconButton as="button" color="pink" title="Restaurar Sessão" @click.stop="openConfirmResetModal(session)">
+                                <IconButton as="button" color="blue" title="Duplicar Sessão" @click.stop="openConfirmDuplicateModal(session)">
+                                    <DocumentDuplicateIcon class="h-5 w-5" />
+                                </IconButton>
+                                <IconButton as="button" color="pink" title="Resetar Sessão" @click.stop="openConfirmResetModal(session)">
                                     <ArrowPathIcon class="h-5 w-5" />
                                 </IconButton>
                                 <IconButton :href="route('sessions.documents', session.id)" color="green"
@@ -199,5 +220,13 @@ const closeModal = () => {
         :message="`Tem certeza que deseja restaurar a sessão '${sessionToReset?.name}' para o estado original? Esta ação limpará quóruns, votos e falas e <strong>NÃO poderá ser desfeita.</strong>`"
         @close="closeModal" 
         @confirm="resetSession" 
+    />
+
+    <ConfirmDeletionModal 
+        :show="confirmingSessionDuplication" 
+        title="Duplicar Sessão"
+        :message="`Tem certeza que deseja criar uma cópia da sessão '${sessionToDuplicate?.name}' e de toda a sua pauta?`"
+        @close="closeModal" 
+        @confirm="duplicateSession" 
     />
 </template>

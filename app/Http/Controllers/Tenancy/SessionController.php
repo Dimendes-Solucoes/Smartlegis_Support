@@ -189,4 +189,11 @@ class SessionController extends Controller
 
         return back()->with('success', 'Sessão resetada com sucesso!');
     }
+
+    public function duplicate(int $id)
+    {
+        $this->service->duplicateSession($id);
+
+        return redirect()->route('sessions.index')->with('success', 'Sessão duplicada com sucesso!');
+    }
 }
