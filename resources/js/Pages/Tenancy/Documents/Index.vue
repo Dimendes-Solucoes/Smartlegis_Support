@@ -5,11 +5,15 @@ import { Head, Link, router } from '@inertiajs/vue3';
 import IconButton from '@/Components/Itens/IconButton.vue';
 import LinkButton from '@/Components/LinkButton.vue';
 import ConfirmDeletionModal from '@/Components/ConfirmDeletionModal.vue';
+import TextInput from '@/Components/TextInput.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
+import SecondaryButton from '@/Components/SecondaryButton.vue';
 import { EyeIcon, PencilSquareIcon, TrashIcon, ChevronUpIcon, ChevronDownIcon } from '@heroicons/vue/24/solid';
 
 interface Document {
     id: number;
     name: string;
+    protocol_number: string | null;
     attachment_url: string | null;
     document_status_vote_id: number;
     document_status_movement_id: number;
@@ -23,101 +27,66 @@ interface PaginatedDocuments {
 const props = defineProps<{
     documents: PaginatedDocuments;
     filters: {
+        search: string;
         sort: string;
         direction: string;
     }
 }>();
 
 const getSignatureStatusText = (status: number) => {
-    const statuses: { [key: number]: string } = {
-        0: 'Pendente',
-        1: 'Assinado',
-        2: 'Assinado',
-        3: 'Expirado',
-    };
+    const statuses: { [key: number]: string } = { 0: 'Pendente', 1: 'Assinado', 2: 'Assinado', 3: 'Expirado' };
     return statuses[status] || 'Desconhecido';
 };
 const getSignatureStatusColor = (status: number) => {
-    const colors: { [key: number]: string } = {
-        0: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
-        1: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-        2: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-        3: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
-    };
+    const colors: { [key: number]: string } = { 0: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200', 1: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200', 2: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200', 3: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200' };
     return colors[status] || 'bg-gray-100 text-gray-800';
 };
-
 const getVoteStatusText = (statusId: number) => {
-    const statuses: { [key: number]: string } = {
-        1: 'Pendente',
-        2: 'Aguardando',
-        3: 'Em vista',
-        4: 'Em votação',
-        5: 'Concluído',
-        6: 'Leitura',
-    };
+    const statuses: { [key: number]: string } = { 1: 'Pendente', 2: 'Aguardando', 3: 'Em vista', 4: 'Em votação', 5: 'Concluído', 6: 'Leitura' };
     return statuses[statusId] || 'N/A';
 };
-
 const getMovementStatusText = (statusId: number) => {
-    const statuses: { [key: number]: string } = {
-        1: 'Secretario',
-        2: 'Em sessão',
-        3: 'Procurador',
-        4: 'Comissão Justiça',
-        5: 'Comissões',
-        6: 'Prefeitura',
-        7: 'Em analise',
-        8: 'Reprovado',
-    };
+    const statuses: { [key: number]: string } = { 1: 'Secretario', 2: 'Em sessão', 3: 'Procurador', 4: 'Comissão Justiça', 5: 'Comissões', 6: 'Prefeitura', 7: 'Em analise', 8: 'Reprovado' };
     return statuses[statusId] || 'N/A';
 };
-
 const getVoteStatusColor = (statusId: number) => {
-    const colors: { [key: number]: string } = {
-        1: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
-        2: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
-        3: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-        4: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
-        5: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-        6: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200',
-    };
+    const colors: { [key: number]: string } = { 1: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200', 2: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200', 3: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200', 4: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200', 5: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200', 6: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200' };
     return colors[statusId] || 'bg-gray-100 text-gray-800';
 };
-
 const getMovementStatusColor = (statusId: number) => {
-    const colors: { [key: number]: string } = {
-        1: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
-        2: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-        3: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200',
-        4: 'bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200',
-        5: 'bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200',
-        6: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-        7: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200',
-        8: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
-    };
+    const colors: { [key: number]: string } = { 1: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200', 2: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200', 3: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200', 4: 'bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200', 5: 'bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200', 6: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200', 7: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200', 8: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200' };
     return colors[statusId] || 'bg-gray-100 text-gray-800';
 };
 
 const confirmingDeletion = ref(false);
 const itemToDelete = ref<Document | null>(null);
-
 const openConfirmDeleteModal = (item: Document) => {
     itemToDelete.value = item;
     confirmingDeletion.value = true;
 };
-
 const closeModal = () => {
     confirmingDeletion.value = false;
     itemToDelete.value = null;
 };
-
 const deleteItem = () => {
     if (!itemToDelete.value) return;
     router.delete(route('documents.destroy', itemToDelete.value.id), {
         preserveScroll: true,
         onSuccess: () => closeModal(),
     });
+};
+
+const search = ref(props.filters.search || '');
+const submitSearch = () => {
+    router.get(route('documents.index'), { search: search.value }, {
+        preserveState: true,
+        replace: true,
+    });
+};
+
+const clearSearch = () => {
+    search.value = '';
+    submitSearch();
 };
 
 const sortBy = (field: string) => {
@@ -128,12 +97,12 @@ const sortBy = (field: string) => {
     router.get(route('documents.index'), { 
         sort: field, 
         direction: direction, 
+        search: search.value
     }, {
         preserveState: true,
         replace: true,
     });
 };
-
 </script>
 
 <template>
@@ -144,25 +113,45 @@ const sortBy = (field: string) => {
             <div class="mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900 dark:text-gray-100">
+                        
+                        <form @submit.prevent="submitSearch" class="flex items-center mb-6">
+                            <TextInput
+                                type="text"
+                                v-model="search"
+                                placeholder="Buscar por nome ou protocolo..."
+                                class="w-full md:w-1/2 rounded-r-none"
+                            />
+                            <PrimaryButton type="submit" class="rounded-l-none rounded-r-none">Buscar</PrimaryButton>
+                            <SecondaryButton v-if="search" type="button" @click="clearSearch" class="rounded-l-none">Limpar</SecondaryButton>
+                        </form>
+
                         <div v-if="props.documents.data.length > 0" class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
-                                <thead class="bg-gray-50 dark:bg-gray-700">
+                            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-600 text-sm">
+                                <thead class="bg-gray-50 dark:bg-gray-700/50">
                                     <tr>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
+                                            <button @click="sortBy('id')" class="flex items-center space-x-1">
+                                                <span>ID</span>
+                                                <ChevronUpIcon v-if="filters.sort === 'id' && filters.direction === 'asc'" class="h-4 w-4" />
+                                                <ChevronDownIcon v-if="filters.sort === 'id' && filters.direction === 'desc'" class="h-4 w-4" />
+                                            </button>
+                                        </th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
                                             <button @click="sortBy('name')" class="flex items-center space-x-1">
-                                                <span>Título</span>
+                                                <span>TÍTULO</span>
                                                 <ChevronUpIcon v-if="filters.sort === 'name' && filters.direction === 'asc'" class="h-4 w-4" />
                                                 <ChevronDownIcon v-if="filters.sort === 'name' && filters.direction === 'desc'" class="h-4 w-4" />
                                             </button>
                                         </th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Votação</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Movimentação</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Assinatura</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Votação</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Movimentação</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Assinatura</th>
                                         <th class="relative px-6 py-3"><span class="sr-only">Ações</span></th>
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
-                                    <tr v-for="doc in props.documents.data" :key="doc.id">
+                                    <tr v-for="doc in props.documents.data" :key="doc.id" class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                                        <td class="px-6 py-4 whitespace-nowrap font-medium">{{ doc.id || 'N/A' }}</td>
                                         <td class="px-6 py-4 whitespace-normal font-medium">{{ doc.name }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full" :class="getVoteStatusColor(doc.document_status_vote_id)">

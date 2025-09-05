@@ -18,7 +18,7 @@ class DocumentController extends Controller
     {
         return Inertia::render('Tenancy/Documents/Index', [
             'documents' => $this->service->getAllDocuments($request),
-            'filters' => $request->only(['search']),
+            'filters' => $request->only(['search', 'sort', 'direction']),
         ]);
     }
 
