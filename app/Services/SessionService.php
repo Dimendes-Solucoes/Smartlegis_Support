@@ -494,4 +494,10 @@ class SessionService
             return $newSession;
         });
     }
+
+    public function removeDocumentFromSession(int $sessionId, int $documentId): void
+    {
+        $session = Session::findOrFail($sessionId);
+        $session->documents()->detach($documentId);
+    }
 }
