@@ -14,8 +14,8 @@ class DocumentService
 {
     public function getAllDocuments(Request $request): LengthAwarePaginator
     {
-$search = $request->input('search');
-        
+        $search = $request->input('search');
+
         $sortField = $request->input('sort', 'id');
         $sortDirection = $request->input('direction', 'desc');
 
@@ -23,7 +23,7 @@ $search = $request->input('search');
             $sortField = 'protocol_number';
             $sortDirection = 'asc';
         }
-        
+
         $sortableFields = ['name', 'protocol_number', 'id'];
         if (!in_array($sortField, $sortableFields)) {
             $sortField = 'id';
@@ -33,8 +33,8 @@ $search = $request->input('search');
             ->with(['category', 'voteStatus', 'movementStatus'])
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%")
-                      ->orWhere('protocol_number', 'like', "%{$search}%");
+                    $q->where('name', 'ilike', "%{$search}%")
+                        ->orWhere('protocol_number', 'ilike', "%{$search}%");
                 });
             })
             ->orderBy($sortField, $sortDirection)

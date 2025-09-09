@@ -18,7 +18,8 @@ const props = defineProps({
     },
     buttonText: {
         type: String,
-        required: true
+        required: false,
+        default: 'Confirmar'
     },
 });
 
