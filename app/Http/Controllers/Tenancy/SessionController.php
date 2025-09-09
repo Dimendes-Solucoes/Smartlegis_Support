@@ -197,9 +197,9 @@ class SessionController extends Controller
         return redirect()->route('sessions.index')->with('success', 'Sessão duplicada com sucesso!');
     }
 
-    public function removeDocument(int $sessionId, int $documentId)
+    public function removeDocument(int $id, int $document_id)
     {
-        $this->service->removeDocumentFromSession($sessionId, $documentId);
+        $this->service->removeDocumentFromSession($id, $document_id);
 
         return back()->with('success', 'Documento removido da pauta com sucesso!');
     }

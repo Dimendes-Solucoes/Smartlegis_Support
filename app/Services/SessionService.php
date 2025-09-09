@@ -16,7 +16,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
 
-
 class SessionService
 {
     public function __construct(
@@ -495,9 +494,9 @@ class SessionService
         });
     }
 
-    public function removeDocumentFromSession(int $sessionId, int $documentId): void
+    public function removeDocumentFromSession(int $session_id, int $document_id): void
     {
-        $session = Session::findOrFail($sessionId);
-        $session->documents()->detach($documentId);
+        $session = Session::findOrFail($session_id);
+        $session->documents()->detach($document_id);
     }
 }
