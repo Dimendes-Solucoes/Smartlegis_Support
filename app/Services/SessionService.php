@@ -16,7 +16,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
 
-
 class SessionService
 {
     public function __construct(
@@ -457,5 +456,47 @@ class SessionService
 
             $session->update(['session_status_id' => 1]); // "aguardando votação"
         });
+    }
+
+    public function duplicateSession(int $id): Session
+    {
+        $originalSession = Session::with('documents')->findOrFail($id);
+
+        return DB::transaction(function () use ($originalSession) {
+            $newSession = $originalSession->replicate(['datetime_end']);
+            $newSession->name = '(DUPLICATA) ' . $originalSession->name ;
+            $newSession->session_status_id = 2; // "Aguardando Votação"
+            $newSession->created_at = now();
+            $newSession->updated_at = now();
+            $newSession->save();
+
+            $newDocumentsPivotData = [];
+            foreach ($originalSession->documents as $originalDocument) {
+                $newDocument = $originalDocument->replicate();
+                $newDocument->protocol_number = '0';
+                $newDocument->status_sign = 0;
+                $newDocument->doc_key_clicksign = null;
+                $newDocument->created_at = now();
+                $newDocument->updated_at = now();
+                $newDocument->save();
+                
+                $newDocumentsPivotData[$newDocument->id] = [
+                    'ordem_do_dia' => $originalDocument->pivot->ordem_do_dia,
+                    'order' => $originalDocument->pivot->order,
+                ];
+            }
+
+            if (!empty($newDocumentsPivotData)) {
+                $newSession->documents()->attach($newDocumentsPivotData);
+            }
+
+            return $newSession;
+        });
+    }
+
+    public function removeDocumentFromSession(int $session_id, int $document_id): void
+    {
+        $session = Session::findOrFail($session_id);
+        $session->documents()->detach($document_id);
     }
 }

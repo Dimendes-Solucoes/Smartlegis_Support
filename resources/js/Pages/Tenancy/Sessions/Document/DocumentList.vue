@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { defineProps, defineEmits } from 'vue';
-import { EyeIcon, ExclamationCircleIcon, ChevronDownIcon, ChevronUpIcon, ClipboardDocumentListIcon } from '@heroicons/vue/24/outline';
+import { EyeIcon, ExclamationCircleIcon, ChevronDownIcon, ChevronUpIcon, ClipboardDocumentListIcon, TrashIcon } from '@heroicons/vue/24/outline';
 import LinkButton from '@/Components/LinkButton.vue';
 import IconButton from '@/Components/Itens/IconButton.vue';
 
@@ -22,12 +22,8 @@ const props = defineProps<{
     documents: Document[];
 }>();
 
-const emit = defineEmits(['update:documents']);
+const emit = defineEmits(['update:documents', 'remove-document']);
 
-/**
- * Move um documento uma posição para cima na lista.
- * @param {number} index - O índice do documento a ser movido.
- */
 const moveUp = (index: number) => {
     if (index > 0) {
         const newDocuments = [...props.documents];
@@ -37,10 +33,6 @@ const moveUp = (index: number) => {
     }
 };
 
-/**
- * Move um documento uma posição para baixo na lista.
- * @param {number} index - O índice do documento a ser movido.
- */
 const moveDown = (index: number) => {
     if (index < props.documents.length - 1) {
         const newDocuments = [...props.documents];
@@ -48,6 +40,10 @@ const moveDown = (index: number) => {
         newDocuments.splice(index + 1, 0, itemToMove);
         emit('update:documents', newDocuments);
     }
+};
+
+const removeDocument = (document: Document) => {
+    emit('remove-document', document);
 };
 </script>
 
@@ -83,14 +79,20 @@ const moveDown = (index: number) => {
 
                 <span class="flex-1 mx-2 font-medium text-gray-800 dark:text-gray-200">{{ element.name }}</span>
 
-                <LinkButton :link="element.attachment" title="Visualizar documento">
-                    <EyeIcon class="h-5 w-5 text-white" />
-                </LinkButton>
+                <div class="flex items-center space-x-1">
+                    <LinkButton :link="element.attachment" title="Visualizar documento">
+                        <EyeIcon class="h-5 w-5 text-white" />
+                    </LinkButton>
 
-                <IconButton :href="route('sessions.documents.votes', { id: session.id, document_id: element.id })"
-                    title="Votos" class="ml-1" color="green">
-                    <ClipboardDocumentListIcon class="h-5 w-5 text-white" />
-                </IconButton>
+                    <IconButton :href="route('sessions.documents.votes', { id: session.id, document_id: element.id })"
+                        title="Votos" class="ml-1" color="green">
+                        <ClipboardDocumentListIcon class="h-5 w-5 text-white" />
+                    </IconButton>
+
+                    <IconButton as="button" color="red" title="Remover da Pauta" @click="removeDocument(element)">
+                        <TrashIcon class="h-5 w-5 text-white" />
+                    </IconButton>
+                </div>
             </li>
         </ul>
     </div>

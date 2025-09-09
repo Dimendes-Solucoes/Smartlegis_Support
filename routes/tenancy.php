@@ -99,10 +99,12 @@ Route::middleware(['auth', 'tenant.connection'])
                 Route::get('/{id}', 'talks')->name('talks');
                 Route::delete('/{id}', 'destroy')->name('destroy');
                 Route::post('/{id}/reset', 'reset')->name('reset');
+                Route::post('/{id}/duplicate', 'duplicate')->name('duplicate');
 
                 Route::get('/{id}/documentos', 'documents')->name('documents');
                 Route::put('/{id}/documentos', 'updateDocuments')->name('update_documents');
                 Route::put('/{id}/resetar-documentos', 'resetDocuments')->name('reset_documents');
+                Route::delete('/{id}/documentos/{document_id}', 'removeDocument')->name('documents.destroy');
                 Route::get('/{id}/documentos/{document_id}/votos', 'documentVotes')->name('documents.votes');
                 Route::put('/{id}/documentos/{document_id}/votos', 'updateDocumentVotes')->name('documents.update_votes');
 
