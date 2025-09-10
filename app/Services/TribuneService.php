@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Tenancy\Tribune;
 use App\Models\Tenancy\TribuneUsers;
+use Illuminate\Support\Facades\DB;
 
 class TribuneService
 {
@@ -26,5 +27,18 @@ class TribuneService
     {
         $tribuneUser = TribuneUsers::findOrFail($tribune_user_id);
         $tribuneUser->delete();
+    }
+
+public function updateUserOrder(array $userIds): void
+    {
+        if (empty($userIds)) {
+            return;
+        }
+        DB::transaction(function () use ($userIds) {
+            foreach ($userIds as $index => $userId) {
+                TribuneUsers::where('id', $userId)
+                    ->update(['position' => $index + 1]);
+            }
+        });
     }
 }

@@ -113,6 +113,7 @@ Route::middleware(['auth', 'tenant.connection'])
 
                 Route::get('/{id}/tribunas', 'tribunes')->name('tribunes');
                 Route::delete('/{id}/tribunas/limpar', 'clearTribunes')->name('tribunes.clear');
+                Route::put('/{id}/reordenar-usuarios', 'reorderUsers')->name('users.reorder');
 
                 Route::get('/{id}/discussoes', 'listDiscussions')->name('list_discussions');
                 Route::delete('/{id}/discussoes/limpar', 'clearDiscussions')->name('discussions.clear');
