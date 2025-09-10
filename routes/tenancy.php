@@ -113,7 +113,6 @@ Route::middleware(['auth', 'tenant.connection'])
 
                 Route::get('/{id}/tribunas', 'tribunes')->name('tribunes');
                 Route::delete('/{id}/tribunas/limpar', 'clearTribunes')->name('tribunes.clear');
-                Route::put('/{id}/reordenar-usuarios', 'reorderUsers')->name('users.reorder');
 
                 Route::get('/{id}/discussoes', 'listDiscussions')->name('list_discussions');
                 Route::delete('/{id}/discussoes/limpar', 'clearDiscussions')->name('discussions.clear');
@@ -128,6 +127,7 @@ Route::middleware(['auth', 'tenant.connection'])
 
         Route::delete('quorums/{id}/inscricoes', [QuorumController::class, 'removeUser'])->name('quorums.users.destroy');
         Route::delete('tribunas/{id}/inscricoes', [TribuneController::class, 'removeUser'])->name('tribunes.users.destroy');
+        Route::put('tribunas/{id}/reordenar-usuarios', [TribuneController::class, 'reorderUsers'])->name('tribunes.users.reorder');
         Route::delete('explanacoes-pessoais/{id}/inscricoes', [BigDiscussionController::class, 'removeUser'])->name('big-discussions.users.destroy');
         Route::delete('discussoes/{id}/inscricoes', [DiscussionController::class, 'removeUser'])->name('discussions.users.destroy');
         Route::delete('questoes-de-ordem/{id}/inscricoes', [QuestionOrderController::class, 'removeUser'])->name('question-orders.users.destroy');

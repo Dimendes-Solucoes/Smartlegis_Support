@@ -60,7 +60,7 @@ const saveOrder = () => {
     isSavingOrder.value = true;
     const userIds = tribuneUsersList.value.map(item => item.id);
     
-    router.put(route('tribunes.users.reorder', props.tribuneData.tribune.id), {
+    router.put(route('tribunes.users.reorder', { id: props.tribuneData.tribune.quorum.session.id, tribune: props.tribuneData.tribune.id }), {
         user_ids: userIds,
     }, {
         preserveScroll: true,
