@@ -13,6 +13,7 @@ import {
     UserGroupIcon,
     PencilSquareIcon,
     DocumentTextIcon,
+    ChatBubbleLeftIcon,
 } from '@heroicons/vue/24/solid';
 
 interface NavigationLink {
@@ -79,7 +80,7 @@ export const staticNavigationLinks: NavigationLink[] = [
         route: 'commissions.index',
         type: 'link',
     },
-        {
+    {
         label: 'Tempos',
         icon: ClockIcon,
         route: 'timers.index',
@@ -105,6 +106,12 @@ export const staticNavigationLinks: NavigationLink[] = [
     },
 
     { type: 'separator' },
+    {
+        label: 'Chat',
+        icon: ChatBubbleLeftIcon,
+        route: 'chats.index',
+        type: 'link',
+    },
     {
         label: 'Perfil',
         icon: UserIcon,

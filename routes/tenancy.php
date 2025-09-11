@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Tenancy\BigDiscussionController;
+use App\Http\Controllers\Tenancy\ChatbotController;
 use App\Http\Controllers\Tenancy\CommissionController;
 use App\Http\Controllers\Tenancy\CouncilorController;
 use App\Http\Controllers\Tenancy\DiscussionController;
@@ -123,6 +124,15 @@ Route::middleware(['auth', 'tenant.connection'])
 
                 Route::get('/{id}/questoes-de-ordem', 'questionOrders')->name('questions_orders');
                 Route::delete('/{id}/questoes-de-ordem/limpar', 'clearQuestionOrders')->name('questions_orders.clear');
+            });
+
+        Route::prefix('chats')
+            ->name('chats.')
+            ->controller(ChatbotController::class)
+            ->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/novo', 'new')->name('new');
+                Route::get('/{id}', 'show')->name('show');
             });
 
         Route::delete('quorums/{id}/inscricoes', [QuorumController::class, 'removeUser'])->name('quorums.users.destroy');

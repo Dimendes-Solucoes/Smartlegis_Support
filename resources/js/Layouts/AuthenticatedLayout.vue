@@ -49,6 +49,9 @@ const filteredNavigationLinks = computed(() => {
         if (link.route === 'admin.index') {
             return isRootUser.value;
         }
+        if (link.route === 'clicksign.index') {
+            return isRootUser.value;
+        }
         return true;
     });
 });

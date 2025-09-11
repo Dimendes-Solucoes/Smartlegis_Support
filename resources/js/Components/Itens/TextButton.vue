@@ -15,7 +15,7 @@ const props = defineProps({
 </script>
 
 <template>
-    <BaseButtonLink :href="href" :color="color" class="px-4 py-2">
+    <BaseButtonLink :href="href" :color="color" class="px-4 py-2 rounded-md">
         <slot></slot>
     </BaseButtonLink>
 </template>
