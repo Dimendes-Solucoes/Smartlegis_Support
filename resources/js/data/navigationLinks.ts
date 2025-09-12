@@ -13,7 +13,7 @@ import {
     UserGroupIcon,
     PencilSquareIcon,
     DocumentTextIcon,
-} from '@heroicons/vue/24/solid';
+} from '@heroicons/vue/24/outline';
 
 interface NavigationLink {
     label?: string;

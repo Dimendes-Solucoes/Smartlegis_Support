@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import IconButton from '@/Components/Itens/IconButton.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { PencilSquareIcon } from '@heroicons/vue/24/solid';
+import { PencilSquareIcon } from '@heroicons/vue/24/outline';
 import { Head } from '@inertiajs/vue3';
 import { formatTimer } from '@/Utils/timers';
 

@@ -3,7 +3,7 @@ import { ref } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
 import IconButton from '@/Components/Itens/IconButton.vue';
-import { TrashIcon, ExclamationCircleIcon, ChevronDownIcon, ChevronUpIcon } from '@heroicons/vue/24/solid';
+import { TrashIcon, ExclamationCircleIcon, ChevronDownIcon, ChevronUpIcon } from '@heroicons/vue/24/outline';
 import ConfirmDeletionModal from '@/Components/ConfirmDeletionModal.vue';
 import BackButtonRow from '@/Components/BackButtonRow.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';

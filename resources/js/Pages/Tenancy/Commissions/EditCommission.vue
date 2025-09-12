@@ -7,7 +7,7 @@ import TextInput from '@/Components/TextInput.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
 import IconButton from '@/Components/Itens/IconButton.vue';
-import { TrashIcon } from '@heroicons/vue/24/solid';
+import { TrashIcon } from '@heroicons/vue/24/outline';
 import BackButtonRow from '@/Components/BackButtonRow.vue';
 
 interface CommissionType {

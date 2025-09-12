@@ -79,13 +79,13 @@ const removeDocument = (document: Document) => {
 
                 <span class="flex-1 mx-2 font-medium text-gray-800 dark:text-gray-200">{{ element.name }}</span>
 
-                <div class="flex items-center space-x-1">
+                <div class="flex flex-col space-y-1 md:flex-row md:space-y-0 md:space-x-1">
                     <LinkButton :link="element.attachment" title="Visualizar documento">
                         <EyeIcon class="h-5 w-5 text-white" />
                     </LinkButton>
 
                     <IconButton :href="route('sessions.documents.votes', { id: session.id, document_id: element.id })"
-                        title="Votos" class="ml-1" color="green">
+                        title="Votos" class="ml-0" color="green">
                         <ClipboardDocumentListIcon class="h-5 w-5 text-white" />
                     </IconButton>
 

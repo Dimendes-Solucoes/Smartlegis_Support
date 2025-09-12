@@ -4,7 +4,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router, Link } from '@inertiajs/vue3';
 import IconButton from '@/Components/Itens/IconButton.vue';
 import TextInput from '@/Components/TextInput.vue';
-import { UsersIcon, TrashIcon } from '@heroicons/vue/24/solid';
+import { UsersIcon, TrashIcon } from '@heroicons/vue/24/outline';
 import { debounce } from 'lodash';
 import ConfirmDeletionModal from '@/Components/ConfirmDeletionModal.vue';
 import BackButtonRow from '@/Components/BackButtonRow.vue';

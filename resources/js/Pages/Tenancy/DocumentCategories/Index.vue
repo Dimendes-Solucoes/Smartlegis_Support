@@ -4,7 +4,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import IconButton from '@/Components/Itens/IconButton.vue';
 import TextButton from '@/Components/Itens/TextButton.vue';
 import DocumentCategoryStatusBadge from '@/Components/DocumentCategory/DocumentCategoryStatusBadge.vue';
-import { DocumentMinusIcon, DocumentPlusIcon, PencilSquareIcon } from '@heroicons/vue/24/solid';
+import { DocumentMinusIcon, DocumentPlusIcon, PencilSquareIcon } from '@heroicons/vue/24/outline';
 import { Head, router } from '@inertiajs/vue3';
 import Checkbox from '@/Components/Checkbox.vue';
 import ConfirmDeletionModal from '@/Components/ConfirmDeletionModal.vue';

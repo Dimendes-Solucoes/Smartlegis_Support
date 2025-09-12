@@ -8,7 +8,7 @@ import ConfirmDeletionModal from '@/Components/ConfirmDeletionModal.vue';
 import TextInput from '@/Components/TextInput.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
-import { EyeIcon, PencilSquareIcon, TrashIcon, ChevronUpIcon, ChevronDownIcon } from '@heroicons/vue/24/solid';
+import { EyeIcon, PencilSquareIcon, TrashIcon, ChevronUpIcon, ChevronDownIcon } from '@heroicons/vue/24/outline';
 
 interface Document {
     id: number;
@@ -111,7 +111,7 @@ const sortBy = (field: string) => {
 
     <AuthenticatedLayout>
         <form @submit.prevent="submitSearch" class="flex items-center mb-6">
-            <TextInput type="text" v-model="search" placeholder="Buscar por nome ou protocolo..."
+            <TextInput type="text" v-model="search" placeholder="Buscar por nome..."
                 class="w-full md:w-1/2 rounded-r-none h-10" />
             <PrimaryButton type="submit" class="rounded-l-none rounded-r-none h-10">
                 Buscar
