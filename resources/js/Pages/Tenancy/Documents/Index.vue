@@ -87,7 +87,7 @@ const search = ref(props.filters.search || '');
 const selectedCategories = ref(props.filters.categories || []);
 
 watch([search, selectedCategories], debounce(() => {
-    router.get(route('documents.index'), { 
+    router.get(route('documents.index'), {
         search: search.value,
         categories: selectedCategories.value,
         sort: props.filters.sort,
@@ -116,119 +116,105 @@ const sortBy = (field: string) => {
 </script>
 
 <template>
+
     <Head title="Documentos" />
+
     <AuthenticatedLayout>
-        <div class="py-12">
-            <div class="mx-auto max-w-screen-xl sm:px-6 lg:px-8">
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900 dark:text-gray-100">
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-                            <TagMultiselectFilter 
-                                :options="categories"
-                                v-model="selectedCategories"
-                                placeholder="Filtrar por Categoria"
-                                class="lg:col-span-1"
-                            />
-                            <TextInput
-                                type="text"
-                                v-model="search"
-                                placeholder="Buscar por nome..."
-                                class="lg:col-span-2 h-10"
-                            />
-                        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+            <TagMultiselectFilter :options="categories" v-model="selectedCategories" placeholder="Filtrar por Categoria"
+                class="lg:col-span-1" />
+            <TextInput type="text" v-model="search" placeholder="Buscar por nome..." class="lg:col-span-2 h-10" />
+        </div>
 
-                        <div class="overflow-x-auto">
-                            <table v-if="props.documents.data.length > 0" class="min-w-full divide-y divide-gray-200 dark:divide-gray-600 text-sm">
-                                <thead class="bg-gray-50 dark:bg-gray-700/50">
-                                    <tr>
-                                        <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
-                                            <button @click="sortBy('id')" class="flex items-center space-x-1">
-                                                <span>ID</span>
-                                                <ChevronUpIcon v-if="filters.sort === 'id' && filters.direction === 'asc'"
-                                                    class="h-4 w-4" />
-                                                <ChevronDownIcon v-if="filters.sort === 'id' && filters.direction === 'desc'"
-                                                    class="h-4 w-4" />
-                                            </button>
-                                        </th>
-                                        <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
-                                            <button @click="sortBy('name')" class="flex items-center space-x-1">
-                                                <span>TÍTULO</span>
-                                                <ChevronUpIcon v-if="filters.sort === 'name' && filters.direction === 'asc'"
-                                                    class="h-4 w-4" />
-                                                <ChevronDownIcon v-if="filters.sort === 'name' && filters.direction === 'desc'"
-                                                    class="h-4 w-4" />
-                                            </button>
-                                        </th>
-                                        <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
-                                            Votação</th>
-                                        <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
-                                            Movimentação</th>
-                                        <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
-                                            Assinatura</th>
-                                        <th class="relative px-6 py-3"><span class="sr-only">Ações</span></th>
-                                    </tr>
-                                </thead>
-                                <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
-                                    <tr v-for="doc in props.documents.data" :key="doc.id"
-                                        class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                                        <td class="px-6 py-4 whitespace-nowrap font-medium">{{ doc.id || 'N/A' }}</td>
-                                        <td class="px-6 py-4 whitespace-normal font-medium">{{ doc.name }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
-                                                :class="getVoteStatusColor(doc.document_status_vote_id)">
-                                                {{ getVoteStatusText(doc.document_status_vote_id) }}
-                                            </span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
-                                                :class="getMovementStatusColor(doc.document_status_movement_id)">
-                                                {{ getMovementStatusText(doc.document_status_movement_id) }}
-                                            </span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
-                                                :class="getSignatureStatusColor(doc.status_sign)">
-                                                {{ getSignatureStatusText(doc.status_sign) }}
-                                            </span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            <div class="flex items-center justify-end space-x-1">
-                                                <LinkButton v-if="doc.attachment_url" :link="doc.attachment_url"
-                                                    title="Visualizar documento">
-                                                    <EyeIcon class="h-5 w-5 text-white" />
-                                                </LinkButton>
-                                                <IconButton :href="route('documents.edit', doc.id)" color="yellow" title="Editar">
-                                                    <PencilSquareIcon class="h-5 w-5" />
-                                                </IconButton>
-                                                <IconButton as="button" color="red" title="Excluir"
-                                                    @click.stop="openConfirmDeleteModal(doc)">
-                                                    <TrashIcon class="h-5 w-5" />
-                                                </IconButton>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                             <div v-else class="text-center py-10 text-gray-500">
-                                <p>Nenhum documento encontrado com os filtros aplicados.</p>
+        <div class="overflow-x-auto">
+            <table v-if="props.documents.data.length > 0"
+                class="min-w-full divide-y divide-gray-200 dark:divide-gray-600 text-sm">
+                <thead class="bg-gray-50 dark:bg-gray-700/50">
+                    <tr>
+                        <th
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
+                            <button @click="sortBy('id')" class="flex items-center space-x-1">
+                                <span>ID</span>
+                                <ChevronUpIcon v-if="filters.sort === 'id' && filters.direction === 'asc'"
+                                    class="h-4 w-4" />
+                                <ChevronDownIcon v-if="filters.sort === 'id' && filters.direction === 'desc'"
+                                    class="h-4 w-4" />
+                            </button>
+                        </th>
+                        <th
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
+                            <button @click="sortBy('name')" class="flex items-center space-x-1">
+                                <span>TÍTULO</span>
+                                <ChevronUpIcon v-if="filters.sort === 'name' && filters.direction === 'asc'"
+                                    class="h-4 w-4" />
+                                <ChevronDownIcon v-if="filters.sort === 'name' && filters.direction === 'desc'"
+                                    class="h-4 w-4" />
+                            </button>
+                        </th>
+                        <th
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
+                            Votação</th>
+                        <th
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
+                            Movimentação</th>
+                        <th
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
+                            Assinatura</th>
+                        <th class="relative px-6 py-3"><span class="sr-only">Ações</span></th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
+                    <tr v-for="doc in props.documents.data" :key="doc.id"
+                        class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                        <td class="px-6 py-4 whitespace-nowrap font-medium">{{ doc.id || 'N/A' }}</td>
+                        <td class="px-6 py-4 whitespace-normal font-medium">{{ doc.name }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
+                                :class="getVoteStatusColor(doc.document_status_vote_id)">
+                                {{ getVoteStatusText(doc.document_status_vote_id) }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
+                                :class="getMovementStatusColor(doc.document_status_movement_id)">
+                                {{ getMovementStatusText(doc.document_status_movement_id) }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
+                                :class="getSignatureStatusColor(doc.status_sign)">
+                                {{ getSignatureStatusText(doc.status_sign) }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <div class="flex items-center justify-end space-x-1">
+                                <LinkButton v-if="doc.attachment_url" :link="doc.attachment_url"
+                                    title="Visualizar documento">
+                                    <EyeIcon class="h-5 w-5 text-white" />
+                                </LinkButton>
+                                <IconButton :href="route('documents.edit', doc.id)" color="yellow" title="Editar">
+                                    <PencilSquareIcon class="h-5 w-5" />
+                                </IconButton>
+                                <IconButton as="button" color="red" title="Excluir"
+                                    @click.stop="openConfirmDeleteModal(doc)">
+                                    <TrashIcon class="h-5 w-5" />
+                                </IconButton>
                             </div>
-                        </div>
-
-                        <div v-if="props.documents.data.length > 0 && props.documents.links.length > 3"
-                            class="mt-6 flex justify-center">
-                            <Link v-for="(link, index) in props.documents.links" :key="index" :href="link.url || ''"
-                                class="px-4 py-2 text-sm"
-                                :class="{ 'bg-indigo-500 text-white rounded-md': link.active, 'text-gray-500 hover:text-gray-800': !link.active, 'cursor-not-allowed text-gray-400': !link.url }"
-                                v-html="link.label" />
-                        </div>
-                    </div>
-                </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div v-else class="text-center py-10 text-gray-500">
+                <p>Nenhum documento encontrado com os filtros aplicados.</p>
             </div>
+        </div>
+
+        <div v-if="props.documents.data.length > 0 && props.documents.links.length > 3"
+            class="mt-6 flex justify-center">
+            <Link v-for="(link, index) in props.documents.links" :key="index" :href="link.url || ''"
+                class="px-4 py-2 text-sm"
+                :class="{ 'bg-indigo-500 text-white rounded-md': link.active, 'text-gray-500 hover:text-gray-800': !link.active, 'cursor-not-allowed text-gray-400': !link.url }"
+                v-html="link.label" />
         </div>
     </AuthenticatedLayout>
 

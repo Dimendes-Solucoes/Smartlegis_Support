@@ -125,9 +125,15 @@ Route::middleware(['auth', 'tenant.connection'])
                 Route::delete('/{id}/questoes-de-ordem/limpar', 'clearQuestionOrders')->name('questions_orders.clear');
             });
 
+        Route::prefix('tribunas')
+            ->name('tribunes.')
+            ->controller(TribuneController::class)
+            ->group(function () {
+                Route::put('/{id}/reordenar-usuarios', 'reorderUsers')->name('users.reorder');
+                Route::delete('/{id}/inscricoes', 'removeUser')->name('users.destroy');
+            });
+
         Route::delete('quorums/{id}/inscricoes', [QuorumController::class, 'removeUser'])->name('quorums.users.destroy');
-        Route::delete('tribunas/{id}/inscricoes', [TribuneController::class, 'removeUser'])->name('tribunes.users.destroy');
-        Route::put('tribunas/{id}/reordenar-usuarios', [TribuneController::class, 'reorderUsers'])->name('tribunes.users.reorder');
         Route::delete('explanacoes-pessoais/{id}/inscricoes', [BigDiscussionController::class, 'removeUser'])->name('big-discussions.users.destroy');
         Route::delete('discussoes/{id}/inscricoes', [DiscussionController::class, 'removeUser'])->name('discussions.users.destroy');
         Route::delete('questoes-de-ordem/{id}/inscricoes', [QuestionOrderController::class, 'removeUser'])->name('question-orders.users.destroy');

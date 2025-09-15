@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Tenancy;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Documents\UpdateDocumentRequest;
-use App\Models\Tenancy\DocumentCategory;
 use App\Services\DocumentService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -15,13 +14,11 @@ class DocumentController extends Controller
         protected DocumentService $service
     ) {}
 
-public function index(Request $request)
+    public function index(Request $request)
     {
-        return Inertia::render('Tenancy/Documents/Index', [
-            'documents' => $this->service->getAllDocuments($request),
-            'filters' => $request->only(['search', 'sort', 'direction', 'categories']),
-            'categories' => DocumentCategory::where('is_active', true)->orderBy('name')->get(['id', 'name']),
-        ]);
+        $data = $this->service->getDocumentsForIndex($request);
+
+        return Inertia::render('Tenancy/Documents/Index', $data);
     }
 
     public function edit(int $id)

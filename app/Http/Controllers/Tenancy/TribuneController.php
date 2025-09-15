@@ -3,9 +3,8 @@
 namespace App\Http\Controllers\Tenancy;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Tribunes\TribuneReorderUsersRequest;
 use App\Services\TribuneService;
-
-use Illuminate\Http\Request;
 
 class TribuneController extends Controller
 {
@@ -17,19 +16,13 @@ class TribuneController extends Controller
     {
         $this->service->removeUserFromTribune($id);
 
-        return back()->with('success', 'Inscrição removida com sucesso!');
+        return redirect()->route('sessions.tribunes', $id)->with('success', 'Inscrição removida com sucesso!');
     }
 
-    public function reorderUsers(Request $request)
+    public function reorderUsers(TribuneReorderUsersRequest $request, int $id)
     {
-        $validated = $request->validate([
-            'user_ids' => ['required', 'array'],
-            'user_ids.*' => ['integer', 'exists:tribune_users,id'],
-        ]);
+        $this->service->updateUserOrder($request->validated('user_ids'));
 
-        $this->service->updateUserOrder($validated['user_ids']);
-
-        return back()->with('success', 'Ordem dos inscritos salva com sucesso!');
+        return redirect()->route('sessions.tribunes', $id)->with('success', 'Ordem dos inscritos salva com sucesso!');
     }
-
 }

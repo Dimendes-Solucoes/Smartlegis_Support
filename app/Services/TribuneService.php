@@ -29,14 +29,15 @@ class TribuneService
         $tribuneUser->delete();
     }
 
-public function updateUserOrder(array $userIds): void
+    public function updateUserOrder(array $user_ids): void
     {
-        if (empty($userIds)) {
+        if (empty($user_ids)) {
             return;
         }
-        DB::transaction(function () use ($userIds) {
-            foreach ($userIds as $index => $userId) {
-                TribuneUsers::where('id', $userId)
+
+        DB::transaction(function () use ($user_ids) {
+            foreach ($user_ids as $index => $user_id) {
+                TribuneUsers::where('id', $user_id)
                     ->update(['position' => $index + 1]);
             }
         });
