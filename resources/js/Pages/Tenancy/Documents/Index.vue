@@ -43,22 +43,27 @@ const getSignatureStatusText = (status: number) => {
     const statuses: { [key: number]: string } = { 0: 'Pendente', 1: 'Assinado', 2: 'Assinado', 3: 'Expirado' };
     return statuses[status] || 'Desconhecido';
 };
+
 const getSignatureStatusColor = (status: number) => {
     const colors: { [key: number]: string } = { 0: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200', 1: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200', 2: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200', 3: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200' };
     return colors[status] || 'bg-gray-100 text-gray-800';
 };
+
 const getVoteStatusText = (statusId: number) => {
     const statuses: { [key: number]: string } = { 1: 'Pendente', 2: 'Aguardando', 3: 'Em vista', 4: 'Em votação', 5: 'Concluído', 6: 'Leitura' };
     return statuses[statusId] || 'N/A';
 };
+
 const getMovementStatusText = (statusId: number) => {
     const statuses: { [key: number]: string } = { 1: 'Secretario', 2: 'Em sessão', 3: 'Procurador', 4: 'Comissão Justiça', 5: 'Comissões', 6: 'Prefeitura', 7: 'Em analise', 8: 'Reprovado' };
     return statuses[statusId] || 'N/A';
 };
+
 const getVoteStatusColor = (statusId: number) => {
     const colors: { [key: number]: string } = { 1: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200', 2: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200', 3: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200', 4: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200', 5: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200', 6: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200' };
     return colors[statusId] || 'bg-gray-100 text-gray-800';
 };
+
 const getMovementStatusColor = (statusId: number) => {
     const colors: { [key: number]: string } = { 1: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200', 2: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200', 3: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200', 4: 'bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200', 5: 'bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200', 6: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200', 7: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200', 8: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200' };
     return colors[statusId] || 'bg-gray-100 text-gray-800';
@@ -201,9 +206,11 @@ const clearFilters = () => {
                                     title="Visualizar documento">
                                     <EyeIcon class="h-5 w-5 text-white" />
                                 </LinkButton>
+
                                 <IconButton :href="route('documents.edit', doc.id)" color="yellow" title="Editar">
                                     <PencilSquareIcon class="h-5 w-5" />
                                 </IconButton>
+
                                 <IconButton as="button" color="red" title="Excluir"
                                     @click.stop="openConfirmDeleteModal(doc)">
                                     <TrashIcon class="h-5 w-5" />
@@ -213,6 +220,7 @@ const clearFilters = () => {
                     </tr>
                 </tbody>
             </table>
+
             <div v-else class="text-center py-10 text-gray-500">
                 <p>Nenhum documento encontrado com os filtros aplicados.</p>
             </div>
