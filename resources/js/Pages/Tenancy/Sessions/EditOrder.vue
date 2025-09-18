@@ -66,8 +66,8 @@ const closeModal = () => {
 const deleteDocumentFromSession = () => {
     if (!docToRemove.value) return;
     router.delete(route('sessions.documents.destroy', { 
-        sessionId: props.session.id, 
-        documentId: docToRemove.value.id 
+        id: props.session.id, 
+        document_id: docToRemove.value.id 
     }), {
         preserveScroll: true,
         onSuccess: () => {
