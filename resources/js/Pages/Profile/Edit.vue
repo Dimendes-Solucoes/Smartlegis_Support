@@ -16,11 +16,11 @@ defineProps<{
 
     <AuthenticatedLayout>
         <div class="mx-auto space-y-4">
-            <div class="bg-white lg:p-4 p-2 border sm:rounded-lg dark:bg-gray-800">
+            <div class="bg-white lg:p-4 p-2 border sm:rounded-lg dark:bg-gray-800 dark:border-gray-700">
                 <UpdateProfileInformationForm :must-verify-email="mustVerifyEmail" :status="status" class="max-w-xl" />
             </div>
 
-            <div class="bg-white lg:p-4 p-2 border sm:rounded-lg dark:bg-gray-800">
+            <div class="bg-white lg:p-4 p-2 border sm:rounded-lg dark:bg-gray-800 dark:border-gray-700">
                 <UpdatePasswordForm class="max-w-xl" />
             </div>
         </div>

@@ -119,10 +119,7 @@ const closeModal = () => {
     <Head title="Sessões" />
 
     <AuthenticatedLayout>
-        <div class="flex justify-between items-center mb-4">
-            <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-200">
-                Sessões
-            </h1>
+        <div class="flex justify-end items-center mb-4">
             <TextButton :href="route('sessions.create')">
                 Nova Sessão
             </TextButton>
@@ -130,7 +127,7 @@ const closeModal = () => {
 
         <div v-if="props.sessions.data.length > 0"
             class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
                 <thead class="bg-gray-50 dark:bg-gray-700/50">
                     <tr>
                         <th scope="col"
