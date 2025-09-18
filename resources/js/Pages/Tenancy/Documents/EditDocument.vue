@@ -62,42 +62,44 @@ const submit = () => {
     <AuthenticatedLayout>
         <BackButtonRow :href="route('documents.index')" />
 
-        <h2 class="text-xl font-semibold mb-6">Editar Documento: {{ data.document.name }}</h2>
-
         <form @submit.prevent="submit">
             <div class="space-y-6">
+                <div class="flex flex-col md:flex-row md:space-x-4">
+                    <div class="md:w-1/5 mb-4 md:mb-0">
+                        <InputLabel for="protocol_number" value="Protocolo" />
+                        <TextInput id="protocol_number" type="text" class="mt-1 block w-full"
+                            v-model="form.protocol_number" />
+                        <InputError class="mt-2" :message="form.errors.protocol_number" />
+                    </div>
 
-                <div>
-                    <InputLabel for="name" value="Nome do Documento" />
-                    <TextInput id="name" type="text" class="mt-1 block w-full" v-model="form.name" required />
-                    <InputError class="mt-2" :message="form.errors.name" />
+                    <div class="md:w-4/5">
+                        <InputLabel for="name" value="Objeto" />
+                        <TextInput id="name" type="text" class="mt-1 block w-full" v-model="form.name" required />
+                        <InputError class="mt-2" :message="form.errors.name" />
+                    </div>
                 </div>
 
-                <div>
-                    <InputLabel for="protocol_number" value="Número do Protocolo" />
-                    <TextInput id="protocol_number" type="text" class="mt-1 block w-full"
-                        v-model="form.protocol_number" />
-                    <InputError class="mt-2" :message="form.errors.protocol_number" />
-                </div>
+                <div class="flex flex-col md:flex-row md:space-x-4">
+                    <div class="flex-1 mb-4 md:mb-0">
+                        <InputLabel for="vote_status" value="Status de Votação" />
+                        <select v-model="form.document_status_vote_id"
+                            class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm">
+                            <option v-for="status in voteStatuses" :key="status.id" :value="status.id">{{ status.name }}
+                            </option>
+                        </select>
+                        <InputError class="mt-2" :message="form.errors.document_status_vote_id" />
+                    </div>
 
-                <div>
-                    <InputLabel for="vote_status" value="Status de Votação" />
-                    <select v-model="form.document_status_vote_id"
-                        class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm">
-                        <option v-for="status in voteStatuses" :key="status.id" :value="status.id">{{ status.name }}
-                        </option>
-                    </select>
-                    <InputError class="mt-2" :message="form.errors.document_status_vote_id" />
-                </div>
-
-                <div>
-                    <InputLabel for="movement_status" value="Status de Movimentação" />
-                    <select v-model="form.document_status_movement_id"
-                        class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm">
-                        <option v-for="status in movementStatuses" :key="status.id" :value="status.id">{{ status.name }}
-                        </option>
-                    </select>
-                    <InputError class="mt-2" :message="form.errors.document_status_movement_id" />
+                    <div class="flex-1">
+                        <InputLabel for="movement_status" value="Status de Movimentação" />
+                        <select v-model="form.document_status_movement_id"
+                            class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm">
+                            <option v-for="status in movementStatuses" :key="status.id" :value="status.id">
+                                {{ status.name }}
+                            </option>
+                        </select>
+                        <InputError class="mt-2" :message="form.errors.document_status_movement_id" />
+                    </div>
                 </div>
 
             </div>

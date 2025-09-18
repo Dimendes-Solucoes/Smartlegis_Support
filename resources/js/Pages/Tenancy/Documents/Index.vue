@@ -6,10 +6,9 @@ import IconButton from '@/Components/Itens/IconButton.vue';
 import LinkButton from '@/Components/LinkButton.vue';
 import ConfirmDeletionModal from '@/Components/ConfirmDeletionModal.vue';
 import TextInput from '@/Components/TextInput.vue';
-import { EyeIcon, PencilSquareIcon, TrashIcon, ChevronUpIcon, ChevronDownIcon } from '@heroicons/vue/24/outline';
+import { EyeIcon, PencilSquareIcon, TrashIcon, ChevronUpIcon, ChevronDownIcon, ArrowPathIcon } from '@heroicons/vue/24/outline';
 import { debounce } from 'lodash';
 import TagMultiselectFilter from '@/Components/MultiselectFilter/TagMultiselectFilter.vue';
-import PageHeader from '@/Components/MultiselectFilter/PageHeader.vue';
 
 interface Document {
     id: number;
@@ -113,6 +112,11 @@ const sortBy = (field: string) => {
         replace: true,
     });
 };
+
+const clearFilters = () => {
+    search.value = '';
+    selectedCategories.value = [];
+};
 </script>
 
 <template>
@@ -120,10 +124,15 @@ const sortBy = (field: string) => {
     <Head title="Documentos" />
 
     <AuthenticatedLayout>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+        <div class="flex flex-wrap items-end gap-4 mb-6">
             <TagMultiselectFilter :options="categories" v-model="selectedCategories" placeholder="Filtrar por Categoria"
-                class="lg:col-span-1" />
-            <TextInput type="text" v-model="search" placeholder="Buscar por nome..." class="lg:col-span-2 h-10" />
+                class="flex-1 min-w-[200px]" />
+            <TextInput type="text" v-model="search" placeholder="Buscar por nome..."
+                class="flex-1 h-10 min-w-[200px]" />
+
+            <IconButton as="button" @click="clearFilters" color="indigo" title="Limpar Filtros" class="h-9 w-9 my-auto">
+                <ArrowPathIcon class="h-6 w-6" />
+            </IconButton>
         </div>
 
         <div class="overflow-x-auto">
