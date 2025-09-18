@@ -22,22 +22,22 @@ export default {
 
   safelist: [
     {
-      pattern: /bg-(indigo|blue|red|yellow|orange|green|gray|pink)-500/,
+      pattern: /bg-(indigo|blue|red|yellow|orange|green|gray|pink|purple)-500/,
     },
     {
-      pattern: /border-(indigo|blue|red|yellow|orange|green|gray|pink)-600/,
+      pattern: /border-(indigo|blue|red|yellow|orange|green|gray|pink|purple)-600/,
     },
     {
-      pattern: /hover:bg-(indigo|blue|red|yellow|orange|green|gray|pink)-700/,
+      pattern: /hover:bg-(indigo|blue|red|yellow|orange|green|gray|pink|purple)-700/,
     },
     {
-      pattern: /active:bg-(indigo|blue|red|yellow|orange|green|gray|pink)-900/,
+      pattern: /active:bg-(indigo|blue|red|yellow|orange|green|gray|pink|purple)-900/,
     },
     {
-      pattern: /focus:border-(indigo|blue|red|yellow|orange|green|gray|pink)-900/,
+      pattern: /focus:border-(indigo|blue|red|yellow|orange|green|gray|pink|purple)-900/,
     },
     {
-      pattern: /focus:ring-(indigo|blue|red|yellow|orange|green|gray|pink)-300/,
+      pattern: /focus:ring-(indigo|blue|red|yellow|orange|green|gray|pink|purple)-300/,
     },
   ],
 

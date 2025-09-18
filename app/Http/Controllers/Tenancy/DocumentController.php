@@ -16,10 +16,9 @@ class DocumentController extends Controller
 
     public function index(Request $request)
     {
-        return Inertia::render('Tenancy/Documents/Index', [
-            'documents' => $this->service->getAllDocuments($request),
-            'filters' => $request->only(['search', 'sort', 'direction']),
-        ]);
+        $data = $this->service->getDocumentsForIndex($request);
+
+        return Inertia::render('Tenancy/Documents/Index', $data);
     }
 
     public function edit(int $id)

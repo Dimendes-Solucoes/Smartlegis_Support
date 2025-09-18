@@ -3,7 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import TextButton from '@/Components/Itens/TextButton.vue';
 import { Head } from '@inertiajs/vue3';
 import IconButton from '@/Components/Itens/IconButton.vue';
-import { PencilSquareIcon } from '@heroicons/vue/24/solid';
+import { PencilSquareIcon } from '@heroicons/vue/24/outline';
 
 interface Commission {
     id: number;

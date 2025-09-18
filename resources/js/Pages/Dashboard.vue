@@ -8,7 +8,7 @@ import {
     UsersIcon,
     MegaphoneIcon,
     NewspaperIcon
-} from '@heroicons/vue/24/solid';
+} from '@heroicons/vue/24/outline';
 
 const authUser = usePage().props.auth.user;
 </script>

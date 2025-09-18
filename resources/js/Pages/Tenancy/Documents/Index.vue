@@ -1,14 +1,15 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import IconButton from '@/Components/Itens/IconButton.vue';
 import LinkButton from '@/Components/LinkButton.vue';
 import ConfirmDeletionModal from '@/Components/ConfirmDeletionModal.vue';
 import TextInput from '@/Components/TextInput.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import SecondaryButton from '@/Components/SecondaryButton.vue';
-import { EyeIcon, PencilSquareIcon, TrashIcon, ChevronUpIcon, ChevronDownIcon } from '@heroicons/vue/24/solid';
+import { EyeIcon, PencilSquareIcon, TrashIcon, ChevronUpIcon, ChevronDownIcon } from '@heroicons/vue/24/outline';
+import { debounce } from 'lodash';
+import TagMultiselectFilter from '@/Components/MultiselectFilter/TagMultiselectFilter.vue';
+import PageHeader from '@/Components/MultiselectFilter/PageHeader.vue';
 
 interface Document {
     id: number;
@@ -23,13 +24,19 @@ interface PaginatedDocuments {
     data: Document[];
     links: { url: string | null; label: string; active: boolean; }[];
 }
+interface Category {
+    id: number;
+    name: string;
+}
 
 const props = defineProps<{
     documents: PaginatedDocuments;
+    categories: Category[];
     filters: {
         search: string;
         sort: string;
         direction: string;
+        categories?: number[];
     }
 }>();
 
@@ -77,17 +84,19 @@ const deleteItem = () => {
 };
 
 const search = ref(props.filters.search || '');
-const submitSearch = () => {
-    router.get(route('documents.index'), { search: search.value }, {
+const selectedCategories = ref(props.filters.categories || []);
+
+watch([search, selectedCategories], debounce(() => {
+    router.get(route('documents.index'), {
+        search: search.value,
+        categories: selectedCategories.value,
+        sort: props.filters.sort,
+        direction: props.filters.direction,
+    }, {
         preserveState: true,
         replace: true,
     });
-};
-
-const clearSearch = () => {
-    search.value = '';
-    submitSearch();
-};
+}, 300));
 
 const sortBy = (field: string) => {
     let direction = 'asc';
@@ -97,7 +106,8 @@ const sortBy = (field: string) => {
     router.get(route('documents.index'), {
         sort: field,
         direction: direction,
-        search: search.value
+        search: search.value,
+        categories: selectedCategories.value,
     }, {
         preserveState: true,
         replace: true,
@@ -110,19 +120,15 @@ const sortBy = (field: string) => {
     <Head title="Documentos" />
 
     <AuthenticatedLayout>
-        <form @submit.prevent="submitSearch" class="flex items-center mb-6">
-            <TextInput type="text" v-model="search" placeholder="Buscar por nome ou protocolo..."
-                class="w-full md:w-1/2 rounded-r-none h-10" />
-            <PrimaryButton type="submit" class="rounded-l-none rounded-r-none h-10">
-                Buscar
-            </PrimaryButton>
-            <SecondaryButton v-if="search" type="button" @click="clearSearch" class="rounded-l-none h-10">
-                Limpar
-            </SecondaryButton>
-        </form>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+            <TagMultiselectFilter :options="categories" v-model="selectedCategories" placeholder="Filtrar por Categoria"
+                class="lg:col-span-1" />
+            <TextInput type="text" v-model="search" placeholder="Buscar por nome..." class="lg:col-span-2 h-10" />
+        </div>
 
-        <div v-if="props.documents.data.length > 0" class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-600 text-sm">
+        <div class="overflow-x-auto">
+            <table v-if="props.documents.data.length > 0"
+                class="min-w-full divide-y divide-gray-200 dark:divide-gray-600 text-sm">
                 <thead class="bg-gray-50 dark:bg-gray-700/50">
                     <tr>
                         <th
@@ -198,10 +204,9 @@ const sortBy = (field: string) => {
                     </tr>
                 </tbody>
             </table>
-        </div>
-
-        <div v-else>
-            <p>Nenhum documento encontrado.</p>
+            <div v-else class="text-center py-10 text-gray-500">
+                <p>Nenhum documento encontrado com os filtros aplicados.</p>
+            </div>
         </div>
 
         <div v-if="props.documents.data.length > 0 && props.documents.links.length > 3"

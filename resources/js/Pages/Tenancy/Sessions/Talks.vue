@@ -10,7 +10,7 @@ import {
     QuestionMarkCircleIcon,
     PencilSquareIcon,
     TrashIcon
-} from '@heroicons/vue/24/solid';
+} from '@heroicons/vue/24/outline';
 import TextButton from '@/Components/Itens/TextButton.vue';
 import IconButton from '@/Components/Itens/IconButton.vue';
 import ConfirmDeletionModal from '@/Components/ConfirmDeletionModal.vue';

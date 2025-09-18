@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
-import { CheckCircleIcon, XCircleIcon } from '@heroicons/vue/24/solid';
+import { CheckCircleIcon, XCircleIcon } from '@heroicons/vue/24/outline';
 import { FlashMessages } from '@/types/inertia';
 
 const props = defineProps<{

@@ -2,7 +2,7 @@
 import { computed, ref, onMounted } from 'vue';
 import NavLink from '@/Components/NavLink.vue';
 import { Link, usePage } from '@inertiajs/vue3';
-import { SunIcon, MoonIcon, Bars3Icon } from '@heroicons/vue/24/solid';
+import { SunIcon, MoonIcon, Bars3Icon } from '@heroicons/vue/24/outline';
 import { staticNavigationLinks } from '@/data/navigationLinks';
 import Alert from '@/Components/Alert.vue';
 

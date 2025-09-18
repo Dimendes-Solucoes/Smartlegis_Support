@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Tenancy\Document;
+use App\Models\Tenancy\DocumentCategory;
 use App\Models\Tenancy\DocumentStatusMovement;
 use App\Models\Tenancy\DocumentStatusVote;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -15,39 +16,57 @@ class DocumentService
     public function getAllDocuments(Request $request): LengthAwarePaginator
     {
         $search = $request->input('search');
-
         $sortField = $request->input('sort', 'id');
         $sortDirection = $request->input('direction', 'desc');
-
-        if ($search) {
-            $sortField = 'protocol_number';
-            $sortDirection = 'asc';
-        }
 
         $sortableFields = ['name', 'protocol_number', 'id'];
         if (!in_array($sortField, $sortableFields)) {
             $sortField = 'id';
         }
 
-        $documents = Document::query()
-            ->with(['category', 'voteStatus', 'movementStatus'])
+        $query = Document::query()
+            ->with(['voteStatus', 'movementStatus'])
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('name', 'ilike', "%{$search}%")
                         ->orWhere('protocol_number', 'ilike', "%{$search}%");
                 });
             })
-            ->orderBy($sortField, $sortDirection)
-            ->paginate(15);
+            ->when($request->input('categories'), function ($query, $categories) {
+                $categoryIds = is_array($categories) ? $categories : [$categories];
+                if (!empty($categoryIds)) {
+                    $query->whereIn('document_category_id', $categoryIds);
+                }
+            });
+
+        $query->orderBy($sortField, $sortDirection);
+
+        $documents = $query->paginate(15);
 
         return $documents->through(fn(Document $document) => [
             'id' => $document->id,
             'name' => $document->name,
+            'protocol_number' => $document->protocol_number,
             'attachment_url' => $document->attachment ? Storage::url($document->attachment) : null,
-            'status_sign' => $document->status_sign,
             'document_status_vote_id' => $document->document_status_vote_id,
             'document_status_movement_id' => $document->document_status_movement_id,
+            'status_sign' => $document->status_sign,
         ]);
+    }
+
+    public function getDocumentsForIndex(Request $request): array
+    {
+        $filters = $request->only(['search', 'sort', 'direction', 'categories']);
+
+        $categories = DocumentCategory::where('is_active', true)
+            ->orderBy('name')
+            ->get(['id', 'name']);
+
+        return [
+            'documents' => $this->getAllDocuments($request),
+            'filters' => $filters,
+            'categories' => $categories
+        ];
     }
 
     public function getDocumentForEdit(int $id): array

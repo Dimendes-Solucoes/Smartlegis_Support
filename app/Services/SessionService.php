@@ -473,6 +473,7 @@ class SessionService
             $newDocumentsPivotData = [];
             foreach ($originalSession->documents as $originalDocument) {
                 $newDocument = $originalDocument->replicate();
+                $newDocument->name = '(COPIA) ' . $originalDocument->name;
                 $newDocument->protocol_number = '0';
                 $newDocument->status_sign = 0;
                 $newDocument->doc_key_clicksign = null;
