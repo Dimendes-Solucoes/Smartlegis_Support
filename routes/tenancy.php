@@ -96,7 +96,6 @@ Route::middleware(['auth', 'tenant.connection'])
                 Route::post('/', 'store')->name('store');
                 Route::get('/{id}/editar', 'edit')->name('edit');
                 Route::put('/{id}', 'update')->name('update');
-                Route::get('/{id}', 'talks')->name('talks');
                 Route::delete('/{id}', 'destroy')->name('destroy');
                 Route::post('/{id}/reset', 'reset')->name('reset');
                 Route::post('/{id}/duplicate', 'duplicate')->name('duplicate');

@@ -54,15 +54,6 @@ class SessionController extends Controller
         return redirect()->route('sessions.index')->with('success', 'Sessão atualizada com sucesso!');
     }
 
-    public function talks(int $id)
-    {
-        $session = $this->service->find($id);
-
-        return Inertia::render('Tenancy/Sessions/Talks', [
-            'session' => $session
-        ]);
-    }
-
     public function documents(int $id)
     {
         $data = $this->service->prepareForDocuments($id);

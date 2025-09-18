@@ -95,7 +95,7 @@ const removeUser = () => {
     <Head :title="`Inscritos na Tribuna - ${tribuneData.tribune.quorum.session.name}`" />
 
     <AuthenticatedLayout>
-        <BackButtonRow :href="route('sessions.talks', tribuneData.tribune.quorum.session.id)" />
+        <BackButtonRow :href="route('sessions.edit', tribuneData.tribune.quorum.session.id)" />
 
         <div class="flex items-center justify-between mb-4">
             <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 mx-2">

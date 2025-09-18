@@ -19,6 +19,31 @@ interface Tenant {
     city: string;
 }
 
+// TYPES OF SYSTEM
+interface Tribune {
+    id: number;
+}
+
+interface Discussion {
+    id: number;
+}
+
+interface BigDiscussion {
+    id: number;
+}
+
+interface QuestionOrder {
+    id: number;
+}
+
+interface Quorum {
+    id: number;
+    tribunes: Tribune[];
+    discussions: Discussion[];
+    big_discussions: BigDiscussion[];
+    question_orders: QuestionOrder[];
+}
+
 interface CustomPageProps extends PageProps {
     auth: {
         user: User;

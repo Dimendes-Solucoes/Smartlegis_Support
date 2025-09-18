@@ -74,7 +74,7 @@ const deleteItem = () => {
     <Head title="Discussões de Documentos" />
 
     <AuthenticatedLayout>
-        <BackButtonRow :href="route('sessions.talks', discussionData.session.id)" />
+        <BackButtonRow :href="route('sessions.edit', discussionData.session.id)" />
 
         <div class="flex items-center justify-between mb-3">
             <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 px-2">

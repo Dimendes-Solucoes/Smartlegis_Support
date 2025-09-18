@@ -63,7 +63,7 @@ const removeUser = () => {
     <Head :title="`${discussionData.discussion.quorum.session.name}`" />
 
     <AuthenticatedLayout>
-        <BackButtonRow :href="route('sessions.talks', discussionData.discussion.quorum.session.id)" />
+        <BackButtonRow :href="route('sessions.edit', discussionData.discussion.quorum.session.id)" />
 
         <div class="flex items-center justify-between mb-4">
             <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 px-2">

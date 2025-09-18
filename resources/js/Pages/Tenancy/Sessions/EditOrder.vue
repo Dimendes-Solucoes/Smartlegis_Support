@@ -3,7 +3,7 @@ import { ref } from 'vue';
 import { Head, router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
-import DocumentList from './Document/DocumentList.vue';
+import DocumentList from './DocumentList.vue';
 import BackButtonRow from '@/Components/BackButtonRow.vue';
 import ConfirmDeletionModal from '@/Components/ConfirmDeletionModal.vue';
 
