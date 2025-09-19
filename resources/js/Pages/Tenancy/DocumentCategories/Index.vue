@@ -123,9 +123,6 @@ const resetOrder = () => {
                             Ordem</th>
                         <th scope="col"
                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
-                            Prox Prot.</th>
-                        <th scope="col"
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
                             Status</th>
                         <th scope="col" class="relative px-6 py-3"><span class="sr-only">Ações</span>
                         </th>
@@ -137,9 +134,6 @@ const resetOrder = () => {
                         <td class="px-6 py-4 whitespace-normal">{{ category.name }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ category.abbreviation }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ category.order }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            {{ Math.max(Number(category.min_protocol), (Number(category.highest_protocol) ?? 0) + 1) }}
-                        </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <DocumentCategoryStatusBadge :status="category.is_active ? 1 : 0" />
                         </td>
