@@ -60,7 +60,7 @@ class DocumentService
 
         $categories = DocumentCategory::where('is_active', true)
             ->orderBy('name')
-            ->get(['id', 'name']);
+            ->get();
 
         return [
             'documents' => $this->getAllDocuments($request),
