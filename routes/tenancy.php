@@ -6,6 +6,7 @@ use App\Http\Controllers\Tenancy\CouncilorController;
 use App\Http\Controllers\Tenancy\DiscussionController;
 use App\Http\Controllers\Tenancy\DocumentCategoryController;
 use App\Http\Controllers\Tenancy\DocumentController;
+use App\Http\Controllers\Tenancy\ProtocolController;
 use App\Http\Controllers\Tenancy\QuestionOrderController;
 use App\Http\Controllers\Tenancy\QuorumController;
 use App\Http\Controllers\Tenancy\SessionController;

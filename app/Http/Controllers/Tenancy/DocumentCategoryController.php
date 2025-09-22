@@ -18,12 +18,15 @@ class DocumentCategoryController extends Controller
     public function index(Request $request)
     {
         $showInactive = $request->boolean('show_inactive');
+        $showProtocols = $request->boolean('show_protocols');
+
         $categories = $this->service->getAllCategories($showInactive);
 
         return Inertia::render('Tenancy/DocumentCategories/Index', [
             'categories' => $categories,
             'filters' => [
                 'show_inactive' => $showInactive,
+                'show_protocols' => $showProtocols,
             ],
         ]);
     }

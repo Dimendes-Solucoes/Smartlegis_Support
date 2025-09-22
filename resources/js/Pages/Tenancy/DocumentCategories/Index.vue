@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import IconButton from '@/Components/Itens/IconButton.vue';
 import TextButton from '@/Components/Itens/TextButton.vue';
-import DocumentCategoryStatusBadge from '@/Components/DocumentCategory/DocumentCategoryStatusBadge.vue';
-import { DocumentMinusIcon, DocumentPlusIcon, PencilSquareIcon } from '@heroicons/vue/24/outline';
 import { Head, router } from '@inertiajs/vue3';
 import Checkbox from '@/Components/Checkbox.vue';
 import ConfirmDeletionModal from '@/Components/ConfirmDeletionModal.vue';
+import DocumentCategoryTable from './DocumentCategoryTable.vue';
+import ProtocolTable from './ProtocolTable.vue';
 
 interface DocumentCategory {
     id: number;
@@ -17,39 +16,43 @@ interface DocumentCategory {
     min_protocol: number;
     highest_protocol: number | null;
     is_active: boolean;
+    active_reserved_protocols: number[];
+    next_available_protocol: number;
 }
 
 const props = defineProps<{
     categories: DocumentCategory[];
     filters: {
-        show_inactive?: boolean;
+        show_inactive: boolean;
+        show_protocols: boolean;
     }
 }>();
 
-const changeStatus = (categoryId: number): void => {
-    const category = props.categories.find(c => c.id === categoryId);
-    if (!category) return;
+const localFilters = ref({
+    show_inactive: props.filters.show_inactive,
+    show_protocols: props.filters.show_protocols
+});
 
+watch(
+    () => localFilters.value,
+    (newFilters) => {
+        router.get(route('document-categories.index'), {
+            show_inactive: newFilters.show_inactive,
+            show_protocols: newFilters.show_protocols
+        }, {
+            preserveState: true,
+            replace: true,
+        });
+    },
+    { deep: true }
+);
+
+const changeStatus = (categoryId: number): void => {
     router.patch(route('document-categories.change_status', { id: categoryId }), {}, {
         preserveScroll: true,
         onSuccess: () => closeDeleteModal()
     });
 };
-
-const inactiveCategory = () => {
-    if (categoryToInactive.value?.id) {
-        changeStatus(categoryToInactive.value?.id)
-    }
-}
-
-const showInactive = ref(props.filters?.show_inactive || false);
-
-watch(showInactive, (value) => {
-    router.get(route('document-categories.index'), { show_inactive: value }, {
-        preserveState: true,
-        replace: true,
-    });
-});
 
 const categoryToInactive = ref<DocumentCategory | null>(null);
 
@@ -59,6 +62,12 @@ const openConfirmDeleteModal = (category: DocumentCategory) => {
 
 const closeDeleteModal = () => {
     categoryToInactive.value = null;
+}
+
+const inactiveCategory = () => {
+    if (categoryToInactive.value?.id) {
+        changeStatus(categoryToInactive.value?.id)
+    }
 }
 
 const confirmResetModal = ref(false);
@@ -77,7 +86,6 @@ const resetOrder = () => {
         onSuccess: () => closeResetModal()
     });
 };
-
 </script>
 
 <template>
@@ -86,11 +94,20 @@ const resetOrder = () => {
 
     <AuthenticatedLayout>
         <div class="flex justify-between items-center mb-4">
-            <div class="flex items-center">
-                <Checkbox id="show_inactive" v-model:checked="showInactive" />
-                <label for="show_inactive" class="ml-2 text-sm text-gray-600 dark:text-gray-400">
-                    Exibir inativas
-                </label>
+            <div class="flex items-center space-x-4">
+                <div class="flex items-center">
+                    <Checkbox id="show_protocols" v-model:checked="localFilters.show_protocols" />
+                    <label for="show_protocols" class="ml-2 text-sm text-gray-600 dark:text-gray-400">
+                        Protocolos
+                    </label>
+                </div>
+
+                <div class="flex items-center">
+                    <Checkbox id="show_inactive" v-model:checked="localFilters.show_inactive" />
+                    <label for="show_inactive" class="ml-2 text-sm text-gray-600 dark:text-gray-400">
+                        Exibir inativas
+                    </label>
+                </div>
             </div>
 
             <div class="flex items-center space-x-2">
@@ -105,68 +122,10 @@ const resetOrder = () => {
             </div>
         </div>
 
-        <div v-if="props.categories.length > 0" class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
-                <thead class="bg-gray-50 dark:bg-gray-700">
-                    <tr>
-                        <th scope="col"
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
-                            ID</th>
-                        <th scope="col"
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
-                            Nome</th>
-                        <th scope="col"
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
-                            Abreviação</th>
-                        <th scope="col"
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
-                            Ordem</th>
-                        <th scope="col"
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
-                            Prox Prot.</th>
-                        <th scope="col"
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
-                            Status</th>
-                        <th scope="col" class="relative px-6 py-3"><span class="sr-only">Ações</span>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
-                    <tr v-for="category in props.categories" :key="category.id">
-                        <td class="px-6 py-4 whitespace-nowrap">{{ category.id }}</td>
-                        <td class="px-6 py-4 whitespace-normal">{{ category.name }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ category.abbreviation }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ category.order }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            {{ Math.max(Number(category.min_protocol), (Number(category.highest_protocol) ?? 0) + 1) }}
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <DocumentCategoryStatusBadge :status="category.is_active ? 1 : 0" />
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <IconButton :href="route('document-categories.edit', category.id)" color="yellow"
-                                title="Editar">
-                                <PencilSquareIcon class="h-5 w-5" />
-                            </IconButton>
+        <DocumentCategoryTable v-if="!props.filters.show_protocols" :categories="props.categories"
+            @open-confirm-delete-modal="openConfirmDeleteModal" @change-status="changeStatus" />
 
-                            <IconButton v-if="category.is_active" @click="openConfirmDeleteModal(category)" color="red"
-                                title="Desativar" class="ml-1">
-                                <DocumentMinusIcon class="h-5 w-5" />
-                            </IconButton>
-
-                            <IconButton v-else @click="changeStatus(category.id)" color="green" title="Ativar"
-                                class="ml-1">
-                                <DocumentPlusIcon class="h-5 w-5" />
-                            </IconButton>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <div v-else>
-            <p>Nenhuma categoria de documento encontrada.</p>
-        </div>
+        <ProtocolTable v-else :categories="props.categories" />
     </AuthenticatedLayout>
 
     <ConfirmDeletionModal :show="categoryToInactive !== null" title="Inativar categoria"

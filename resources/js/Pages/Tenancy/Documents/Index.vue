@@ -157,6 +157,9 @@ const clearFilters = () => {
                         </th>
                         <th
                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
+                            Prot.</th>
+                        <th
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
                             <button @click="sortBy('name')" class="flex items-center space-x-1">
                                 <span>TÍTULO</span>
                                 <ChevronUpIcon v-if="filters.sort === 'name' && filters.direction === 'asc'"
@@ -181,6 +184,7 @@ const clearFilters = () => {
                     <tr v-for="doc in props.documents.data" :key="doc.id"
                         class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
                         <td class="px-6 py-4 whitespace-nowrap font-medium">{{ doc.id || 'N/A' }}</td>
+                        <td class="px-6 py-4 whitespace-normal font-medium">{{ doc.protocol_number }}</td>
                         <td class="px-6 py-4 whitespace-normal font-medium">{{ doc.name }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
