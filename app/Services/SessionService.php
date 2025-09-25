@@ -102,15 +102,12 @@ class SessionService
         $session = Session::with('documents.category')->findOrFail($id);
         $documents = $session->documents;
 
-        [$agendaDocuments, $extraDocuments] = $documents->partition(fn($document) => $document->pivot->ordem_do_dia == 1);
-
-        $sortedAgendaDocuments = $this->sortAndTransform($agendaDocuments);
-        $sortedExtraDocuments = $this->sortAndTransform($extraDocuments);
+        [$orderDocuments, $expedientDocuments] = $documents->partition(fn($document) => $document->pivot->ordem_do_dia == 1);
 
         return [
             'session' => $session,
-            'agendaDocuments' => $sortedAgendaDocuments,
-            'extraDocuments' => $sortedExtraDocuments,
+            'orderDocuments' => $this->sortAndTransform($orderDocuments),
+            'expedientDocuments' => $this->sortAndTransform($expedientDocuments),
         ];
     }
 
