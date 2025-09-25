@@ -178,7 +178,7 @@ class SessionController extends Controller
     {
         $this->service->resetSession($id);
 
-        return back()->with('success', 'Sessão resetada com sucesso!');
+        return redirect()->route('sessions.documents', $id)->with('success', 'Sessão resetada com sucesso!');
     }
 
     public function duplicate(int $id)
