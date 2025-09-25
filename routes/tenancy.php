@@ -6,7 +6,6 @@ use App\Http\Controllers\Tenancy\CouncilorController;
 use App\Http\Controllers\Tenancy\DiscussionController;
 use App\Http\Controllers\Tenancy\DocumentCategoryController;
 use App\Http\Controllers\Tenancy\DocumentController;
-use App\Http\Controllers\Tenancy\ProtocolController;
 use App\Http\Controllers\Tenancy\QuestionOrderController;
 use App\Http\Controllers\Tenancy\QuorumController;
 use App\Http\Controllers\Tenancy\SessionController;
@@ -104,7 +103,7 @@ Route::middleware(['auth', 'tenant.connection'])
                 Route::get('/{id}/documentos', 'documents')->name('documents');
                 Route::put('/{id}/documentos', 'updateDocuments')->name('update_documents');
                 Route::put('/{id}/resetar-documentos', 'resetDocuments')->name('reset_documents');
-                Route::delete('/{id}/documentos/{document_id}/expendient', 'removeDocumentFromExpendient')->name('documents.destroy_expendient');
+                Route::delete('/{id}/documentos/{document_id}/expendient', 'removeDocumentFromExpedient')->name('documents.destroy_expendient');
                 Route::delete('/{id}/documentos/{document_id}/order', 'removeDocumentFromOrder')->name('documents.destroy_order');
                 Route::get('/{id}/documentos/{document_id}/votos', 'documentVotes')->name('documents.votes');
                 Route::put('/{id}/documentos/{document_id}/votos', 'updateDocumentVotes')->name('documents.update_votes');

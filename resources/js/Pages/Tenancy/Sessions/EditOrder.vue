@@ -87,15 +87,7 @@ const deleteDocumentFromSession = () => {
         document_id: doc.id
     }), {
         preserveScroll: true,
-        onSuccess: () => {
-            if (doc.listType === 'expediente') {
-                expedientList.value = expedientList.value.filter(d => d.id !== doc.id);
-            } else if (doc.listType === 'ordemDoDia') {
-                orderList.value = orderList.value.filter(d => d.id !== doc.id);
-            }
-
-            closeModal();
-        },
+        onSuccess: () => closeModal(),
     });
 };
 </script>
@@ -119,14 +111,13 @@ const deleteDocumentFromSession = () => {
         </div>
 
         <div class="space-y-8">
-            <DocumentList title="Expediente do Dia"
-                description="Documentos que serão discutidos no início da sessão." :session="session"
-                :documents="expedientList" @update:documents="expedientList = $event"
+            <DocumentList title="Expediente do Dia" description="Documentos que serão discutidos no início da sessão."
+                :session="session" :documents="expedientList" @update:documents="expedientList = $event"
                 @remove-document="doc => handleRemoveDocument(doc, 'expediente')" />
 
             <DocumentList title="Ordem do Dia"
-                description="Documentos principais a serem votados ou discutidos em profundidade."
-                :session="session" :documents="orderList" @update:documents="orderList = $event"
+                description="Documentos principais a serem votados ou discutidos em profundidade." :session="session"
+                :documents="orderList" @update:documents="orderList = $event"
                 @remove-document="doc => handleRemoveDocument(doc, 'ordemDoDia')" />
         </div>
     </AuthenticatedLayout>

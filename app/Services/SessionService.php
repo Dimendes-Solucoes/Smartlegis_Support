@@ -501,6 +501,7 @@ class SessionService
             DocumentSession::where('session_id', $session_id)
                 ->where('document_id', $document_id)
                 ->where('ordem_do_dia', $ordem_do_dia)
+                ->first()
                 ->delete();
 
             $hasOppositeType = DocumentSession::where('ordem_do_dia', 1 - $ordem_do_dia)
