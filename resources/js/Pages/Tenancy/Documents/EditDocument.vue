@@ -13,7 +13,7 @@ interface Document {
     protocol_number: string | null;
     document_status_vote_id: number;
     document_status_movement_id: number;
-    document_category_id: number; 
+    document_category_id: number;
 }
 interface Status {
     id: number;
@@ -27,7 +27,7 @@ interface EditData {
     document: Document;
     vote_statuses: Status[];
     movement_statuses: Status[];
-    categories: Category[]; 
+    categories: Category[];
 }
 
 const props = defineProps<{
@@ -60,7 +60,7 @@ const form = useForm({
     protocol_number: props.data.document.protocol_number,
     document_status_vote_id: props.data.document.document_status_vote_id,
     document_status_movement_id: props.data.document.document_status_movement_id,
-    document_category_id: props.data.document.document_category_id, 
+    document_category_id: props.data.document.document_category_id,
 });
 
 const submit = () => {
@@ -69,6 +69,7 @@ const submit = () => {
 </script>
 
 <template>
+
     <Head :title="`Editar Documento`" />
     <AuthenticatedLayout>
         <BackButtonRow :href="route('documents.index')" />
@@ -79,8 +80,8 @@ const submit = () => {
                 <div class="flex flex-col md:flex-row md:space-x-4">
                     <div class="flex-1 mb-4 md:mb-0">
                         <InputLabel for="protocol_number" value="Protocolo" />
-                        <TextInput id="protocol_number" type="text" class="mt-1 block w-full bg-gray-100 dark:bg-gray-800"
-                            v-model="form.protocol_number" readonly />
+                        <TextInput id="protocol_number" type="text"
+                            class="mt-1 block w-full bg-gray-100 dark:bg-gray-800" v-model="form.protocol_number" />
                         <InputError class="mt-2" :message="form.errors.protocol_number" />
                     </div>
 
@@ -88,7 +89,9 @@ const submit = () => {
                         <InputLabel for="category" value="Categoria do Documento" />
                         <select v-model="form.document_category_id"
                             class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm">
-                            <option v-for="category in data.categories" :key="category.id" :value="category.id">{{ category.name }}</option>
+                            <option v-for="category in data.categories" :key="category.id" :value="category.id">
+                                {{ category.name }}
+                            </option>
                         </select>
                         <InputError class="mt-2" :message="form.errors.document_category_id" />
                     </div>
