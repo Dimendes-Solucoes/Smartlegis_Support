@@ -13,9 +13,21 @@ interface Document {
     protocol_number: string | null;
     document_status_vote_id: number;
     document_status_movement_id: number;
+    document_category_id: number; 
+}
+interface Status {
+    id: number;
+    name: string;
+}
+interface Category {
+    id: number;
+    name: string;
 }
 interface EditData {
     document: Document;
+    vote_statuses: Status[];
+    movement_statuses: Status[];
+    categories: Category[]; 
 }
 
 const props = defineProps<{
@@ -48,6 +60,7 @@ const form = useForm({
     protocol_number: props.data.document.protocol_number,
     document_status_vote_id: props.data.document.document_status_vote_id,
     document_status_movement_id: props.data.document.document_status_movement_id,
+    document_category_id: props.data.document.document_category_id, 
 });
 
 const submit = () => {
@@ -56,29 +69,37 @@ const submit = () => {
 </script>
 
 <template>
-
     <Head :title="`Editar Documento`" />
-
     <AuthenticatedLayout>
         <BackButtonRow :href="route('documents.index')" />
 
         <form @submit.prevent="submit">
             <div class="space-y-6">
+
                 <div class="flex flex-col md:flex-row md:space-x-4">
-                    <div class="md:w-1/5 mb-4 md:mb-0">
+                    <div class="flex-1 mb-4 md:mb-0">
                         <InputLabel for="protocol_number" value="Protocolo" />
-                        <TextInput id="protocol_number" type="text" class="mt-1 block w-full"
-                            v-model="form.protocol_number" />
+                        <TextInput id="protocol_number" type="text" class="mt-1 block w-full bg-gray-100 dark:bg-gray-800"
+                            v-model="form.protocol_number" readonly />
                         <InputError class="mt-2" :message="form.errors.protocol_number" />
                     </div>
 
-                    <div class="md:w-4/5">
-                        <InputLabel for="name" value="Objeto" />
-                        <TextInput id="name" type="text" class="mt-1 block w-full" v-model="form.name" required />
-                        <InputError class="mt-2" :message="form.errors.name" />
+                    <div class="flex-1">
+                        <InputLabel for="category" value="Categoria do Documento" />
+                        <select v-model="form.document_category_id"
+                            class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm">
+                            <option v-for="category in data.categories" :key="category.id" :value="category.id">{{ category.name }}</option>
+                        </select>
+                        <InputError class="mt-2" :message="form.errors.document_category_id" />
                     </div>
                 </div>
-
+                <div>
+                    <InputLabel for="name" value="Objeto" />
+                    <textarea id="name"
+                        class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm"
+                        v-model="form.name" required rows="6"></textarea>
+                    <InputError class="mt-2" :message="form.errors.name" />
+                </div>
                 <div class="flex flex-col md:flex-row md:space-x-4">
                     <div class="flex-1 mb-4 md:mb-0">
                         <InputLabel for="vote_status" value="Status de Votação" />
@@ -101,7 +122,6 @@ const submit = () => {
                         <InputError class="mt-2" :message="form.errors.document_status_movement_id" />
                     </div>
                 </div>
-
             </div>
 
             <div class="flex items-center justify-end mt-6">

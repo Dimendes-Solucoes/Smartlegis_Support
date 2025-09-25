@@ -18,23 +18,30 @@ interface Document {
     attachment: string;
 }
 
+interface DocumentToRemove extends Document {
+    listType: 'expediente' | 'ordemDoDia';
+}
+
 const props = defineProps<{
     session: Session;
-    agendaDocuments: Document[];
-    extraDocuments: Document[];
+    orderDocuments: Document[];
+    expedientDocuments: Document[];
 }>();
 
-const expedienteList = ref(props.extraDocuments);
-const ordemDoDiaList = ref(props.agendaDocuments);
+const expedientList = ref(props.expedientDocuments);
+const orderList = ref(props.orderDocuments);
 
 const isSaving = ref(false);
 const isReseting = ref(false);
 
+const confirmingDocRemoval = ref(false);
+const docToRemove = ref<DocumentToRemove | null>(null);
+
 const saveOrder = () => {
     isSaving.value = true;
     const payload = {
-        expediente_documents: expedienteList.value.map(doc => doc.id),
-        ordem_do_dia_documents: ordemDoDiaList.value.map(doc => doc.id),
+        expediente_documents: expedientList.value.map(doc => doc.id),
+        ordem_do_dia_documents: orderList.value.map(doc => doc.id),
     };
     router.put(route('sessions.update_documents', props.session.id), payload, {
         preserveScroll: true,
@@ -50,11 +57,8 @@ const resetOrder = () => {
     });
 };
 
-const confirmingDocRemoval = ref(false);
-const docToRemove = ref<Document | null>(null);
-
-const handleRemoveDocument = (document: Document) => {
-    docToRemove.value = document;
+const handleRemoveDocument = (document: Document, listType: 'expediente' | 'ordemDoDia') => {
+    docToRemove.value = { ...document, listType };
     confirmingDocRemoval.value = true;
 };
 
@@ -64,21 +68,32 @@ const closeModal = () => {
 };
 
 const deleteDocumentFromSession = () => {
-    if (!docToRemove.value) return;
-    router.delete(route('sessions.documents.destroy', { 
-        id: props.session.id, 
-        document_id: docToRemove.value.id 
+    const doc = docToRemove.value;
+    if (!doc) return;
+
+    let routeName: string;
+
+    if (doc.listType === 'expediente') {
+        routeName = 'sessions.documents.destroy_expendient';
+    } else if (doc.listType === 'ordemDoDia') {
+        routeName = 'sessions.documents.destroy_order';
+    } else {
+        closeModal();
+        return;
+    }
+
+    router.delete(route(routeName, {
+        id: props.session.id,
+        document_id: doc.id
     }), {
         preserveScroll: true,
         onSuccess: () => {
-            if (docToRemove.value) {
-                expedienteList.value = expedienteList.value.filter(
-                    doc => doc.id !== docToRemove.value?.id
-                );
-                ordemDoDiaList.value = ordemDoDiaList.value.filter(
-                    doc => doc.id !== docToRemove.value?.id
-                );
+            if (doc.listType === 'expediente') {
+                expedientList.value = expedientList.value.filter(d => d.id !== doc.id);
+            } else if (doc.listType === 'ordemDoDia') {
+                orderList.value = orderList.value.filter(d => d.id !== doc.id);
             }
+
             closeModal();
         },
     });
@@ -86,44 +101,37 @@ const deleteDocumentFromSession = () => {
 </script>
 
 <template>
+
     <Head title="Documentos" />
+
     <AuthenticatedLayout>
         <BackButtonRow :href="route('sessions.index')" />
         <div class="flex items-center justify-end mb-4">
             <PrimaryButton @click="resetOrder" :disabled="isReseting" :class="{ 'opacity-25': isReseting }">
-                <span v-if="isReseting">Salvando...</span>
+                <span v-if="isReseting">Restaurando...</span>
                 <span v-else>Restaurar Ordem</span>
             </PrimaryButton>
+
             <PrimaryButton @click="saveOrder" :disabled="isSaving" :class="{ 'opacity-25': isSaving, 'ml-1': true }">
                 <span v-if="isSaving">Salvando...</span>
                 <span v-else>Salvar Ordem</span>
             </PrimaryButton>
         </div>
-        <div class="gap-8">
-            <DocumentList 
-                title="Expediente do Dia" 
-                description="Documentos que serão discutidos no início da sessão."
-                :session="session" 
-                :documents="expedienteList" 
-                @update:documents="expedienteList = $event"
-                @remove-document="handleRemoveDocument" 
-            />
-            <DocumentList 
-                title="Ordem do Dia"
-                description="Documentos principais a serem votados ou discutidos em profundidade." 
-                :session="session"
-                :documents="ordemDoDiaList" 
-                @update:documents="ordemDoDiaList = $event"
-                @remove-document="handleRemoveDocument" 
-            />
+
+        <div class="space-y-8">
+            <DocumentList title="Expediente do Dia"
+                description="Documentos que serão discutidos no início da sessão." :session="session"
+                :documents="expedientList" @update:documents="expedientList = $event"
+                @remove-document="doc => handleRemoveDocument(doc, 'expediente')" />
+
+            <DocumentList title="Ordem do Dia"
+                description="Documentos principais a serem votados ou discutidos em profundidade."
+                :session="session" :documents="orderList" @update:documents="orderList = $event"
+                @remove-document="doc => handleRemoveDocument(doc, 'ordemDoDia')" />
         </div>
     </AuthenticatedLayout>
-    <ConfirmDeletionModal 
-        :show="confirmingDocRemoval" 
-        title="Remover Documento da Pauta"
-        :message="`Tem certeza que deseja remover o documento '${docToRemove?.name}' desta sessão?`"
-        buttonText="Remover da Pauta"
-        @close="closeModal" 
-        @confirm="deleteDocumentFromSession" 
-    />
+
+    <ConfirmDeletionModal :show="confirmingDocRemoval" title="Remover Documento da Pauta"
+        :message="`Tem certeza que deseja remover o documento '${docToRemove?.name}' da pauta de ${docToRemove?.listType === 'expediente' ? 'Expediente do Dia' : 'Ordem do Dia'} desta sessão?`"
+        buttonText="Remover da Pauta" @close="closeModal" @confirm="deleteDocumentFromSession" />
 </template>

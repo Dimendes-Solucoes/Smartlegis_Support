@@ -75,6 +75,7 @@ class DocumentService
             'document' => Document::findOrFail($id),
             'vote_statuses' => DocumentStatusVote::all(),
             'movement_statuses' => DocumentStatusMovement::all(),
+            'categories' => DocumentCategory::orderBy('is_active', 'desc')->orderBy('name')->get(),
         ];
     }
 
@@ -87,6 +88,7 @@ class DocumentService
             'protocol_number',
             'document_status_vote_id',
             'document_status_movement_id',
+            'document_category_id',
         ]);
 
         $document->update($fieldsToUpdate);
