@@ -495,9 +495,24 @@ class SessionService
         });
     }
 
-    public function removeDocumentFromSession(int $session_id, int $document_id): void
+    public function removeDocumentFromSession(int $session_id, int $document_id, int $ordem_do_dia): void
     {
-        $session = Session::findOrFail($session_id);
-        $session->documents()->detach($document_id);
+        DB::transaction(function () use ($session_id, $document_id, $ordem_do_dia) {
+            $document = Document::findOrFail($document_id);
+            $pautaCountInThisSession = DocumentSession::where('session_id', $session_id)
+                ->where('document_id', $document_id)
+                ->count();
+
+            DocumentSession::where('session_id', $session_id)
+                ->where('document_id', $document_id)
+                ->where('ordem_do_dia', $ordem_do_dia)
+                ->delete();
+
+            if ($pautaCountInThisSession === 1) {
+                $document->update([
+                    'document_status_movement_id' => 1 
+                ]);
+            }
+        });
     }
 }
