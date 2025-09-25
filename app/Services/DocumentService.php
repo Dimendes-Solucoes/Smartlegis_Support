@@ -75,7 +75,7 @@ class DocumentService
             'document' => Document::findOrFail($id),
             'vote_statuses' => DocumentStatusVote::all(),
             'movement_statuses' => DocumentStatusMovement::all(),
-            'categories' => DocumentCategory::where('is_active', true)->orderBy('name')->get(),
+            'categories' => DocumentCategory::orderBy('is_active', 'desc')->orderBy('name')->get(),
         ];
     }
 

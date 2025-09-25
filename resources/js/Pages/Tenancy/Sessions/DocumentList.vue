@@ -15,12 +15,14 @@ interface Document {
     attachment: string;
 }
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
     title: string;
     description: string;
     session: Session;
     documents: Document[];
-}>();
+}>(), {
+    documents: () => [],
+});
 
 const emit = defineEmits(['update:documents', 'remove-document']);
 
@@ -57,7 +59,7 @@ const removeDocument = (document: Document) => {
         <div v-if="documents.length === 0"
             class="p-6 text-center text-gray-500 dark:text-gray-400 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg">
             <ExclamationCircleIcon class="h-8 w-8 mx-auto mb-2 text-gray-400" />
-            <p>Nenhum documento no {{ title.toLowerCase() }}.</p>
+            <p>Nenhum documento em {{ title.toLowerCase() }}.</p>
         </div>
 
         <ul v-else class="space-y-3">

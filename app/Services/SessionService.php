@@ -438,23 +438,22 @@ class SessionService
                     ->delete();
 
                 foreach ($session->documents as $document) {
-                    $lastVoteOrder = Vote::where('document_id', $document->id)
-                                         ->max('order');
+                    $lastVoteOrder = Vote::where('document_id', $document->id)->max('order');
+
                     $updateData = [
-                        'document_status_vote_id' => 2, // "Aguardando Votação"
-                        'document_status_movement_id' => 2, // "Em Sessão"
+                        'document_status_vote_id' => 2,
+                        'document_status_movement_id' => 2,
                     ];
-                    if ($lastVoteOrder == 1) {
-                        $updateData['voting_result_1'] = null;
-                    } elseif ($lastVoteOrder == 2) {
-                        $updateData['voting_result_2'] = null;
-                    } 
+
+                    if (in_array($lastVoteOrder, [1, 2])) {
+                        $updateData['voting_result_' . $lastVoteOrder] = null;
+                    }
 
                     $document->update($updateData);
                 }
             }
 
-            $session->update(['session_status_id' => 1]); // "aguardando votação"
+            $session->update(['session_status_id' => 1]);
         });
     }
 
@@ -464,8 +463,8 @@ class SessionService
 
         return DB::transaction(function () use ($originalSession) {
             $newSession = $originalSession->replicate(['datetime_end']);
-            $newSession->name = '(DUPLICATA) ' . $originalSession->name ;
-            $newSession->session_status_id = 2; // "Aguardando Votação"
+            $newSession->name = '(DUPLICATA) ' . $originalSession->name;
+            $newSession->session_status_id = 2;
             $newSession->created_at = now();
             $newSession->updated_at = now();
             $newSession->save();
@@ -480,7 +479,7 @@ class SessionService
                 $newDocument->created_at = now();
                 $newDocument->updated_at = now();
                 $newDocument->save();
-                
+
                 $newDocumentsPivotData[$newDocument->id] = [
                     'ordem_do_dia' => $originalDocument->pivot->ordem_do_dia,
                     'order' => $originalDocument->pivot->order,
@@ -497,22 +496,28 @@ class SessionService
 
     public function removeDocumentFromSession(int $session_id, int $document_id, int $ordem_do_dia): void
     {
-        DB::transaction(function () use ($session_id, $document_id, $ordem_do_dia) {
+        DB::beginTransaction();
+
+        try {
             $document = Document::findOrFail($document_id);
-            $hasOtherType = DocumentSession::where('ordem_do_dia', $ordem_do_dia == 1 ? 0 : 1)
-                ->where('document_id', $document_id)
-                ->exists();
 
             DocumentSession::where('session_id', $session_id)
                 ->where('document_id', $document_id)
                 ->where('ordem_do_dia', $ordem_do_dia)
                 ->delete();
 
-            if ($hasOtherType) {
-                $document->update([
-                    'document_status_movement_id' => 1 
-                ]);
+            $hasOppositeType = DocumentSession::where('ordem_do_dia', 1 - $ordem_do_dia)
+                ->where('document_id', $document_id)
+                ->exists();
+
+            if (!$hasOppositeType) {
+                $document->update(['document_status_movement_id' => 1]);
             }
-        });
+
+            DB::commit();
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            throw $e;
+        }
     }
 }
