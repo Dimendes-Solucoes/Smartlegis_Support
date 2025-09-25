@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { Head, router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
@@ -30,6 +30,14 @@ const props = defineProps<{
 
 const expedientList = ref(props.expedientDocuments);
 const orderList = ref(props.orderDocuments);
+
+watch(() => props.expedientDocuments, (newExpedientDocuments) => {
+    expedientList.value = newExpedientDocuments;
+}, { deep: true });
+
+watch(() => props.orderDocuments, (newOrderDocuments) => {
+    orderList.value = newOrderDocuments;
+}, { deep: true });
 
 const isSaving = ref(false);
 const isReseting = ref(false);
