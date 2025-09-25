@@ -499,16 +499,16 @@ class SessionService
     {
         DB::transaction(function () use ($session_id, $document_id, $ordem_do_dia) {
             $document = Document::findOrFail($document_id);
-            $pautaCountInThisSession = DocumentSession::where('session_id', $session_id)
+            $hasOtherType = DocumentSession::where('ordem_do_dia', $ordem_do_dia == 1 ? 0 : 1)
                 ->where('document_id', $document_id)
-                ->count();
+                ->exists();
 
             DocumentSession::where('session_id', $session_id)
                 ->where('document_id', $document_id)
                 ->where('ordem_do_dia', $ordem_do_dia)
                 ->delete();
 
-            if ($pautaCountInThisSession === 1) {
+            if ($hasOtherType) {
                 $document->update([
                     'document_status_movement_id' => 1 
                 ]);
