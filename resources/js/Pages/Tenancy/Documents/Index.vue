@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import IconButton from '@/Components/Itens/IconButton.vue';
@@ -8,7 +8,7 @@ import ConfirmDeletionModal from '@/Components/ConfirmDeletionModal.vue';
 import TextInput from '@/Components/TextInput.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
-import { EyeIcon, PencilSquareIcon, TrashIcon, ChevronUpIcon, ChevronDownIcon } from '@heroicons/vue/24/outline';
+import { EyeIcon, PencilSquareIcon, TrashIcon, ChevronUpIcon, ChevronDownIcon, MagnifyingGlassIcon } from '@heroicons/vue/24/outline';
 import TagMultiselectFilter from '@/Components/MultiselectFilter/TagMultiselectFilter.vue';
 
 interface Document {
@@ -28,6 +28,7 @@ interface Category {
     id: number;
     name: string;
 }
+
 const props = defineProps<{
     documents: PaginatedDocuments;
     categories: Category[];
@@ -74,7 +75,6 @@ const closeModal = () => {
     confirmingDeletion.value = false;
     itemToDelete.value = null;
 };
-
 const deleteItem = () => {
     if (!itemToDelete.value) return;
     router.delete(route('documents.destroy', itemToDelete.value.id), {
@@ -125,79 +125,77 @@ const sortBy = (field: string) => {
     <Head title="Documentos" />
 
     <AuthenticatedLayout>
-        <div class="py-6">
-            <div class="mx-auto max-w-screen-xl sm:px-4 lg:px-4">
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900 dark:text-gray-100">
-                        
-                        <form @submit.prevent="submitFilters" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-                            <TagMultiselectFilter 
-                                :options="categories"
-                                v-model="selectedCategories"
-                                placeholder="Filtrar por Categoria"
-                                class="lg:col-span-1"
-                            />
-                            <div class="flex items-center lg:col-span-2">
+                        <form @submit.prevent="submitFilters">
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                <TagMultiselectFilter 
+                                    :options="categories"
+                                    v-model="selectedCategories"
+                                    placeholder="Filtrar por Categoria"
+                                    class="md:col-span-2 " />
                                 <TextInput
                                     type="text"
                                     v-model="search"
                                     placeholder="Buscar por nome ou protocolo..."
-                                    class="w-full rounded-r-none h-10"
-                                />
-                                <PrimaryButton type="submit" class="rounded-l-none rounded-r-none h-10">Buscar</PrimaryButton>
-                                <SecondaryButton v-if="search || selectedCategories.length > 0" type="button" @click="clearFilters" class="rounded-l-none h-10">
-                                    Limpar
+                                    class="md:col-span-2 " />
+                            </div>
+                            <div class="flex justify-end items-center space-x-4 mt-4">
+                                <PrimaryButton type="submit" class="h-9 flex items-center">
+                                    <MagnifyingGlassIcon class="h-5 w-5 mr-4" />
+                                    <span>Pesquisar</span>
+                                </PrimaryButton>
+                                <SecondaryButton v-if="search || selectedCategories.length > 0" type="button" @click="clearFilters" class="h-10">
+                                    Limpar 
                                 </SecondaryButton>
                             </div>
                         </form>
 
-                        <div class="overflow-x-auto">
+                        <div class="overflow-x-auto mt-4">
                             <table v-if="props.documents.data.length > 0" class="min-w-full divide-y divide-gray-200 dark:divide-gray-600 text-sm">
                                 <thead class="bg-gray-50 dark:bg-gray-700/50">
                                     <tr>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
+                                        <th class="px-6 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
                                             <button @click="sortBy('id')" class="flex items-center space-x-1">
                                                 <span>ID</span>
                                                 <ChevronUpIcon v-if="filters.sort === 'id' && filters.direction === 'asc'" class="h-4 w-4" />
                                                 <ChevronDownIcon v-if="filters.sort === 'id' && filters.direction === 'desc'" class="h-4 w-4" />
                                             </button>
                                         </th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
+                                        <th class="px-6 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
                                             <button @click="sortBy('name')" class="flex items-center space-x-1">
-                                                <span>TÍTULO</span>
+                                                <span>Título</span>
                                                 <ChevronUpIcon v-if="filters.sort === 'name' && filters.direction === 'asc'" class="h-4 w-4" />
                                                 <ChevronDownIcon v-if="filters.sort === 'name' && filters.direction === 'desc'" class="h-4 w-4" />
                                             </button>
                                         </th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
+                                        <th class="px-6 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
                                             Votação</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
+                                        <th class="px-6 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
                                             Movimentação</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
+                                        <th class="px-6 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
                                             Assinatura</th>
-                                        <th class="relative px-6 py-3"><span class="sr-only">Ações</span></th>
+                                        <th class="relative px-6 py-2"><span class="sr-only">Ações</span></th>
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
                                     <tr v-for="doc in props.documents.data" :key="doc.id" class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                                        <td class="px-6 py-4 whitespace-nowrap font-medium">{{ doc.id || 'N/A' }}</td>
-                                        <td class="px-6 py-4 whitespace-normal font-medium">{{ doc.name }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
+                                        <td class="px-6 py-2 whitespace-nowrap font-medium">{{ doc.id || 'N/A' }}</td>
+                                        <td class="px-6 py-2 whitespace-normal font-medium">{{ doc.name }}</td>
+                                        <td class="px-6 py-2 whitespace-nowrap">
                                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full" :class="getVoteStatusColor(doc.document_status_vote_id)">
                                                 {{ getVoteStatusText(doc.document_status_vote_id) }}
                                             </span>
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
+                                        <td class="px-6 py-2 whitespace-nowrap">
                                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full" :class="getMovementStatusColor(doc.document_status_movement_id)">
                                                 {{ getMovementStatusText(doc.document_status_movement_id) }}
                                             </span>
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
+                                        <td class="px-6 py-2 whitespace-nowrap">
                                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full" :class="getSignatureStatusColor(doc.status_sign)">
                                                 {{ getSignatureStatusText(doc.status_sign) }}
                                             </span>
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <td class="px-6 py-2 whitespace-nowrap text-right text-sm font-medium">
                                             <div class="flex items-center justify-end space-x-1">
                                                 <LinkButton v-if="doc.attachment_url" :link="doc.attachment_url" title="Visualizar documento">
                                                     <EyeIcon class="h-5 w-5 text-white" />
@@ -226,10 +224,6 @@ const sortBy = (field: string) => {
                                 :class="{ 'bg-indigo-500 text-white rounded-md': link.active, 'text-gray-500 hover:text-gray-800': !link.active, 'cursor-not-allowed text-gray-400': !link.url }"
                                 v-html="link.label" />
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </AuthenticatedLayout>
 
     <ConfirmDeletionModal :show="confirmingDeletion" title="Excluir Documento"
