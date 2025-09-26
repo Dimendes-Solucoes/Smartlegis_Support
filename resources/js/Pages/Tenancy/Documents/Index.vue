@@ -74,6 +74,7 @@ const closeModal = () => {
     confirmingDeletion.value = false;
     itemToDelete.value = null;
 };
+
 const deleteItem = () => {
     if (!itemToDelete.value) return;
     router.delete(route('documents.destroy', itemToDelete.value.id), {

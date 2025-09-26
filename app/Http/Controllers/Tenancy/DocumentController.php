@@ -37,6 +37,6 @@ class DocumentController extends Controller
     public function destroy(int $id)
     {
         $this->service->destroyDocument($id);
-        return redirect()->route('documents.index')->with('success', 'Documento movido para a lixeira!');
+        return back()->with('success', 'Documento movido para a lixeira!');
     }
 }
