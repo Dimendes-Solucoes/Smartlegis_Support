@@ -16,6 +16,7 @@ class DocumentService
     public function getAllDocuments(Request $request): LengthAwarePaginator
     {
         $search = $request->input('search');
+        $categoryId = $request->input('category_id');
         $sortField = $request->input('sort', 'id');
         $sortDirection = $request->input('direction', 'desc');
 
@@ -32,10 +33,9 @@ class DocumentService
                         ->orWhere('protocol_number', 'ilike', "%{$search}%");
                 });
             })
-            ->when($request->input('categories'), function ($query, $categories) {
-                $categoryIds = is_array($categories) ? $categories : [$categories];
-                if (!empty($categoryIds)) {
-                    $query->whereIn('document_category_id', $categoryIds);
+            ->when($categoryId, function ($query, $categoryId) {
+                if ($categoryId !== 'null' && $categoryId !== null && $categoryId !== '') {
+                    $query->where('document_category_id', $categoryId);
                 }
             });
 
@@ -56,7 +56,7 @@ class DocumentService
 
     public function getDocumentsForIndex(Request $request): array
     {
-        $filters = $request->only(['search', 'sort', 'direction', 'categories']);
+        $filters = $request->only(['search', 'category_id', 'sort', 'direction']);
 
         $categories = DocumentCategory::where('is_active', true)
             ->orderBy('name')
