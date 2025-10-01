@@ -5,6 +5,7 @@ import { Head, router } from '@inertiajs/vue3';
 import IconButton from '@/Components/Itens/IconButton.vue';
 import { TrashIcon } from '@heroicons/vue/24/outline';
 import ConfirmDeletionModal from '@/Components/ConfirmDeletionModal.vue';
+import { getImageUrl } from '@/Utils/image'; // 1. Importe sua função de imagem
 
 interface Tenant {
     id: string;
@@ -19,6 +20,7 @@ interface Credential {
     host: string;
     key: string;
     city_name: string | null;
+    city_shield: string | null; // 2. Adicione o novo campo à interface
     tenant: Tenant | null;
 }
 
@@ -49,41 +51,50 @@ const deleteItem = () => {
 </script>
 
 <template>
-    <Head title="Credenciais" />
-    <AuthenticatedLayout>
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                    <div v-if="credentials.length > 0" class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
-                            <thead class="bg-gray-50 dark:bg-gray-700/50">
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Cidade</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Nome Curto</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Canal</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Host</th>
-                                    <th class="relative px-6 py-3"><span class="sr-only">Ações</span></th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
-                                <tr v-for="credential in credentials" :key="credential.id" class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ credential.tenant?.city_name || credential.city_name || 'N/A' }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ credential.short_name }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ credential.channel }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ credential.host }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <div class="flex items-center justify-end space-x-1">
-                                            <IconButton as="button" color="red" title="Excluir Permanentemente" @click="openConfirmDeleteModal(credential)">
-                                                <TrashIcon class="h-5 w-5" />
-                                            </IconButton>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+        <Head title="Credenciais" />
+
+        <AuthenticatedLayout>
+                    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                        <div v-if="credentials.length > 0" class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
+                                <thead class="bg-gray-50 dark:bg-gray-700/50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Brasão</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Cidade</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Nome Curto</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Canal</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Host</th>
+                                        <th class="relative px-6 py-3"><span class="sr-only">Ações</span></th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
+                                    <tr v-for="credential in credentials" :key="credential.id" class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <img v-if="credential.city_shield" :src="getImageUrl(credential.city_shield)" alt="Brasão"
+                                                class="h-10 w-10 object-contain rounded-md">
+                                            <div v-else class="h-10 w-10 bg-gray-200 dark:bg-gray-700 rounded-md flex items-center justify-center text-xs text-gray-500">
+                                                <span>N/A</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">{{ credential.tenant?.city_name || credential.city_name || 'N/A' }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">{{ credential.short_name }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">{{ credential.channel }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">{{ credential.host }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                            <div class="flex items-center justify-end space-x-1">
+                                                <IconButton as="button" color="red" title="Excluir Permanentemente" @click="openConfirmDeleteModal(credential)">
+                                                    <TrashIcon class="h-5 w-5" />
+                                                </IconButton>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div v-else class="p-6 text-center text-gray-500">
+                            <p>Nenhuma credencial encontrada.</p>
+                        </div>
                     </div>
-                    <div v-else class="p-6 text-center text-gray-500">
-                        <p>Nenhuma credencial encontrada.</p>
-                    </div>
-                </div>
     </AuthenticatedLayout>
 
     <ConfirmDeletionModal 

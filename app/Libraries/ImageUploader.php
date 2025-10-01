@@ -5,10 +5,11 @@ namespace App\Libraries;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
 use Intervention\Image\Laravel\Facades\Image;
+use Illuminate\Support\Facades\Storage;
 
 class ImageUploader
 {
-    public static function handleImageUpload(UploadedFile $imageFile): ?string
+    public static function handleImageUpload(UploadedFile $imageFile, string $storagePath = 'imagens_user'): ?string
     {
         if (!$imageFile instanceof UploadedFile) {
             return null;
@@ -25,10 +26,11 @@ class ImageUploader
 
         $extension = $imageFile->getClientOriginalExtension();
         $fileName = Str::random(40) . '.' . $extension;
-        $filePath = 'imagens_user/' . $fileName;
+        
+        $fullPath = rtrim($storagePath, '/') . '/' . $fileName;
 
-        $path = StorageCustom::put($filePath, (string) $image->encode());
+        Storage::disk('public')->put($fullPath, (string) $image->encode());
 
-        return "/" . $path;
+        return $fullPath;
     }
 }
