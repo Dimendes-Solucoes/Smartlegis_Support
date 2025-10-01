@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\ClicksignController;
+use App\Http\Controllers\CredentialController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SelectedTenantController;
@@ -31,6 +32,17 @@ Route::middleware(['auth', 'is_root'])->group(function () {
 
     Route::get('/clicksign', [ClicksignController::class, 'index'])->name('clicksign.index');
     Route::delete('/clicksign', [ClicksignController::class, 'destroy'])->name('clicksign.destroy');
+});
+
+Route::prefix('credentials')->name('credentials.')
+        ->controller(CredentialController::class)
+        ->group(function() {
+            Route::get('/', 'index')->name('index');
+            Route::get('/create', 'create')->name('create');
+            Route::post('/', 'store')->name('store');
+            Route::get('/{id}/edit', 'edit')->name('edit');
+            Route::put('/{id}', 'update')->name('update');
+            Route::delete('/{id}', 'destroy')->name('destroy');
 });
 
 require __DIR__ . '/auth.php';

@@ -13,6 +13,7 @@ import {
     UserGroupIcon,
     PencilSquareIcon,
     DocumentTextIcon,
+    KeyIcon,
 } from '@heroicons/vue/24/outline';
 
 interface NavigationLink {
@@ -45,6 +46,12 @@ export const staticNavigationLinks: NavigationLink[] = [
         label: 'Configurações',
         icon: Cog6ToothIcon,
         route: 'tenant.settings',
+        type: 'link',
+    },
+    {
+        label: 'Credenciais',
+        icon: KeyIcon,
+        route: 'credentials.index',
         type: 'link',
     },
     {
