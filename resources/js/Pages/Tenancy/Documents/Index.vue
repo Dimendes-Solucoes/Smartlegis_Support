@@ -6,9 +6,9 @@ import IconButton from '@/Components/Itens/IconButton.vue';
 import LinkButton from '@/Components/LinkButton.vue';
 import ConfirmDeletionModal from '@/Components/ConfirmDeletionModal.vue';
 import TextInput from '@/Components/TextInput.vue';
-import { EyeIcon, PencilSquareIcon, TrashIcon, ChevronUpIcon, ChevronDownIcon, ArrowPathIcon } from '@heroicons/vue/24/outline';
-import { debounce } from 'lodash';
-import TagMultiselectFilter from '@/Components/MultiselectFilter/TagMultiselectFilter.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
+import SecondaryButton from '@/Components/SecondaryButton.vue';
+import { EyeIcon, PencilSquareIcon, TrashIcon, ChevronUpIcon, ChevronDownIcon, MagnifyingGlassIcon } from '@heroicons/vue/24/outline';
 
 interface Document {
     id: number;
@@ -19,10 +19,12 @@ interface Document {
     document_status_movement_id: number;
     status_sign: number;
 }
+
 interface PaginatedDocuments {
     data: Document[];
     links: { url: string | null; label: string; active: boolean; }[];
 }
+
 interface Category {
     id: number;
     name: string;
@@ -35,7 +37,7 @@ const props = defineProps<{
         search: string;
         sort: string;
         direction: string;
-        categories?: number[];
+        category_id: number | null;
     }
 }>();
 
@@ -71,14 +73,17 @@ const getMovementStatusColor = (statusId: number) => {
 
 const confirmingDeletion = ref(false);
 const itemToDelete = ref<Document | null>(null);
+
 const openConfirmDeleteModal = (item: Document) => {
     itemToDelete.value = item;
     confirmingDeletion.value = true;
 };
+
 const closeModal = () => {
     confirmingDeletion.value = false;
     itemToDelete.value = null;
 };
+
 const deleteItem = () => {
     if (!itemToDelete.value) return;
     router.delete(route('documents.destroy', itemToDelete.value.id), {
@@ -88,19 +93,25 @@ const deleteItem = () => {
 };
 
 const search = ref(props.filters.search || '');
-const selectedCategories = ref(props.filters.categories || []);
+const selectedCategory = ref(props.filters.category_id !== undefined ? props.filters.category_id : null);
 
-watch([search, selectedCategories], debounce(() => {
+const submitFilters = () => {
     router.get(route('documents.index'), {
         search: search.value,
-        categories: selectedCategories.value,
+        category_id: selectedCategory.value,
         sort: props.filters.sort,
         direction: props.filters.direction,
     }, {
         preserveState: true,
         replace: true,
     });
-}, 300));
+};
+
+const clearFilters = () => {
+    search.value = '';
+    selectedCategory.value = null;
+    submitFilters();
+};
 
 const sortBy = (field: string) => {
     let direction = 'asc';
@@ -111,16 +122,11 @@ const sortBy = (field: string) => {
         sort: field,
         direction: direction,
         search: search.value,
-        categories: selectedCategories.value,
+        category_id: selectedCategory.value,
     }, {
         preserveState: true,
         replace: true,
     });
-};
-
-const clearFilters = () => {
-    search.value = '';
-    selectedCategories.value = [];
 };
 </script>
 
@@ -129,24 +135,41 @@ const clearFilters = () => {
     <Head title="Documentos" />
 
     <AuthenticatedLayout>
-        <div class="flex flex-wrap items-end gap-4 mb-6">
-            <TagMultiselectFilter :options="categories" v-model="selectedCategories" placeholder="Filtrar por Categoria"
-                class="flex-1 min-w-[200px]" />
-            <TextInput type="text" v-model="search" placeholder="Buscar por nome..."
-                class="flex-1 h-10 min-w-[200px]" />
+        <form @submit.prevent="submitFilters">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="md:col-span-2">
+                    <select id="category-filter" v-model="selectedCategory"
+                        class="block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
+                        <option :value="null">Todas as categorias</option>
+                        <option v-for="category in categories" :key="category.id" :value="category.id">
+                            {{ category.name }}
+                        </option>
+                    </select>
+                </div>
 
-            <IconButton as="button" @click="clearFilters" color="indigo" title="Limpar Filtros" class="h-9 w-9 my-auto">
-                <ArrowPathIcon class="h-6 w-6" />
-            </IconButton>
-        </div>
+                <TextInput type="text" v-model="search" placeholder="Buscar por nome ou protocolo..." class="md:col-span-2" />
+            </div>
 
-        <div class="overflow-x-auto">
+            <div class="flex justify-end items-center space-x-4 mt-4">
+                <PrimaryButton type="submit" class="h-9 flex items-center">
+                    <MagnifyingGlassIcon class="h-5 w-5 mr-2" />
+                    <span>Pesquisar</span>
+                </PrimaryButton>
+
+                <SecondaryButton v-if="search || selectedCategory !== null" type="button" @click="clearFilters"
+                    class="h-9">
+                    Limpar
+                </SecondaryButton>
+            </div>
+        </form>
+
+        <div class="overflow-x-auto mt-4">
             <table v-if="props.documents.data.length > 0"
                 class="min-w-full divide-y divide-gray-200 dark:divide-gray-600 text-sm">
                 <thead class="bg-gray-50 dark:bg-gray-700/50">
                     <tr>
                         <th
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
+                            class="px-6 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
                             <button @click="sortBy('id')" class="flex items-center space-x-1">
                                 <span>ID</span>
                                 <ChevronUpIcon v-if="filters.sort === 'id' && filters.direction === 'asc'"
@@ -156,12 +179,9 @@ const clearFilters = () => {
                             </button>
                         </th>
                         <th
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
-                            Prot.</th>
-                        <th
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
+                            class="px-6 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
                             <button @click="sortBy('name')" class="flex items-center space-x-1">
-                                <span>TÍTULO</span>
+                                <span>Título</span>
                                 <ChevronUpIcon v-if="filters.sort === 'name' && filters.direction === 'asc'"
                                     class="h-4 w-4" />
                                 <ChevronDownIcon v-if="filters.sort === 'name' && filters.direction === 'desc'"
@@ -169,52 +189,49 @@ const clearFilters = () => {
                             </button>
                         </th>
                         <th
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
+                            class="px-6 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
                             Votação</th>
                         <th
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
+                            class="px-6 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
                             Movimentação</th>
                         <th
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
+                            class="px-6 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
                             Assinatura</th>
-                        <th class="relative px-6 py-3"><span class="sr-only">Ações</span></th>
+                        <th class="relative px-6 py-2"><span class="sr-only">Ações</span></th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
                     <tr v-for="doc in props.documents.data" :key="doc.id"
                         class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                        <td class="px-6 py-4 whitespace-nowrap font-medium">{{ doc.id || 'N/A' }}</td>
-                        <td class="px-6 py-4 whitespace-normal font-medium">{{ doc.protocol_number }}</td>
-                        <td class="px-6 py-4 whitespace-normal font-medium">{{ doc.name }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
+                        <td class="px-6 py-2 whitespace-nowrap font-medium">{{ doc.id || 'N/A' }}</td>
+                        <td class="px-6 py-2 whitespace-normal font-medium">{{ doc.name }}</td>
+                        <td class="px-6 py-2 whitespace-nowrap">
                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
                                 :class="getVoteStatusColor(doc.document_status_vote_id)">
                                 {{ getVoteStatusText(doc.document_status_vote_id) }}
                             </span>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
+                        <td class="px-6 py-2 whitespace-nowrap">
                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
                                 :class="getMovementStatusColor(doc.document_status_movement_id)">
                                 {{ getMovementStatusText(doc.document_status_movement_id) }}
                             </span>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
+                        <td class="px-6 py-2 whitespace-nowrap">
                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
                                 :class="getSignatureStatusColor(doc.status_sign)">
                                 {{ getSignatureStatusText(doc.status_sign) }}
                             </span>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <td class="px-6 py-2 whitespace-nowrap text-right text-sm font-medium">
                             <div class="flex items-center justify-end space-x-1">
                                 <LinkButton v-if="doc.attachment_url" :link="doc.attachment_url"
                                     title="Visualizar documento">
                                     <EyeIcon class="h-5 w-5 text-white" />
                                 </LinkButton>
-
                                 <IconButton :href="route('documents.edit', doc.id)" color="yellow" title="Editar">
                                     <PencilSquareIcon class="h-5 w-5" />
                                 </IconButton>
-
                                 <IconButton as="button" color="red" title="Excluir"
                                     @click.stop="openConfirmDeleteModal(doc)">
                                     <TrashIcon class="h-5 w-5" />

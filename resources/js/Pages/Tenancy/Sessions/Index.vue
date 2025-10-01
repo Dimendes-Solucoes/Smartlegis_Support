@@ -125,85 +125,89 @@ const closeModal = () => {
             </TextButton>
         </div>
 
-        <div v-if="props.sessions.data.length > 0"
-            class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
-                <thead class="bg-gray-50 dark:bg-gray-700/50">
-                    <tr>
-                        <th scope="col"
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
-                            <button @click="sortBy('name')" class="flex items-center space-x-1 uppercase">
-                                <span>Nome da Sessão</span>
-                                <ChevronUpIcon v-if="filters.sort === 'name' && filters.direction === 'asc'"
-                                    class="h-4 w-4" />
-                                <ChevronDownIcon v-if="filters.sort === 'name' && filters.direction === 'desc'"
-                                    class="h-4 w-4" />
-                            </button>
-                        </th>
-                        <th scope="col"
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
-                            <button @click="sortBy('datetime_start')" class="flex items-center space-x-1 uppercase">
-                                <span>Data de Início</span>
-                                <ChevronUpIcon v-if="filters.sort === 'datetime_start' && filters.direction === 'asc'"
-                                    class="h-4 w-4" />
-                                <ChevronDownIcon
-                                    v-if="filters.sort === 'datetime_start' && filters.direction === 'desc'"
-                                    class="h-4 w-4" />
-                            </button>
-                        </th>
-                        <th scope="col"
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
-                            Status
-                        </th>
-                        <th scope="col"
-                            class="relative px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
-                            Ações
-                        </th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
-                    <tr v-for="session in props.sessions.data" :key="session.id"
-                        class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                        <td class="px-6 py-4 whitespace-normal">{{ session.name }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ formatDate(session.datetime_start) }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <SessionStatusBadge :status="session.session_status_id" />
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <div class="flex items-center justify-end space-x-1">
-                                <IconButton as="button" color="purple" title="Duplicar Sessão"
-                                    @click.stop="openConfirmDuplicateModal(session)">
-                                    <DocumentDuplicateIcon class="h-5 w-5" />
-                                </IconButton>
+        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="overflow-x-auto">
+                <table v-if="props.sessions.data.length > 0"
+                    class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
+                    <thead class="bg-gray-50 dark:bg-gray-700/50">
+                        <tr>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
+                                <button @click="sortBy('name')" class="flex items-center space-x-1 uppercase">
+                                    <span>Nome da Sessão</span>
+                                    <ChevronUpIcon v-if="filters.sort === 'name' && filters.direction === 'asc'"
+                                        class="h-4 w-4" />
+                                    <ChevronDownIcon v-if="filters.sort === 'name' && filters.direction === 'desc'"
+                                        class="h-4 w-4" />
+                                </button>
+                            </th>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
+                                <button @click="sortBy('datetime_start')" class="flex items-center space-x-1 uppercase">
+                                    <span>Data de Início</span>
+                                    <ChevronUpIcon
+                                        v-if="filters.sort === 'datetime_start' && filters.direction === 'asc'"
+                                        class="h-4 w-4" />
+                                    <ChevronDownIcon
+                                        v-if="filters.sort === 'datetime_start' && filters.direction === 'desc'"
+                                        class="h-4 w-4" />
+                                </button>
+                            </th>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
+                                Status
+                            </th>
+                            <th scope="col"
+                                class="relative px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
+                                Ações
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
+                        <tr v-for="session in props.sessions.data" :key="session.id"
+                            class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                            <td class="px-6 py-4 whitespace-normal">{{ session.name }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ formatDate(session.datetime_start) }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <SessionStatusBadge :status="session.session_status_id" />
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <div class="flex items-center justify-end space-x-1">
+                                    <IconButton as="button" color="purple" title="Duplicar Sessão"
+                                        @click.stop="openConfirmDuplicateModal(session)">
+                                        <DocumentDuplicateIcon class="h-5 w-5" />
+                                    </IconButton>
 
-                                <IconButton as="button" color="blue" title="Resetar Sessão"
-                                    @click.stop="openConfirmResetModal(session)">
-                                    <ArrowPathIcon class="h-5 w-5" />
-                                </IconButton>
+                                    <IconButton as="button" color="blue" title="Resetar Sessão"
+                                        @click.stop="openConfirmResetModal(session)">
+                                        <ArrowPathIcon class="h-5 w-5" />
+                                    </IconButton>
 
-                                <IconButton :href="route('sessions.documents', session.id)" color="green"
-                                    title="Documentos da Sessão">
-                                    <ListBulletIcon class="h-5 w-5" />
-                                </IconButton>
+                                    <IconButton :href="route('sessions.documents', session.id)" color="green"
+                                        title="Documentos da Sessão">
+                                        <ListBulletIcon class="h-5 w-5" />
+                                    </IconButton>
 
-                                <IconButton :href="route('sessions.edit', session.id)" color="yellow"
-                                    title="Editar Sesssão">
-                                    <PencilSquareIcon class="h-5 w-5" />
-                                </IconButton>
+                                    <IconButton :href="route('sessions.edit', session.id)" color="yellow"
+                                        title="Editar Sesssão">
+                                        <PencilSquareIcon class="h-5 w-5" />
+                                    </IconButton>
 
-                                <IconButton as="button" color="red" title="Excluir Sessão"
-                                    @click.stop="openConfirmDeleteModal(session)">
-                                    <TrashIcon class="h-5 w-5" />
-                                </IconButton>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+                                    <IconButton as="button" color="red" title="Excluir Sessão"
+                                        @click.stop="openConfirmDeleteModal(session)">
+                                        <TrashIcon class="h-5 w-5" />
+                                    </IconButton>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
 
-        <div v-else class="bg-white dark:bg-gray-800 rounded-lg p-6 text-center text-gray-500">
-            <p>Nenhuma sessão encontrada.</p>
+            <div v-if="props.sessions.data.length === 0"
+                class="bg-white dark:bg-gray-800 rounded-lg p-6 text-center text-gray-500">
+                <p>Nenhuma sessão encontrada.</p>
+            </div>
         </div>
 
         <div v-if="props.sessions.data.length > 0 && props.sessions.links.length > 3" class="mt-6 flex justify-center">
