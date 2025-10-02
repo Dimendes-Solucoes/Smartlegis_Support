@@ -34,10 +34,7 @@ const submit = () => {
 <template>
     <Head title="Nova Credencial" />
     <AuthenticatedLayout>
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900 dark:text-gray-100">
                         <BackButtonRow :href="route('credentials.index')" />
-                        <h2 class="text-xl font-semibold mt-4">Cadastrar Nova Credencial</h2>
                         <form @submit.prevent="submit" class="mt-6">
                             <CredentialForm :form="form" :tenants="props.formData.tenants" />
                             <div class="flex items-center justify-end mt-6">
@@ -46,7 +43,5 @@ const submit = () => {
                                 </PrimaryButton>
                             </div>
                         </form>
-                    </div>
-                </div>
     </AuthenticatedLayout>
 </template>

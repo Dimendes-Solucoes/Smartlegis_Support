@@ -8,10 +8,6 @@ import ConfirmDeletionModal from '@/Components/ConfirmDeletionModal.vue';
 import { getImageUrl } from '@/Utils/image';
 import TextButton from '@/Components/Itens/TextButton.vue';
 
-interface Tenant {
-    id: string;
-    city_name: string;
-}
 interface Credential {
     id: number;
     tenant_id: string;
@@ -21,14 +17,15 @@ interface Credential {
     key: string;
     city_name: string | null;
     city_shield: string | null;
-    tenant: Tenant | null;
 }
 
 const props = defineProps<{
     credentials: Credential[];
+    can: {
+        delete_credential: boolean;
+    }
 }>();
 
-const user = computed(() => usePage().props.auth.user as { is_root: boolean });
 const itemToDelete = ref<Credential | null>(null);
 const confirmingDeletion = ref(false);
 
@@ -79,7 +76,7 @@ const deleteItem = () => {
                                                 <span>N/A</span>
                                             </div>
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ credential.tenant?.city_name || credential.city_name || 'N/A' }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">{{ credential.city_name || 'N/A' }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap">{{ credential.short_name }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap">{{ credential.channel }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap">{{ credential.host }}</td>
@@ -88,7 +85,7 @@ const deleteItem = () => {
                                                 <IconButton :href="route('credentials.edit', credential.id)" color="yellow" title="Editar">
                                                     <PencilSquareIcon class="h-5 w-5" />
                                                 </IconButton>
-                                                <IconButton v-if="user.is_root" as="button" color="red" title="Excluir" @click="openConfirmDeleteModal(credential)">
+                                                <IconButton v-if="can.delete_credential" as="button" color="red" title="Excluir" @click="openConfirmDeleteModal(credential)">
                                                     <TrashIcon class="h-5 w-5" />
                                                 </IconButton>
                                             </div>
@@ -102,6 +99,6 @@ const deleteItem = () => {
                         </div>
                     </div>
         </AuthenticatedLayout>
-        <ConfirmDeletionModal :show="confirmingDeletion" title="Excluir Credencial" :message="`Tem certeza que deseja mover a credencial para '${itemToDelete?.tenant?.city_name || itemToDelete?.city_name}' para a lixeira?`" buttonText="Excluir" @close="closeModal" @confirm="deleteItem" />
+        <ConfirmDeletionModal :show="confirmingDeletion" title="Excluir Credencial" :message="`Tem certeza que deseja mover a credencial para '${itemToDelete?.city_name}' para a lixeira?`" buttonText="Excluir" @close="closeModal" @confirm="deleteItem" />
     </div>
 </template>
