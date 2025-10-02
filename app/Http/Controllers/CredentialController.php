@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Credentials\CredentialStoreRequest;
+use App\Http\Requests\Credentials\CredentialUpdateRequest;
 use App\Services\CredentialService;
 use Inertia\Inertia;
+use Illuminate\Http\Request;
 
 class CredentialController extends Controller
 {
@@ -13,12 +16,47 @@ class CredentialController extends Controller
     {
         return Inertia::render('Credentials/Index', [
             'credentials' => $this->service->getAllCredentials(),
+            'can' => [
+                'delete_credential' => auth()->user()->is_root,
+            ]
         ]);
+    }
+    
+    public function create()
+    {
+        return Inertia::render('Credentials/CreateCredential', [
+            'formData' => $this->service->getCreationFormData(),
+            'can' => [
+                'manage_key' => auth()->user()->is_root,
+            ]
+        ]);
+    }
+    
+    public function store(CredentialStoreRequest $request)
+    {
+        $this->service->createCredential($request->validated());
+        return redirect()->route('credentials.index')->with('success', 'Credencial criada com sucesso!');
+    }
+    
+    public function edit(int $id)
+    {
+        return Inertia::render('Credentials/EditCredential', [
+            'data' => $this->service->getCredentialForEdit($id),
+            'can' => [
+                'manage_key' => auth()->user()->is_root,
+            ]
+        ]);
+    }
+    
+    public function update(CredentialUpdateRequest $request, int $id)
+    {
+        $this->service->updateCredential($id, $request->validated());
+        return redirect()->route('credentials.index')->with('success', 'Credencial atualizada com sucesso!');
     }
     
     public function destroy(int $id)
     {
         $this->service->destroyCredential($id);
-        return back()->with('success', 'Credencial movida para a lixeira!');
+        return back()->with('success', 'Credencial excluída com sucesso!');
     }
 }
