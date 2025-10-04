@@ -3,14 +3,12 @@
 namespace App\Http\Requests\Credentials;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class CredentialStoreRequest extends FormRequest
 {
-
     public function authorize(): bool
     {
-        return true; 
+        return true;
     }
 
     public function rules(): array

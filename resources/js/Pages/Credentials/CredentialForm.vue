@@ -17,20 +17,18 @@ const props = defineProps<{
     isEditing?: boolean;
 }>();
 
-const user = computed(() => usePage().props.auth.user as { is_root: boolean });
+const user = computed(() => usePage().props.auth.user);
 </script>
 
 <template>
     <div class="space-y-4">
-        <div>
+        <div v-if="!isEditing">
             <InputLabel for="tenant_id" value="Cidade (Tenant)" />
-            <select v-if="!isEditing" v-model="form.tenant_id" required
+            <select v-model="form.tenant_id" required
                 class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 rounded-md shadow-sm">
                 <option value="" disabled>Selecione um tenant disponível</option>
                 <option v-for="tenant in tenants" :key="tenant.id" :value="tenant.id">{{ tenant.city_name }}</option>
             </select>
-            <TextInput v-else type="text" class="mt-1 block w-full bg-gray-100 dark:bg-gray-700"
-                :model-value="form.tenant?.city_name || form.city_name" readonly />
             <InputError class="mt-2" :message="form.errors.tenant_id" />
         </div>
 
@@ -61,8 +59,7 @@ const user = computed(() => usePage().props.auth.user as { is_root: boolean });
 
         <div v-if="user.is_root">
             <InputLabel for="key" :value="isEditing ? 'Nova Chave (deixe em branco para não alterar)' : 'Chave'" />
-            <TextInput id="key" type="password" class="mt-1 block w-full" v-model="form.key" :required="!isEditing"
-                autocomplete="new-password" />
+            <TextInput id="key" type="text" class="mt-1 block w-full" v-model="form.key" :required="!isEditing" />
             <InputError class="mt-2" :message="form.errors.key" />
         </div>
         

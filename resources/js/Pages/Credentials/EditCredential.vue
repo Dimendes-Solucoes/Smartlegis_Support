@@ -27,7 +27,7 @@ const form = useForm({
     short_name: props.data.credential.short_name,
     channel: props.data.credential.channel,
     host: props.data.credential.host,
-    key: '', 
+    key: '',
     city_name: props.data.credential.city_name,
     city_shield: null as File | null,
     existing_city_shield: props.data.credential.city_shield,
@@ -39,18 +39,19 @@ const submit = () => {
 };
 </script>
 
-<template>
+<template>    
     <Head title="Editar Credencial" />
+
     <AuthenticatedLayout>
-                        <BackButtonRow :href="route('credentials.index')" />
-                        <h2 class="text-xl font-semibold mt-4">Editar Credencial: {{ data.credential.tenant?.city_name || data.credential.city_name }}</h2>
-                        <form @submit.prevent="submit" class="mt-6">
-                            <CredentialForm :form="form" :is-editing="true" />
-                            <div class="flex items-center justify-end mt-6">
-                                <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                                    Salvar Alterações
-                                </PrimaryButton>
-                            </div>
-                        </form>
+        <BackButtonRow :href="route('credentials.index')" />
+
+        <form @submit.prevent="submit" class="mt-6">
+            <CredentialForm :form="form" :is-editing="true" />
+            <div class="flex items-center justify-end mt-6">
+                <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                    Salvar Alterações
+                </PrimaryButton>
+            </div>
+        </form>
     </AuthenticatedLayout>
 </template>

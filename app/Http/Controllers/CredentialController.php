@@ -6,11 +6,12 @@ use App\Http\Requests\Credentials\CredentialStoreRequest;
 use App\Http\Requests\Credentials\CredentialUpdateRequest;
 use App\Services\CredentialService;
 use Inertia\Inertia;
-use Illuminate\Http\Request;
 
 class CredentialController extends Controller
 {
-    public function __construct(protected CredentialService $service) {}
+    public function __construct(
+        protected CredentialService $service
+    ) {}
 
     public function index()
     {
@@ -21,7 +22,7 @@ class CredentialController extends Controller
             ]
         ]);
     }
-    
+
     public function create()
     {
         return Inertia::render('Credentials/CreateCredential', [
@@ -31,13 +32,13 @@ class CredentialController extends Controller
             ]
         ]);
     }
-    
+
     public function store(CredentialStoreRequest $request)
     {
         $this->service->createCredential($request->validated());
         return redirect()->route('credentials.index')->with('success', 'Credencial criada com sucesso!');
     }
-    
+
     public function edit(int $id)
     {
         return Inertia::render('Credentials/EditCredential', [
@@ -47,13 +48,13 @@ class CredentialController extends Controller
             ]
         ]);
     }
-    
+
     public function update(CredentialUpdateRequest $request, int $id)
     {
         $this->service->updateCredential($id, $request->validated());
         return redirect()->route('credentials.index')->with('success', 'Credencial atualizada com sucesso!');
     }
-    
+
     public function destroy(int $id)
     {
         $this->service->destroyCredential($id);

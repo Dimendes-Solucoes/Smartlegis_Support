@@ -25,7 +25,7 @@ class StorageCustom
             return self::$defaultDisk;
         }
 
-        return env('FILESYSTEM_DISK') === 'local' ? 'public' : env('FILESYSTEM_DISK');
+        return config('filesystems.default') === 'local' ? 'public' : config('filesystems.default');
     }
 
     public static function getTenancyBasePath(): string

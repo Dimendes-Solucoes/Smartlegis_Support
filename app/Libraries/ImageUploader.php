@@ -5,7 +5,6 @@ namespace App\Libraries;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
 use Intervention\Image\Laravel\Facades\Image;
-use Illuminate\Support\Facades\Storage;
 
 class ImageUploader
 {
@@ -26,11 +25,10 @@ class ImageUploader
 
         $extension = $imageFile->getClientOriginalExtension();
         $fileName = Str::random(40) . '.' . $extension;
-        
-        $fullPath = rtrim($storagePath, '/') . '/' . $fileName;
+        $filePath = $storagePath . '/' . $fileName;
 
-        Storage::disk('public')->put($fullPath, (string) $image->encode());
+        $path = StorageCustom::put($filePath, (string) $image->encode());
 
-        return $fullPath;
+        return "/" . $path;
     }
 }

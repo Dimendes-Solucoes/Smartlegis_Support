@@ -21,13 +21,14 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/calendario', [CalendarController::class, 'index'])->name('calendar.index');
 
-    Route::prefix('credentials')->name('credentials.')
+    Route::prefix('credenciais')
+        ->name('credentials.')
         ->controller(CredentialController::class)
         ->group(function() {
             Route::get('/', 'index')->name('index');
-            Route::get('/create', 'create')->name('create');
+            Route::get('/casdastrar', 'create')->name('create');
             Route::post('/', 'store')->name('store');
-            Route::get('/{id}/edit', 'edit')->name('edit');
+            Route::get('/{id}/editar', 'edit')->name('edit');
             Route::put('/{id}', 'update')->name('update');
     });
 });
