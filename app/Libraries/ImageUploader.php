@@ -8,7 +8,7 @@ use Intervention\Image\Laravel\Facades\Image;
 
 class ImageUploader
 {
-    public static function handleImageUpload(UploadedFile $imageFile): ?string
+    public static function handleImageUpload(UploadedFile $imageFile, string $storagePath = 'imagens_user'): ?string
     {
         if (!$imageFile instanceof UploadedFile) {
             return null;
@@ -25,7 +25,7 @@ class ImageUploader
 
         $extension = $imageFile->getClientOriginalExtension();
         $fileName = Str::random(40) . '.' . $extension;
-        $filePath = 'imagens_user/' . $fileName;
+        $filePath = $storagePath . '/' . $fileName;
 
         $path = StorageCustom::put($filePath, (string) $image->encode());
 

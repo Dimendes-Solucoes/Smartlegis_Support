@@ -12,7 +12,8 @@ class Credential extends Model
         'channel',
         'host',
         'key',
-        'city_name'
+        'city_name',
+        'city_shield',
     ];
 
     public function tenant()

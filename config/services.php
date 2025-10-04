@@ -31,4 +31,9 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'clicksign' => [
+        'host' => env('CLICKSIGN_HOST'),
+        'token' => env('CLICKSIGN_TOKEN')
+    ],
+
 ];

@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\ClicksignController;
+use App\Http\Controllers\CredentialController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SelectedTenantController;
@@ -19,6 +20,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/configuracoes', [SelectedTenantController::class, 'settings'])->name('tenant.settings');
 
     Route::get('/calendario', [CalendarController::class, 'index'])->name('calendar.index');
+
+    Route::prefix('credenciais')
+        ->name('credentials.')
+        ->controller(CredentialController::class)
+        ->group(function() {
+            Route::get('/', 'index')->name('index');
+            Route::get('/casdastrar', 'create')->name('create');
+            Route::post('/', 'store')->name('store');
+            Route::get('/{id}/editar', 'edit')->name('edit');
+            Route::put('/{id}', 'update')->name('update');
+    });
 });
 
 Route::middleware(['auth', 'is_root'])->group(function () {
@@ -31,6 +43,8 @@ Route::middleware(['auth', 'is_root'])->group(function () {
 
     Route::get('/clicksign', [ClicksignController::class, 'index'])->name('clicksign.index');
     Route::delete('/clicksign', [ClicksignController::class, 'destroy'])->name('clicksign.destroy');
+
+    Route::delete('/credentials/{id}', [CredentialController::class, 'destroy'])->name('credentials.destroy');
 });
 
 require __DIR__ . '/auth.php';
