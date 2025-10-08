@@ -20,8 +20,8 @@ class ClicksignApi
 
     public static function boot(): void
     {
-        self::$host = config('services.host');
-        self::$token = config('services.token');
+        self::$host = config('services.clicksign.host');
+        self::$token = config('services.clicksign.token');
 
         self::$httpClient = Http::baseUrl("https://" . self::$host . ".clicksign.com/api/v1/")
             ->withHeaders([
