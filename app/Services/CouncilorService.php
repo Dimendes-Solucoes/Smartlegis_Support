@@ -216,4 +216,34 @@ class CouncilorService
         $data = ClicksignApi::createSigner($email, $name);
         return $data['signer']['key'] ?? '';
     }
+
+    public function getCouncilorWithTerms(int $id): array
+    {
+        $councilor = User::findOrFail($id);
+        $terms = UserTerm::where('user_id', $id)->orderBy('start_date', 'desc')->get();
+
+        return [
+            'councilor' => $councilor,
+            'terms' => $terms,
+        ];
+    }
+
+    public function storeTerm(int $councilorId, array $data): UserTerm
+    {
+        $data['user_id'] = $councilorId;
+        return UserTerm::create($data);
+    }
+
+    public function updateTerm(int $termId, array $data): UserTerm
+    {
+        $term = UserTerm::findOrFail($termId);
+        $term->update($data);
+        return $term;
+    }
+
+    public function destroyTerm(int $termId): void
+    {
+        $term = UserTerm::findOrFail($termId);
+        $term->delete();
+    }
 }

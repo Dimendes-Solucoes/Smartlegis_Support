@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Tenancy;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Councilors\CouncilorStoreRequest;
 use App\Http\Requests\Councilors\CouncilorUpdateRequest;
+use App\Http\Requests\Councilors\StoreUserTermRequest;
+use App\Http\Requests\Councilors\UpdateUserTermRequest;
 use App\Services\CouncilorService;
 use Inertia\Inertia;
 
@@ -60,5 +62,30 @@ class CouncilorController extends Controller
         $this->service->changeStatus($id);
 
         return redirect()->route('councilors.index')->with('success', 'Vereador atualizado com sucesso!');
+    }
+
+    public function termsIndex(int $id)
+    {
+        return Inertia::render('Tenancy/Councilors/Terms/Index', [
+            'data' => $this->service->getCouncilorWithTerms($id),
+        ]);
+    }
+
+    public function termsStore(StoreUserTermRequest $request, int $id)
+    {
+        $this->service->storeTerm($id, $request->validated());
+        return back()->with('success', 'Mandato adicionado com sucesso!');
+    }
+
+    public function termsUpdate(UpdateUserTermRequest $request, int $termId)
+    {
+        $this->service->updateTerm($termId, $request->validated());
+        return back()->with('success', 'Mandato atualizado com sucesso!');
+    }
+
+    public function termsDestroy(int $termId)
+    {
+        $this->service->destroyTerm($termId);
+        return back()->with('success', 'Mandato removido com sucesso!');
     }
 }

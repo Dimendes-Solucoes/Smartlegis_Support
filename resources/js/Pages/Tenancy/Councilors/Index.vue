@@ -8,7 +8,6 @@ import TextButton from '@/Components/Itens/TextButton.vue';
 import IconButton from '@/Components/Itens/IconButton.vue';
 import UserStatusBadge from '@/Components/User/UserStatusBadge.vue';
 import Checkbox from '@/Components/Checkbox.vue';
-import BackButtonRow from '@/Components/BackButtonRow.vue';
 
 interface User {
     id: number;
@@ -86,7 +85,7 @@ watch(showInactive, (value) => {
     <AuthenticatedLayout>
         <div class="flex justify-end items-center mb-4">
             <div class="flex items-center space-x-2">
-                <TextButton @click="copyAllUsersToClipboard()" class="p-4" color="yellow"
+                <TextButton @click="copyAllUsersToClipboard" class="p-4" color="yellow"
                     :disabled="!props.users.length">
                     Copiar Vereadores
                 </TextButton>
@@ -125,7 +124,7 @@ watch(showInactive, (value) => {
                         <th scope="col"
                             class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
                             Status</th>
-                        <th></th>
+                        <th class="relative px-4 py-3"><span class="sr-only">Ações</span></th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
@@ -165,20 +164,26 @@ watch(showInactive, (value) => {
                             <UserStatusBadge :statusUser="user.status_user" />
                         </td>
                         <td class="px-4 py-4 whitespace-nowrap text-left text-sm font-medium">
-                            <IconButton :href="route('councilors.edit', user.id)" color="yellow" title="Editar">
-                                <PencilSquareIcon class="h-5 w-5" />
-                            </IconButton>
+                            <div class="flex items-center justify-end space-x-1">
+                                <IconButton :href="route('councilors.terms.index', user.id)" color="blue" title="Mandatos">
+                                    <ClipboardDocumentListIcon class="h-5 w-5" />
+                                </IconButton>
 
-                            <IconButton @click="changeStatus(user.id)" :color="user.status_user === 1 ? 'red' : 'green'"
-                                :title="user.status_user === 1 ? 'Desativar usuário' : 'Ativar usuário'" href="#"
-                                class="ml-1" v-if="user.category?.id === 2">
-                                <template v-if="user.status_user === 1">
-                                    <UserMinusIcon class="h-5 w-5" />
-                                </template>
-                                <template v-else>
-                                    <UserPlusIcon class="h-5 w-5" />
-                                </template>
-                            </IconButton>
+                                <IconButton :href="route('councilors.edit', user.id)" color="yellow" title="Editar">
+                                    <PencilSquareIcon class="h-5 w-5" />
+                                </IconButton>
+
+                                <IconButton @click="changeStatus(user.id)" :color="user.status_user === 1 ? 'red' : 'green'"
+                                    :title="user.status_user === 1 ? 'Desativar usuário' : 'Ativar usuário'"
+                                    v-if="user.category?.id === 2">
+                                    <template v-if="user.status_user === 1">
+                                        <UserMinusIcon class="h-5 w-5" />
+                                    </template>
+                                    <template v-else>
+                                        <UserPlusIcon class="h-5 w-5" />
+                                    </template>
+                                </IconButton>
+                            </div>
                         </td>
                     </tr>
                 </tbody>
