@@ -85,12 +85,12 @@ watch(showInactive, (value) => {
     <AuthenticatedLayout>
         <div class="flex justify-end items-center mb-4">
             <div class="flex items-center space-x-2">
-                <TextButton @click="copyAllUsersToClipboard" class="p-4" color="yellow"
+                <TextButton @click="copyAllUsersToClipboard" class="p-4 justify-center text-center" color="yellow"
                     :disabled="!props.users.length">
                     Copiar Vereadores
                 </TextButton>
 
-                <TextButton :href="route('councilors.create')" class="p-4">
+                <TextButton :href="route('councilors.create')" class="p-4 justify-center text-center">
                     Novo Vereador
                 </TextButton>
             </div>
