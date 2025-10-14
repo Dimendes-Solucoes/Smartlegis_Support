@@ -40,7 +40,11 @@ Route::middleware(['auth', 'tenant.connection'])
                 Route::get('/{id}/editar', 'edit')->name('edit');
                 Route::put('/{id}', 'update')->name('update');
                 Route::patch('/{id}/trocar-status', 'changeStatus')->name('change_status');
-            });
+                Route::get('/{id}/mandatos', 'termsIndex')->name('terms.index');
+                Route::post('/{id}/mandatos', 'termsStore')->name('terms.store');
+                Route::put('/mandatos/{termId}', 'termsUpdate')->name('terms.update');
+                Route::delete('/mandatos/{termId}', 'termsDestroy')->name('terms.destroy');
+                    });
 
         Route::prefix('comissoes')
             ->name('commissions.')
