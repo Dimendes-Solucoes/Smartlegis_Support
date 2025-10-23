@@ -45,6 +45,7 @@ Route::middleware('auth')->group(function () {
         ->controller(TicketController::class)
         ->group(function () {
             Route::get('/', 'index')->name('index');
+            Route::get('/casdastrar', 'create')->name('create');
         });
 
     Route::prefix('administradores')
