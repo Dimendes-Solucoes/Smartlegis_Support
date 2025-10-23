@@ -1,12 +1,13 @@
 <?php
 
-use App\Http\Controllers\AdminController;
-use App\Http\Controllers\CalendarController;
-use App\Http\Controllers\ClicksignController;
-use App\Http\Controllers\CredentialController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\SelectedTenantController;
+use App\Http\Controllers\Public\AdminController;
+use App\Http\Controllers\Public\CalendarController;
+use App\Http\Controllers\Public\ClicksignController;
+use App\Http\Controllers\Public\CredentialController;
+use App\Http\Controllers\Public\DashboardController;
+use App\Http\Controllers\Public\ProfileController;
+use App\Http\Controllers\Public\SelectedTenantController;
+use App\Http\Controllers\Public\TicketController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [DashboardController::class, 'index'])
@@ -37,6 +38,13 @@ Route::middleware('auth')->group(function () {
             Route::get('/{id}/editar', 'edit')->name('edit');
             Route::put('/{id}', 'update')->name('update');
             Route::delete('/{id}', 'destroy')->name('destroy')->middleware('is_root');
+        });
+
+    Route::prefix('tickets')
+        ->name('tickets.')
+        ->controller(TicketController::class)
+        ->group(function () {
+            Route::get('/', 'index')->name('index');
         });
 
     Route::prefix('administradores')

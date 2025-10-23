@@ -14,6 +14,7 @@ import {
     PencilSquareIcon,
     DocumentTextIcon,
     KeyIcon,
+    TicketIcon,
 } from '@heroicons/vue/24/outline';
 
 interface NavigationLink {
@@ -55,6 +56,12 @@ export const staticNavigationLinks: NavigationLink[] = [
         type: 'link',
     },
     {
+        label: 'Tickets',
+        icon: TicketIcon,
+        route: 'tickets.index',
+        type: 'link',
+    },
+    {
         label: 'Administradores',
         icon: ShieldCheckIcon,
         route: 'admin.index',
@@ -86,7 +93,7 @@ export const staticNavigationLinks: NavigationLink[] = [
         route: 'commissions.index',
         type: 'link',
     },
-        {
+    {
         label: 'Tempos',
         icon: ClockIcon,
         route: 'timers.index',
