@@ -18,14 +18,14 @@ class AdminController extends Controller
     {
         $admins = $this->service->list();
 
-        return Inertia::render('Admin/Index', [
+        return Inertia::render('Public/Admin/Index', [
             'admins' => $admins,
         ]);
     }
 
     public function create()
     {
-        return Inertia::render('Admin/CreateAdmin');
+        return Inertia::render('Public/Admin/CreateAdmin');
     }
 
     public function store(AdminStoreRequest $request)
@@ -40,7 +40,7 @@ class AdminController extends Controller
     {
         $admin = $this->service->find($id);
 
-        return Inertia::render('Admin/UpdateAdmin', [
+        return Inertia::render('Public/Admin/UpdateAdmin', [
             'admin' => $admin,
         ]);
     }

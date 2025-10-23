@@ -16,7 +16,7 @@ class SelectedTenantController extends Controller
     {
         $tenants = $this->service->getFormattedTenantsForSelect();
 
-        return Inertia::render('Settings/Index', [
+        return Inertia::render('Public/Settings/Index', [
             'tenants' => $tenants
         ]);
     }

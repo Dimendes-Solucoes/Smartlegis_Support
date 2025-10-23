@@ -30,7 +30,7 @@ class CalendarController extends Controller
             'events' => $events,
         ];
 
-        return Inertia::render('Calendar/Index', [
+        return Inertia::render('Pubic/Calendar/Index', [
             'calendarData' => $calendarData,
         ]);
     }

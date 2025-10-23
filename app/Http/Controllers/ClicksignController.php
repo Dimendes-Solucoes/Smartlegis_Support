@@ -17,7 +17,7 @@ class ClicksignController extends Controller
     {
         $clicksigns = $this->service->getAll();
 
-        return Inertia::render('Clicksign/Index', [
+        return Inertia::render('Public/Clicksign/Index', [
             'clicksigns' => $clicksigns,
         ]);
     }

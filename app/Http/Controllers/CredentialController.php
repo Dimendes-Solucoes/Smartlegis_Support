@@ -15,7 +15,7 @@ class CredentialController extends Controller
 
     public function index()
     {
-        return Inertia::render('Credentials/Index', [
+        return Inertia::render('Public/Credentials/Index', [
             'credentials' => $this->service->getAllCredentials(),
             'can' => [
                 'delete_credential' => auth()->user()->is_root,
@@ -25,7 +25,7 @@ class CredentialController extends Controller
 
     public function create()
     {
-        return Inertia::render('Credentials/CreateCredential', [
+        return Inertia::render('Public/Credentials/CreateCredential', [
             'formData' => $this->service->getCreationFormData(),
             'can' => [
                 'manage_key' => auth()->user()->is_root,
@@ -41,7 +41,7 @@ class CredentialController extends Controller
 
     public function edit(int $id)
     {
-        return Inertia::render('Credentials/EditCredential', [
+        return Inertia::render('Public/Credentials/EditCredential', [
             'data' => $this->service->getCredentialForEdit($id),
             'can' => [
                 'manage_key' => auth()->user()->is_root,
