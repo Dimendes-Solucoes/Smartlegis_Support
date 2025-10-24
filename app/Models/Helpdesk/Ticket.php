@@ -13,21 +13,13 @@ class Ticket extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'tenant_id',
         'ticket_type_id',
-        'status_id',
+        'ticket_status_id',
         'author_id',
-        'author_name',
-        'assigned_to_id',
         'code',
         'title',
         'description',
     ];
-
-    public function tenant()
-    {
-        return $this->belongsTo(Tenant::class);
-    }
 
     public function type()
     {
@@ -36,12 +28,13 @@ class Ticket extends Model
 
     public function status()
     {
-        return $this->belongsTo(TicketStatus::class, 'status_id');
+        return $this->belongsTo(TicketStatus::class, 'ticket_status_id');
     }
 
-    public function assignedTo()
+
+    public function author()
     {
-        return $this->belongsTo(User::class, 'assigned_to_id');
+        return $this->belongsTo(User::class, 'author_id');
     }
 
     public function messages()
@@ -52,5 +45,10 @@ class Ticket extends Model
     public function attachments()
     {
         return $this->hasMany(TicketAttachment::class);
+    }
+
+    public function tenants()
+    {
+        return $this->belongsToMany(Tenant::class, 'ticket_tenants');
     }
 }

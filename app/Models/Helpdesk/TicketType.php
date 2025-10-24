@@ -12,4 +12,9 @@ class TicketType extends Model
     protected $fillable = [
         'title',
     ];
+
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class, 'ticket_type_id');
+    }
 }
