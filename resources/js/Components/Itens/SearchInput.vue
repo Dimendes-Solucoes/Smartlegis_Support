@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-import TextInput from '@/Components/TextInput.vue';
+import TextInput from '@/Components/Form/TextInput.vue';
 import { MagnifyingGlassIcon } from '@heroicons/vue/24/outline';
 
 const props = defineProps<{

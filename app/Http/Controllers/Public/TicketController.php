@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
+use App\Models\Credential;
+use App\Models\Tenant;
 use Inertia\Inertia;
 
 class TicketController extends Controller
@@ -37,6 +39,26 @@ class TicketController extends Controller
 
     public function create()
     {
-        
+        $formData = [
+            'ticket_types' => [
+                [
+                    'id' => 1,
+                    'title' => 'Operacional'
+                ],
+                [
+                    'id' => 2,
+                    'title' => 'Equipamentos'
+                ],
+                [
+                    'id' => 3,
+                    'title' => 'Desconhecido'
+                ]
+            ],
+            'tenants' => Credential::all()
+        ];
+
+        return Inertia::render('Public/Tickets/CreateTicket', [
+            'formData' => $formData
+        ]);
     }
 }

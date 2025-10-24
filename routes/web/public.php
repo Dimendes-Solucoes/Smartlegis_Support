@@ -33,7 +33,7 @@ Route::middleware('auth')->group(function () {
         ->controller(CredentialController::class)
         ->group(function () {
             Route::get('/', 'index')->name('index');
-            Route::get('/casdastrar', 'create')->name('create');
+            Route::get('/cadastrar', 'create')->name('create');
             Route::post('/', 'store')->name('store');
             Route::get('/{id}/editar', 'edit')->name('edit');
             Route::put('/{id}', 'update')->name('update');
@@ -45,7 +45,7 @@ Route::middleware('auth')->group(function () {
         ->controller(TicketController::class)
         ->group(function () {
             Route::get('/', 'index')->name('index');
-            Route::get('/casdastrar', 'create')->name('create');
+            Route::get('/cadastrar', 'create')->name('create');
         });
 
     Route::prefix('administradores')
@@ -54,7 +54,7 @@ Route::middleware('auth')->group(function () {
         ->middleware('is_root')
         ->group(function () {
             Route::get('/', 'index')->name('index');
-            Route::get('/casdastrar', 'create')->name('create');
+            Route::get('/cadastrar', 'create')->name('create');
             Route::post('/', 'store')->name('store');
             Route::get('/{id}/editar', 'edit')->name('edit');
             Route::put('/{id}', 'update')->name('update');

@@ -5,7 +5,7 @@ import { ref, watch, nextTick } from 'vue';
 import { applyTimerMask } from '@/Utils/timers';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import InputLabel from '@/Components/InputLabel.vue';
-import TextInput from '@/Components/TextInput.vue';
+import TextInput from '@/Components/Form/TextInput.vue';
 import InputError from '@/Components/InputError.vue';
 import BackButtonRow from '@/Components/BackButtonRow.vue';
 

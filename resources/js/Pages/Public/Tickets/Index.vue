@@ -54,8 +54,8 @@ const props = defineProps<{
                             <tr>
                                 <RegularColumn>Título</RegularColumn>
                                 <RegularColumn>Autor</RegularColumn>
-                                <RegularColumn>Status</RegularColumn>
                                 <RegularColumn>Tipo</RegularColumn>
+                                <RegularColumn>Status</RegularColumn>
                                 <th class="relative px-6 py-3">
                                     <span class="sr-only">Ações</span>
                                 </th>
@@ -76,13 +76,13 @@ const props = defineProps<{
                                     {{ ticket.author.name }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
+                                    {{ ticket.ticket_type.title }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
                                     <CustomBadge
                                         :title="ticket.ticket_status.title"
                                         :color="ticket.ticket_status.color"
                                     />
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    {{ ticket.ticket_type.title }}
                                 </td>
                                 <td></td>
                             </tr>

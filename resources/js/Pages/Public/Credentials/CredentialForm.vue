@@ -2,9 +2,10 @@
 import { computed } from "vue";
 import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
-import TextInput from "@/Components/TextInput.vue";
+import TextInput from "@/Components/Form/TextInput.vue";
 import { usePage } from "@inertiajs/vue3";
 import ImageUploadWithCropper from "@/Components/User/ImageUploadWithCropper.vue";
+import SelectInput from "@/Components/Form/SelectInput.vue";
 
 interface Tenant {
     id: string;
@@ -24,16 +25,15 @@ const user = computed(() => usePage().props.auth.user);
     <div class="space-y-4">
         <div v-if="!isEditing">
             <InputLabel for="tenant_id" value="Cidade (Tenant)" />
-            <select
+            <SelectInput
                 v-model="form.tenant_id"
+                :options="tenants"
+                value-key="id"
+                label-key="city_name"
+                placeholder="Selecione um tenant disponível"
+                :disable-placeholder="true"
                 required
-                class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 rounded-md shadow-sm"
-            >
-                <option value="" disabled>Selecione um tenant disponível</option>
-                <option v-for="tenant in tenants" :key="tenant.id" :value="tenant.id">
-                    {{ tenant.city_name }}
-                </option>
-            </select>
+            />
             <InputError class="mt-2" :message="form.errors.tenant_id" />
         </div>
 
