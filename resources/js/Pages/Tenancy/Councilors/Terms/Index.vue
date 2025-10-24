@@ -2,11 +2,11 @@
 import { ref } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
-import BackButtonRow from '@/Components/BackButtonRow.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
+import BackButtonRow from '@/Components/Common/BackButtonRow.vue';
+import PrimaryButton from '@/Components/Common/PrimaryButton.vue';
 import IconButton from '@/Components/Itens/IconButton.vue';
 import { PencilSquareIcon, TrashIcon, PlusIcon } from '@heroicons/vue/24/outline';
-import ConfirmDeletionModal from '@/Components/ConfirmDeletionModal.vue';
+import ConfirmDeletionModal from '@/Components/Common/ConfirmDeletionModal.vue';
 import TermModal from './TermModal.vue';
 
 interface User { id: number; name: string; }

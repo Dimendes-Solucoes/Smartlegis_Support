@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import InputLabel from "@/Components/InputLabel.vue";
-import InputError from "@/Components/InputError.vue";
+import InputLabel from "@/Components/Form/InputLabel.vue";
+import InputError from "@/Components/Form/InputError.vue";
 
 interface Option {
     value: string | number;

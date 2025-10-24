@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import InputError from "@/Components/InputError.vue";
-import InputLabel from "@/Components/InputLabel.vue";
+import InputError from "@/Components/Form/InputError.vue";
+import InputLabel from "@/Components/Form/InputLabel.vue";
 import TextInput from "@/Components/Form/TextInput.vue";
 import SelectInput from "../Form/SelectInput.vue";
 

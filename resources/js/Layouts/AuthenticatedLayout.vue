@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { computed, ref, onMounted } from "vue";
-import NavLink from "@/Components/NavLink.vue";
+import NavLink from "@/Components/Common/NavLink.vue";
 import { Link, usePage } from "@inertiajs/vue3";
 import { SunIcon, MoonIcon, Bars3Icon } from "@heroicons/vue/24/outline";
 import { staticNavigationLinks } from "@/data/navigationLinks";
-import Alert from "@/Components/Alert.vue";
+import Alert from "@/Components/Common/Alert.vue";
 
 interface AuthUser {
     id: number;

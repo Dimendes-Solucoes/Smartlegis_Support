@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import PrimaryButton from "@/Components/PrimaryButton.vue";
+import PrimaryButton from "@/Components/Common/PrimaryButton.vue";
 import { Head, useForm } from "@inertiajs/vue3";
-import BackButtonRow from "@/Components/BackButtonRow.vue";
+import BackButtonRow from "@/Components/Common/BackButtonRow.vue";
 import TicketForm from "./TicketForm.vue";
 
 interface TicketType {
     id: number;
-    name: string;
+    title: string;
 }
 
 interface Tenant {

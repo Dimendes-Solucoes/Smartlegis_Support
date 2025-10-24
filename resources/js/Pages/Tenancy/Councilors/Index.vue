@@ -7,7 +7,7 @@ import { ClipboardDocumentListIcon, PencilSquareIcon, UserMinusIcon, UserPlusIco
 import TextButton from '@/Components/Itens/TextButton.vue';
 import IconButton from '@/Components/Itens/IconButton.vue';
 import UserStatusBadge from '@/Components/User/UserStatusBadge.vue';
-import Checkbox from '@/Components/Checkbox.vue';
+import Checkbox from '@/Components/Form/Checkbox.vue';
 
 interface User {
     id: number;

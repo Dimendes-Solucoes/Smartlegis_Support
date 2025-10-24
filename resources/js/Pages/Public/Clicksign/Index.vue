@@ -3,7 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router, useForm } from '@inertiajs/vue3';
 import IconButton from '@/Components/Itens/IconButton.vue';
 import { TrashIcon } from '@heroicons/vue/24/outline';
-import ConfirmDeletionModal from '@/Components/ConfirmDeletionModal.vue';
+import ConfirmDeletionModal from '@/Components/Common/ConfirmDeletionModal.vue';
 import { ref } from 'vue';
 
 interface Clicksign {

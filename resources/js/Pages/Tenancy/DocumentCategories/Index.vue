@@ -3,8 +3,8 @@ import { ref, watch } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import TextButton from '@/Components/Itens/TextButton.vue';
 import { Head, router } from '@inertiajs/vue3';
-import Checkbox from '@/Components/Checkbox.vue';
-import ConfirmDeletionModal from '@/Components/ConfirmDeletionModal.vue';
+import Checkbox from '@/Components/Form/Checkbox.vue';
+import ConfirmDeletionModal from '@/Components/Common/ConfirmDeletionModal.vue';
 import DocumentCategoryTable from './DocumentCategoryTable.vue';
 import ProtocolTable from './ProtocolTable.vue';
 

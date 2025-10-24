@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { defineProps, defineEmits } from 'vue';
 import { EyeIcon, ExclamationCircleIcon, ChevronDownIcon, ChevronUpIcon, ClipboardDocumentListIcon, TrashIcon } from '@heroicons/vue/24/outline';
-import LinkButton from '@/Components/LinkButton.vue';
+import LinkButton from '@/Components/Common/LinkButton.vue';
 import IconButton from '@/Components/Itens/IconButton.vue';
 
 interface Session {

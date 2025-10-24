@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import InputLabel from "@/Components/InputLabel.vue";
-import InputError from "@/Components/InputError.vue";
-import PrimaryButton from "@/Components/PrimaryButton.vue";
+import InputLabel from "@/Components/Form/InputLabel.vue";
+import InputError from "@/Components/Form/InputError.vue";
+import PrimaryButton from "@/Components/Common/PrimaryButton.vue";
 import { Head, useForm } from "@inertiajs/vue3";
 import TextInput from "@/Components/Form/TextInput.vue";
-import BackButtonRow from "@/Components/BackButtonRow.vue";
+import BackButtonRow from "@/Components/Common/BackButtonRow.vue";
 import SelectInput from "@/Components/Form/SelectInput.vue";
 
 interface SessionStatus {

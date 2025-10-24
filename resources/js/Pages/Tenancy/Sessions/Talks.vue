@@ -3,7 +3,7 @@ import { router } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
 import { UserGroupIcon, MicrophoneIcon, ChatBubbleOvalLeftEllipsisIcon, MegaphoneIcon, QuestionMarkCircleIcon, PencilSquareIcon, TrashIcon } from '@heroicons/vue/24/outline';
 import IconButton from '@/Components/Itens/IconButton.vue';
-import ConfirmDeletionModal from '@/Components/ConfirmDeletionModal.vue';
+import ConfirmDeletionModal from '@/Components/Common/ConfirmDeletionModal.vue';
 import { Quorum } from '@/types/inertia';
 
 const props = defineProps<{

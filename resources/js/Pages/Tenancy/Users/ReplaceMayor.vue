@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import PrimaryButton from "@/Components/PrimaryButton.vue";
-import InputLabel from "@/Components/InputLabel.vue";
-import InputError from "@/Components/InputError.vue";
+import PrimaryButton from "@/Components/Common/PrimaryButton.vue";
+import InputLabel from "@/Components/Form/InputLabel.vue";
+import InputError from "@/Components/Form/InputError.vue";
 import { Head, useForm } from "@inertiajs/vue3";
 import ImageUploadWithCropper from "@/Components/User/ImageUploadWithCropper.vue";
 import UserForm from "@/Components/User/UserForm.vue";
-import BackButtonRow from "@/Components/BackButtonRow.vue";
+import BackButtonRow from "@/Components/Common/BackButtonRow.vue";
 import SelectInput from "@/Components/Form/SelectInput.vue";
 
 interface Category {
@@ -128,12 +128,9 @@ const submit = () => {
                         v-model="existingMayorForm.mayor_id"
                         :options="props.mayors"
                         value-key="id"
+                        :format-label="(mayor: Mayor) => `${mayor.name} (${mayor.email})`"
                         placeholder="Selecione um prefeito inativo"
-                    >
-                        <template #option="{ option }">
-                            {{ option.name }} ({{ option.email }})
-                        </template>
-                    </SelectInput>
+                    />
                     <InputError
                         class="mt-2"
                         :message="existingMayorForm.errors.mayor_id"

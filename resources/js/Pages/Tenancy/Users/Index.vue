@@ -6,7 +6,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { getImageUrl } from '@/Utils/image'
 import TextButton from '@/Components/Itens/TextButton.vue';
 import IconButton from '@/Components/Itens/IconButton.vue';
-import ConfirmDeletionModal from '@/Components/ConfirmDeletionModal.vue';
+import ConfirmDeletionModal from '@/Components/Common/ConfirmDeletionModal.vue';
 
 interface User {
     id: number;

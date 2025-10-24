@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import Alert from '@/Components/Alert.vue';
-import ApplicationLogo from '@/Components/ApplicationLogo.vue';
-import { Link, usePage } from '@inertiajs/vue3';
+import Alert from "@/Components/Common/Alert.vue";
+import ApplicationLogo from "@/Components/Common/ApplicationLogo.vue";
+import { Link, usePage } from "@inertiajs/vue3";
 
 const page = usePage();
 </script>

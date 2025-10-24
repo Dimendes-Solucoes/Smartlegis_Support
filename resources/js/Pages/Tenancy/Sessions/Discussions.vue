@@ -6,8 +6,8 @@ import IconButton from '@/Components/Itens/IconButton.vue';
 import TextInput from '@/Components/Form/TextInput.vue';
 import { UsersIcon, TrashIcon } from '@heroicons/vue/24/outline';
 import { debounce } from 'lodash';
-import ConfirmDeletionModal from '@/Components/ConfirmDeletionModal.vue';
-import BackButtonRow from '@/Components/BackButtonRow.vue';
+import ConfirmDeletionModal from '@/Components/Common/ConfirmDeletionModal.vue';
+import BackButtonRow from '@/Components/Common/BackButtonRow.vue';
 
 interface Quorum {
     session_id: number

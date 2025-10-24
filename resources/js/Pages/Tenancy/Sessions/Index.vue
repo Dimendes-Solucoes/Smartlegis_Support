@@ -4,7 +4,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import SessionStatusBadge from "@/Components/Session/SessionStatusBadge.vue";
 import { Head, router, Link } from "@inertiajs/vue3";
 import IconButton from "@/Components/Itens/IconButton.vue";
-import ConfirmDeletionModal from "@/Components/ConfirmDeletionModal.vue";
+import ConfirmDeletionModal from "@/Components/Common/ConfirmDeletionModal.vue";
 import TextButton from "@/Components/Itens/TextButton.vue";
 import RegularColumn from "@/Components/Table/RegularColumn.vue";
 import {

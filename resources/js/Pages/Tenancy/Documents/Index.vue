@@ -3,11 +3,11 @@ import { ref, watch } from "vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head, Link, router } from "@inertiajs/vue3";
 import IconButton from "@/Components/Itens/IconButton.vue";
-import LinkButton from "@/Components/LinkButton.vue";
-import ConfirmDeletionModal from "@/Components/ConfirmDeletionModal.vue";
+import LinkButton from "@/Components/Common/LinkButton.vue";
+import ConfirmDeletionModal from "@/Components/Common/ConfirmDeletionModal.vue";
 import TextInput from "@/Components/Form/TextInput.vue";
-import PrimaryButton from "@/Components/PrimaryButton.vue";
-import SecondaryButton from "@/Components/SecondaryButton.vue";
+import PrimaryButton from "@/Components/Common/PrimaryButton.vue";
+import SecondaryButton from "@/Components/Common/SecondaryButton.vue";
 import {
     EyeIcon,
     PencilSquareIcon,

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import InputLabel from '@/Components/InputLabel.vue';
+import InputLabel from '@/Components/Form/InputLabel.vue';
 import TextInput from '@/Components/Form/TextInput.vue';
-import InputError from '@/Components/InputError.vue';
+import InputError from '@/Components/Form/InputError.vue';
 import { useForm } from '@inertiajs/vue3';
 
 defineProps<{

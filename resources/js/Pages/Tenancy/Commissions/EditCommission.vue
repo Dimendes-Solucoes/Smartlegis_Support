@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import PrimaryButton from "@/Components/PrimaryButton.vue";
-import InputError from "@/Components/InputError.vue";
-import InputLabel from "@/Components/InputLabel.vue";
+import PrimaryButton from "@/Components/Common/PrimaryButton.vue";
+import InputError from "@/Components/Form/InputError.vue";
+import InputLabel from "@/Components/Form/InputLabel.vue";
 import TextInput from "@/Components/Form/TextInput.vue";
 import { Head, useForm } from "@inertiajs/vue3";
 import { ref, watch } from "vue";
 import IconButton from "@/Components/Itens/IconButton.vue";
 import { TrashIcon } from "@heroicons/vue/24/outline";
-import BackButtonRow from "@/Components/BackButtonRow.vue";
+import BackButtonRow from "@/Components/Common/BackButtonRow.vue";
 import SelectInput from "@/Components/Form/SelectInput.vue";
 
 interface CommissionType {

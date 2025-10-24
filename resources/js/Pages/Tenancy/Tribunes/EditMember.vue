@@ -4,9 +4,9 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
 import IconButton from '@/Components/Itens/IconButton.vue';
 import { TrashIcon, ExclamationCircleIcon, ChevronDownIcon, ChevronUpIcon } from '@heroicons/vue/24/outline';
-import ConfirmDeletionModal from '@/Components/ConfirmDeletionModal.vue';
-import BackButtonRow from '@/Components/BackButtonRow.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
+import ConfirmDeletionModal from '@/Components/Common/ConfirmDeletionModal.vue';
+import BackButtonRow from '@/Components/Common/BackButtonRow.vue';
+import PrimaryButton from '@/Components/Common/PrimaryButton.vue';
 
 interface User {
     id: number;

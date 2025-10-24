@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { Head, router } from "@inertiajs/vue3";
+import { Head } from "@inertiajs/vue3";
 import TextButton from "@/Components/Itens/TextButton.vue";
 import RegularColumn from "@/Components/Table/RegularColumn.vue";
 import CustomBadge from "@/Components/Common/CustomBadge.vue";

@@ -16,13 +16,14 @@ import {
     KeyIcon,
     TicketIcon,
 } from '@heroicons/vue/24/outline';
+import type { Method } from "@inertiajs/core";
 
 interface NavigationLink {
     label?: string;
     icon?: any;
     route?: string;
     condition?: boolean | ((isRoot: boolean) => boolean);
-    method?: string;
+    method?: Method;
     as?: string;
     textClass?: string;
     iconClass?: string;

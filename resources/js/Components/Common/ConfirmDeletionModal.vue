@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import Modal from '@/Components/Modal.vue';
-import DangerButton from '@/Components/DangerButton.vue';
-import SecondaryButton from '@/Components/SecondaryButton.vue';
+import Modal from "@/Components/Common/Modal.vue";
+import DangerButton from "@/Components/Common/DangerButton.vue";
+import SecondaryButton from "@/Components/Common/SecondaryButton.vue";
 
 const props = defineProps({
     show: {
@@ -19,12 +19,11 @@ const props = defineProps({
     buttonText: {
         type: String,
         required: false,
-        default: 'Confirmar'
+        default: "Confirmar",
     },
 });
 
-const emit = defineEmits(['close', 'confirm']);
-
+const emit = defineEmits(["close", "confirm"]);
 </script>
 
 <template>
@@ -34,7 +33,7 @@ const emit = defineEmits(['close', 'confirm']);
                 {{ title }}
             </h2>
 
-        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400" v-html="message"></p>
+            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400" v-html="message"></p>
 
             <div class="mt-6 flex justify-end">
                 <SecondaryButton @click="$emit('close')"> Cancelar </SecondaryButton>

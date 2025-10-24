@@ -2,8 +2,8 @@
 import { ref, computed } from "vue";
 import { Head, router } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import PrimaryButton from "@/Components/PrimaryButton.vue";
-import BackButtonRow from "@/Components/BackButtonRow.vue";
+import PrimaryButton from "@/Components/Common/PrimaryButton.vue";
+import BackButtonRow from "@/Components/Common/BackButtonRow.vue";
 import SelectInput from "@/Components/Form/SelectInput.vue";
 
 interface User {

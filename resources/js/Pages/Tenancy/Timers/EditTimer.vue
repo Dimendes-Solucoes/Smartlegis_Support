@@ -3,11 +3,11 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref, watch, nextTick } from 'vue';
 import { applyTimerMask } from '@/Utils/timers';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import InputLabel from '@/Components/InputLabel.vue';
+import PrimaryButton from '@/Components/Common/PrimaryButton.vue';
+import InputLabel from '@/Components/Form/InputLabel.vue';
 import TextInput from '@/Components/Form/TextInput.vue';
-import InputError from '@/Components/InputError.vue';
-import BackButtonRow from '@/Components/BackButtonRow.vue';
+import InputError from '@/Components/Form/InputError.vue';
+import BackButtonRow from '@/Components/Common/BackButtonRow.vue';
 
 interface Timer {
     id: number;
