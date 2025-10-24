@@ -1,19 +1,38 @@
 <script setup lang="ts">
-import { ref, watch, onMounted } from "vue";
+import InputError from "@/components/Form/InputError.vue";
+import InputLabel from "@/components/Form/InputLabel.vue";
+import PrimaryButton from "@/components/Common/PrimaryButton.vue";
+import { DocumentPlusIcon } from "@heroicons/vue/24/outline";
+import { computed, ref, watch } from "vue";
 import { Cropper } from "vue-advanced-cropper";
 import "vue-advanced-cropper/dist/style.css";
-import InputLabel from "@/components/Form/InputLabel.vue";
-import InputError from "@/components/Form/InputError.vue";
-import PrimaryButton from "@/components/Common/PrimaryButton.vue";
 import { getImageUrl } from "@/utils/image";
 
-const props = defineProps<{
+interface Props {
     modelValue: File | null;
-    error: string | undefined;
+    label?: string;
+    error?: string;
+    id?: string;
+    accept?: string;
+    maxSize?: number; // em MB
     initialImageUrl?: string | null;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+    label: "Foto do Usuário",
+    id: "attachment",
+    accept: "image/*",
+    maxSize: 10,
+});
+
+const emit = defineEmits<{
+    "update:modelValue": [file: File | null];
 }>();
 
-const emit = defineEmits(["update:modelValue"]);
+const file = computed({
+    get: () => props.modelValue,
+    set: (value) => emit("update:modelValue", value),
+});
 
 const imageSource = ref<string | null>(null);
 const showCropperModal = ref(false);
@@ -49,19 +68,37 @@ watch(
     { immediate: true }
 );
 
-const handleImageChange = (event: Event) => {
+const formatFileSize = (bytes: number): string => {
+    if (bytes === 0) return "0 Bytes";
+    const k = 1024;
+    const sizes = ["Bytes", "KB", "MB", "GB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + " " + sizes[i];
+};
+
+const handleFileChange = (event: Event) => {
     const target = event.target as HTMLInputElement;
-    if (target.files && target.files[0]) {
-        const file = target.files[0];
-        imageSource.value = URL.createObjectURL(file);
-        showCropperModal.value = true;
-    } else {
-        emit("update:modelValue", null);
+    if (!target.files || !target.files[0]) {
+        file.value = null;
         imageSource.value = null;
         previewImageUrl.value = props.initialImageUrl
             ? getImageUrl(props.initialImageUrl)
             : null;
+        return;
     }
+
+    const selectedFile = target.files[0];
+    const maxSizeBytes = props.maxSize * 1024 * 1024;
+
+    if (selectedFile.size > maxSizeBytes) {
+        alert(`O arquivo excede o tamanho máximo de ${props.maxSize}MB`);
+        target.value = "";
+        return;
+    }
+
+    imageSource.value = URL.createObjectURL(selectedFile);
+    showCropperModal.value = true;
+    target.value = "";
 };
 
 const cropImage = () => {
@@ -70,10 +107,10 @@ const cropImage = () => {
         if (canvas) {
             canvas.toBlob((blob) => {
                 if (blob) {
-                    const croppedFile = new File([blob], "profile.png", {
+                    const croppedFile = new File([blob], "image.png", {
                         type: "image/png",
                     });
-                    emit("update:modelValue", croppedFile);
+                    file.value = croppedFile;
                 }
                 showCropperModal.value = false;
                 if (imageSource.value) {
@@ -91,6 +128,14 @@ const cancelCrop = () => {
         URL.revokeObjectURL(imageSource.value);
         imageSource.value = null;
     }
+    previewImageUrl.value = props.initialImageUrl || null;
+};
+
+const removeFile = () => {
+    if (previewImageUrl.value && file.value) {
+        URL.revokeObjectURL(previewImageUrl.value);
+    }
+    file.value = null;
     previewImageUrl.value = props.initialImageUrl
         ? getImageUrl(props.initialImageUrl)
         : null;
@@ -99,27 +144,65 @@ const cancelCrop = () => {
 
 <template>
     <div>
-        <InputLabel for="path_image" value="Foto de Perfil" />
+        <InputLabel :for="id" :value="label" />
+
         <input
-            id="path_image"
+            :id="id"
             type="file"
-            @change="handleImageChange"
-            class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
-            accept="image/*"
+            :accept="accept"
+            @change="handleFileChange"
+            class="mt-1 block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 dark:file:bg-indigo-900 file:text-indigo-700 dark:file:text-indigo-300 hover:file:bg-indigo-100 dark:hover:file:bg-indigo-800 cursor-pointer"
         />
+
         <InputError class="mt-2" :message="error" />
 
+        <p v-if="maxSize" class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+            Tamanho máximo: {{ maxSize }}MB
+        </p>
+
         <div v-if="previewImageUrl && !showCropperModal" class="mt-4">
-            <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">
-                Pré-visualização da Imagem:
-            </p>
-            <img
-                :src="previewImageUrl"
-                alt="Pré-visualização da imagem"
-                class="max-w-xs h-auto rounded-lg shadow-md max-h-36"
-            />
+            <div class="flex items-center justify-between mb-2">
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                    Pré-visualização da Imagem:
+                </p>
+                <button
+                    v-if="file"
+                    type="button"
+                    @click="removeFile"
+                    class="text-xs text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 font-medium transition duration-150 ease-in-out"
+                >
+                    Remover
+                </button>
+            </div>
+
+            <div
+                class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border border-gray-300 dark:border-gray-600 shadow-sm"
+            >
+                <img
+                    :src="previewImageUrl"
+                    alt="Pré-visualização da imagem"
+                    class="w-36 h-36 object-cover rounded-lg shadow-md mx-auto"
+                />
+                <p
+                    v-if="file"
+                    class="text-xs text-gray-500 dark:text-gray-400 text-center mt-2"
+                >
+                    {{ file.name }} ({{ formatFileSize(file.size) }})
+                </p>
+            </div>
         </div>
 
+        <div
+            v-else-if="!showCropperModal"
+            class="mt-4 text-center py-8 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700"
+        >
+            <DocumentPlusIcon class="mx-auto h-12 w-12 text-gray-400" />
+            <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                Nenhuma foto selecionada
+            </p>
+        </div>
+
+        <!-- Modal de Cropper -->
         <div
             v-if="showCropperModal"
             class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75"
