@@ -9,4 +9,6 @@ class TicketTenant extends Pivot
     protected $table = 'ticket_tenants';
 
     public $timestamps = false;
+    
+    public $incrementing = true;
 }

@@ -48,7 +48,8 @@ class Ticket extends Model
     }
 
     public function tenants()
-    {
-        return $this->belongsToMany(Tenant::class, 'ticket_tenants');
+    {    
+        return $this->belongsToMany(Tenant::class, 'ticket_tenants')
+        ->using(TicketTenant::class); 
     }
 }
