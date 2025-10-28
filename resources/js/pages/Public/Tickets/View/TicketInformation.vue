@@ -55,9 +55,7 @@ const formatDate = (date: string) => {
 </script>
 
 <template>
-    <div
-        class="bg-white dark:bg-gray-800 border dark:border-gray-500 rounded-lg shadow p-6"
-    >
+    <div class="bg-white dark:bg-gray-800 border dark:border-gray-500 rounded-lg p-6">
         <div class="flex items-center justify-between mb-4">
             <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100">
                 Informações

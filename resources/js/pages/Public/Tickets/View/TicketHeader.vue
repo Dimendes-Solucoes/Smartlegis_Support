@@ -21,7 +21,7 @@ const formatDate = (date: string) => {
 
 <template>
     <div
-        class="bg-gray-100 dark:bg-gray-800 border dark:border-gray-500 rounded-lg shadow-lg p-6 text-gray-900 dark:text-gray-100"
+        class="bg-white dark:bg-gray-800 border dark:border-gray-500 rounded-lg p-6 text-gray-900 dark:text-gray-100"
     >
         <div class="flex items-center justify-between">
             <div>

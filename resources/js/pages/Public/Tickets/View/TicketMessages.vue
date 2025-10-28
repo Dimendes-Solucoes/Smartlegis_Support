@@ -63,7 +63,7 @@ const handleSubmit = () => {
 
 <template>
     <div
-        class="bg-white dark:bg-gray-800 border dark:border-gray-500 rounded-lg shadow dark:shadow-gray-900/50 p-6"
+        class="bg-white dark:bg-gray-800 border dark:border-gray-500 rounded-lg dark:shadow-gray-900/50 p-6"
     >
         <div class="flex items-center justify-between mb-4">
             <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100">
