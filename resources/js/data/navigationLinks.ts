@@ -14,14 +14,16 @@ import {
     PencilSquareIcon,
     DocumentTextIcon,
     KeyIcon,
+    TicketIcon,
 } from '@heroicons/vue/24/outline';
+import type { Method } from "@inertiajs/core";
 
 interface NavigationLink {
     label?: string;
     icon?: any;
     route?: string;
     condition?: boolean | ((isRoot: boolean) => boolean);
-    method?: string;
+    method?: Method;
     as?: string;
     textClass?: string;
     iconClass?: string;
@@ -52,6 +54,12 @@ export const staticNavigationLinks: NavigationLink[] = [
         label: 'Credenciais',
         icon: KeyIcon,
         route: 'credentials.index',
+        type: 'link',
+    },
+    {
+        label: 'Tickets',
+        icon: TicketIcon,
+        route: 'tickets.index',
         type: 'link',
     },
     {
@@ -86,7 +94,7 @@ export const staticNavigationLinks: NavigationLink[] = [
         route: 'commissions.index',
         type: 'link',
     },
-        {
+    {
         label: 'Tempos',
         icon: ClockIcon,
         route: 'timers.index',

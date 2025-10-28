@@ -4,6 +4,7 @@ namespace App\Exceptions;
 
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -37,6 +38,10 @@ class Handler extends ExceptionHandler
 
         if ($e instanceof AuthenticationException) {
             return redirect()->route('login');
+        }
+
+        if ($e instanceof NotFoundHttpException) {
+            return redirect()->route('dashboard')->with('error', $e->getMessage() ?? 'Erro ao realizar requisição');
         }
 
         return back()->with('error', $e->getMessage() ?? 'Erro ao realizar requisição');

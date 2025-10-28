@@ -185,7 +185,6 @@ class SessionService
 
             $this->updateVotationResult($document_id, $session_id);
         } catch (\Exception $e) {
-            dd($e);
             DB::rollBack();
         }
     }
