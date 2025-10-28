@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { Head, router } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/layouts/AuthenticatedLayout.vue";
 import SessionStatusBadge from "@/components/Session/SessionStatusBadge.vue";
-import { Head, router, Link } from "@inertiajs/vue3";
 import IconButton from "@/components/Itens/IconButton.vue";
 import ConfirmDeletionModal from "@/components/Common/ConfirmDeletionModal.vue";
 import TextButton from "@/components/Itens/TextButton.vue";
 import RegularColumn from "@/components/Table/RegularColumn.vue";
+import Pagination from "@/components/Table/Pagination.vue";
 import {
     TrashIcon,
     ChevronUpIcon,
@@ -153,10 +154,6 @@ const closeModal = () => {
                 >
                     <thead class="bg-gray-50 dark:bg-gray-700/50">
                         <tr>
-                            <th
-                                scope="col"
-                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400"
-                            ></th>
                             <RegularColumn>
                                 <button
                                     @click="sortBy('name')"
@@ -289,23 +286,7 @@ const closeModal = () => {
             </div>
         </div>
 
-        <div
-            v-if="props.sessions.data.length > 0 && props.sessions.links.length > 3"
-            class="mt-6 flex justify-center"
-        >
-            <Link
-                v-for="(link, index) in props.sessions.links"
-                :key="index"
-                :href="link.url || ''"
-                class="px-4 py-2 text-sm"
-                :class="{
-                    'bg-indigo-500 text-white rounded-md': link.active,
-                    'text-gray-500 hover:text-gray-800': !link.active,
-                    'cursor-not-allowed text-gray-400': !link.url,
-                }"
-                v-html="link.label"
-            />
-        </div>
+        <Pagination :paginator="sessions" />
     </AuthenticatedLayout>
 
     <ConfirmDeletionModal

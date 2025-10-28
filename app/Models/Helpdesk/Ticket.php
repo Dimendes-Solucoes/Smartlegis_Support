@@ -31,7 +31,6 @@ class Ticket extends Model
         return $this->belongsTo(TicketStatus::class, 'ticket_status_id');
     }
 
-
     public function author()
     {
         return $this->belongsTo(User::class, 'author_id');
@@ -48,8 +47,8 @@ class Ticket extends Model
     }
 
     public function tenants()
-    {    
+    {
         return $this->belongsToMany(Tenant::class, 'ticket_tenants')
-        ->using(TicketTenant::class); 
+            ->using(TicketTenant::class);
     }
 }

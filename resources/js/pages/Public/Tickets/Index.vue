@@ -4,6 +4,7 @@ import { Head } from "@inertiajs/vue3";
 import TextButton from "@/components/Itens/TextButton.vue";
 import RegularColumn from "@/components/Table/RegularColumn.vue";
 import CustomBadge from "@/components/Common/CustomBadge.vue";
+import Pagination from "@/components/Table/Pagination.vue";
 
 interface TicketStatus {
     title: string;
@@ -25,13 +26,27 @@ interface Ticket {
     ticket_status_id: number;
     ticket_type_id: number;
     author_id: number;
-    ticket_status: TicketStatus;
-    ticket_type: TicketType;
+    status: TicketStatus;
+    type: TicketType;
     author: Author;
 }
 
+interface PaginatedTickets {
+    data: Ticket[];
+    links: {
+        url: string | null;
+        label: string;
+        active: boolean;
+    }[];
+}
+
 const props = defineProps<{
-    tickets: Ticket[];
+    tickets: PaginatedTickets;
+    links: {
+        url: string | null;
+        label: string;
+        active: boolean;
+    }[];
 }>();
 </script>
 
@@ -46,7 +61,7 @@ const props = defineProps<{
             <div
                 class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg"
             >
-                <div v-if="tickets.length > 0" class="overflow-x-auto">
+                <div v-if="tickets.data.length > 0" class="overflow-x-auto">
                     <table
                         class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm"
                     >
@@ -65,7 +80,7 @@ const props = defineProps<{
                             class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700"
                         >
                             <tr
-                                v-for="ticket in tickets"
+                                v-for="ticket in props.tickets.data"
                                 :key="ticket.id"
                                 class="hover:bg-gray-50 dark:hover:bg-gray-700/50"
                             >
@@ -76,12 +91,12 @@ const props = defineProps<{
                                     {{ ticket.author.name }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    {{ ticket.ticket_type.title }}
+                                    {{ ticket.type.title }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <CustomBadge
-                                        :title="ticket.ticket_status.title"
-                                        :color="ticket.ticket_status.color"
+                                        :title="ticket.status.title"
+                                        :color="ticket.status.color"
                                     />
                                 </td>
                                 <td></td>
@@ -94,6 +109,8 @@ const props = defineProps<{
                     <p>Nenhum ticket encontrado.</p>
                 </div>
             </div>
+
+            <Pagination :paginator="tickets" />
         </AuthenticatedLayout>
     </div>
 </template>

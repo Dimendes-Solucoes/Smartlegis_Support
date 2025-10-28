@@ -13,6 +13,12 @@ interface TicketType {
     title: string;
 }
 
+interface TicketStatus {
+    id: number;
+    title: string;
+    color: string;
+}
+
 interface Tenant {
     id: string;
     city_name: string;
@@ -21,6 +27,7 @@ interface Tenant {
 const props = defineProps<{
     form: any;
     ticket_types: TicketType[];
+    ticket_status: TicketStatus[];
     tenants: Tenant[];
 }>();
 
@@ -34,18 +41,36 @@ const tenantOptions = computed(() =>
 
 <template>
     <div class="space-y-6">
-        <div>
-            <InputLabel for="ticket_type_id" value="Tipo" />
-            <SelectInput
-                id="ticket_type_id"
-                v-model="form.ticket_type_id"
-                :options="ticket_types"
-                placeholder="Selecione um tipo"
-                value-key="id"
-                label-key="title"
-                required
-            />
-            <InputError :message="form.errors.ticket_type_id" class="mt-2" />
+        <div class="flex flex-col md:flex-row md:space-x-4">
+            <div class="md:flex-1 mb-4 md:mb-0">
+                <InputLabel for="ticket_type_id" value="Tipo" />
+                <SelectInput
+                    id="ticket_type_id"
+                    v-model="form.ticket_type_id"
+                    :options="ticket_types"
+                    placeholder="Selecione um tipo"
+                    value-key="id"
+                    label-key="title"
+                    required
+                    :disablePlaceholder="true"
+                />
+                <InputError :message="form.errors.ticket_type_id" class="mt-2" />
+            </div>
+
+            <div class="md:flex-1">
+                <InputLabel for="ticket_status_id" value="Status" />
+                <SelectInput
+                    id="ticket_status_id"
+                    v-model="form.ticket_status_id"
+                    :options="ticket_status"
+                    placeholder="Selecione um status"
+                    value-key="id"
+                    label-key="title"
+                    required
+                    :disablePlaceholder="true"
+                />
+                <InputError :message="form.errors.ticket_status_id" class="mt-2" />
+            </div>
         </div>
 
         <div>

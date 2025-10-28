@@ -46,6 +46,7 @@ Route::middleware('auth')->group(function () {
         ->group(function () {
             Route::get('/', 'index')->name('index');
             Route::get('/cadastrar', 'create')->name('create');
+            Route::post('/', 'store')->name('store');
         });
 
     Route::prefix('administradores')

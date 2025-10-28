@@ -1,13 +1,15 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref } from "vue";
 import AuthenticatedLayout from "@/layouts/AuthenticatedLayout.vue";
-import { Head, Link, router } from "@inertiajs/vue3";
+import { Head, router } from "@inertiajs/vue3";
 import IconButton from "@/components/Itens/IconButton.vue";
 import LinkButton from "@/components/Common/LinkButton.vue";
 import ConfirmDeletionModal from "@/components/Common/ConfirmDeletionModal.vue";
 import TextInput from "@/components/Form/TextInput.vue";
 import PrimaryButton from "@/components/Common/PrimaryButton.vue";
 import SecondaryButton from "@/components/Common/SecondaryButton.vue";
+import SelectInput from "@/components/Form/SelectInput.vue";
+import Pagination from "@/components/Table/Pagination.vue";
 import {
     EyeIcon,
     PencilSquareIcon,
@@ -16,7 +18,6 @@ import {
     ChevronDownIcon,
     MagnifyingGlassIcon,
 } from "@heroicons/vue/24/outline";
-import SelectInput from "@/components/Form/SelectInput.vue";
 
 interface Document {
     id: number;
@@ -388,23 +389,7 @@ const sortBy = (field: string) => {
             </div>
         </div>
 
-        <div
-            v-if="props.documents.data.length > 0 && props.documents.links.length > 3"
-            class="mt-6 flex justify-center"
-        >
-            <Link
-                v-for="(link, index) in props.documents.links"
-                :key="index"
-                :href="link.url || ''"
-                class="px-4 py-2 text-sm"
-                :class="{
-                    'bg-indigo-500 text-white rounded-md': link.active,
-                    'text-gray-500 hover:text-gray-800': !link.active,
-                    'cursor-not-allowed text-gray-400': !link.url,
-                }"
-                v-html="link.label"
-            />
-        </div>
+        <Pagination :paginator="documents" />
     </AuthenticatedLayout>
 
     <ConfirmDeletionModal
