@@ -43,7 +43,7 @@ class Handler extends ExceptionHandler
         if ($e instanceof NotFoundHttpException) {
             return redirect()->route('dashboard')->with('error', $e->getMessage() ?? 'Erro ao realizar requisição');
         }
-dd($e);
+
         return back()->with('error', $e->getMessage() ?? 'Erro ao realizar requisição');
     }
 }

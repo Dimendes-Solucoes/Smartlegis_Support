@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Libraries\FileUploader;
+use App\Libraries\StorageCustom;
 use App\Models\Credential;
 use App\Models\Helpdesk\Ticket;
 use App\Models\Helpdesk\TicketAttachment;
@@ -13,6 +14,7 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
@@ -114,25 +116,44 @@ class TicketService
         $this->handleAttachmentUpload($ticket, $data['attachments']);
     }
 
-    public function removeAttachmentsByCode(string $code, array $data): void
+    public function removeAttachmentsByCode(string $code, int $attachment_id): void
     {
-        if (empty($data['attachment_ids'])) {
-            return;
-        }
+        DB::beginTransaction();
 
-        $ticket = Ticket::where('code', $code)->first();
+        try {
+            $ticket = Ticket::where('code', $code)->first();
 
-        if (!$ticket) {
-            throw new Exception("Ticket não encontrado");
-        }
+            if (!$ticket) {
+                throw new ModelNotFoundException("Ticket não encontrado.");
+            }
 
-        $attachments = TicketAttachment::where('ticket_id', $ticket->id)
-            ->whereIn('id', $data['attachment_ids'])
-            ->get();
+            $attachment = TicketAttachment::where('ticket_id', $ticket->id)
+                ->where('id', $attachment_id)
+                ->first();
 
-        foreach ($attachments as $attachment) {
-            Storage::disk('public')->delete($attachment->file_path);
+            if (!$attachment) {
+                throw new ModelNotFoundException("Anexo não encontrado.");
+            }
+
+            if ($attachment->user_id !== auth()->id()) {
+                throw new Exception("Acesso negado. Você não é o proprietário deste ticket.");
+            }
+
+            $filePath = $attachment->file_path;
+
+            if ($filePath) {
+                StorageCustom::delete($filePath);
+            }
+
             $attachment->delete();
+
+            DB::commit();
+        } catch (ModelNotFoundException $e) {
+            DB::rollBack();
+            throw $e;
+        } catch (Exception $e) {
+            DB::rollBack();
+            throw new Exception($e->getMessage() ?? "Não foi possível remover o anexo. Tente novamente.");
         }
     }
 
@@ -153,21 +174,23 @@ class TicketService
         ]);
     }
 
-    public function removeMessageByCode(string $code, array $data): void
+    public function removeMessageByCode(string $code, int $message_id): void
     {
-        if (empty($data['message_ids'])) {
-            return;
-        }
-
         $ticket = Ticket::where('code', $code)->first();
 
         if (!$ticket) {
-            throw new Exception("Ticket não encontrado");
+            throw new Exception("Ticket não encontrado.");
         }
 
-        TicketMessage::where('ticket_id', $ticket->id)
-            ->whereIn('id', $data['message_ids'])
-            ->delete();
+        $message = TicketMessage::where('ticket_id', $ticket->id)
+            ->where('id', $message_id)
+            ->first();
+
+        if ($message->author_id !== auth()->id()) {
+            throw new Exception("Acesso negado. Você não é o proprietário deste ticket.");
+        }
+
+        $message->delete();
     }
 
     private function buildQuery(array $filter = []): Builder
@@ -225,7 +248,7 @@ class TicketService
 
         foreach ($files as $file) {
             if ($file instanceof UploadedFile) {
-                $uploadData = FileUploader::handleUpload($file, "tickets/{$ticket->id}");
+                $uploadData = FileUploader::handleUpload($file, "tickets/{$ticket->code}");
 
                 if (!empty($uploadData)) {
                     TicketAttachment::create([

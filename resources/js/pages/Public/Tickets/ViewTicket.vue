@@ -2,7 +2,7 @@
 import AuthenticatedLayout from "@/layouts/AuthenticatedLayout.vue";
 import PrimaryButton from "@/components/Common/PrimaryButton.vue";
 import SecondaryButton from "@/components/Common/SecondaryButton.vue";
-import { Head, useForm } from "@inertiajs/vue3";
+import { Head, useForm, usePage } from "@inertiajs/vue3";
 import BackButtonRow from "@/components/Common/BackButtonRow.vue";
 import InputError from "@/components/Form/InputError.vue";
 import InputLabel from "@/components/Form/InputLabel.vue";
@@ -11,6 +11,7 @@ import MultiSelect from "@/components/Form/MultiSelect.vue";
 import FileAttachment from "@/components/Form/FileAttachment.vue";
 import SelectInput from "@/components/Form/SelectInput.vue";
 import { computed, ref } from "vue";
+import { PaperClipIcon, TrashIcon } from "@heroicons/vue/24/outline";
 
 interface TicketType {
     id: number;
@@ -36,8 +37,9 @@ interface User {
 interface TicketAttachement {
     id: number;
     user: User;
-    file_path: string;
     file_name: string;
+    file_path: string;
+    file_url: string;
     created_at: string;
 }
 
@@ -72,21 +74,21 @@ const props = defineProps<{
     };
 }>();
 
+const page = usePage();
+const currentUserId = computed(() => page.props.auth?.user?.id);
+
 const editMode = ref(false);
 
-// Form para atualizar o ticket
 const updateForm = useForm({
     ticket_type_id: props.ticket.type.id,
     ticket_status_id: props.ticket.status.id,
     credential_ids: props.ticket.credentials.map((t) => t.id),
 });
 
-// Form para adicionar mensagens
 const messageForm = useForm({
     content: "",
 });
 
-// Form para adicionar anexos
 const attachmentForm = useForm({
     attachments: [] as File[],
 });
@@ -122,6 +124,36 @@ const submitAttachment = () => {
     });
 };
 
+const deleteAttachment = (attachmentId: number) => {
+    if (confirm("Tem certeza que deseja excluir este anexo?")) {
+        useForm({}).delete(
+            route("tickets.attachments.delete", {
+                code: props.ticket.code,
+                attachment_id: attachmentId,
+            })
+        );
+    }
+};
+
+const deleteMessage = (messageId: number) => {
+    if (confirm("Tem certeza que deseja excluir esta mensagem?")) {
+        useForm({}).delete(
+            route("tickets.messages.delete", {
+                code: props.ticket.code,
+                message_id: messageId,
+            })
+        );
+    }
+};
+
+const canDeleteAttachment = (attachment: TicketAttachement) => {
+    return currentUserId.value === attachment.user.id;
+};
+
+const canDeleteMessage = (message: TicketMessage) => {
+    return currentUserId.value === message.author.id;
+};
+
 const formatDate = (date: string) => {
     return new Date(date).toLocaleString("pt-BR", {
         day: "2-digit",
@@ -139,23 +171,21 @@ const formatDate = (date: string) => {
         <BackButtonRow :href="route('tickets.index')" />
 
         <div class="mt-6 space-y-6">
-            <!-- Código do Ticket em Destaque -->
             <div class="bg-gray-200 rounded-lg shadow-lg p-6 text-dark">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm font-medium opacity-90">Código do Ticket</p>
-                        <h1 class="text-2xl font-bold mt-1">#{{ ticket.code }}</h1>
+                        <h1 class="text-xl font-bold mt-1">#{{ ticket.code }}</h1>
                     </div>
                     <div class="text-right">
                         <p class="text-sm opacity-90">Criado em</p>
-                        <p class="text-lg font-semibold">
+                        <p class="text-md font-semibold">
                             {{ formatDate(ticket.created_at) }}
                         </p>
                     </div>
                 </div>
             </div>
 
-            <!-- Informações Originais do Ticket (Não Editáveis) -->
             <div class="bg-white rounded-lg shadow p-6">
                 <h2 class="text-xl font-semibold mb-4 text-gray-800">Informações</h2>
 
@@ -190,7 +220,6 @@ const formatDate = (date: string) => {
                 </div>
             </div>
 
-            <!-- Seção Editável (Tipo, Status, Cidades) -->
             <div class="bg-white rounded-lg shadow p-6">
                 <div class="flex items-center justify-between mb-4">
                     <h2 class="text-xl font-semibold text-gray-800">Encaminhamento</h2>
@@ -211,11 +240,10 @@ const formatDate = (date: string) => {
                                 id="ticket_type_id"
                                 v-model="updateForm.ticket_type_id"
                                 :options="formData.ticket_types"
-                                placeholder="Selecione um tipo"
-                                value-key="id"
-                                label-key="title"
+                                option-label="title"
+                                option-value="id"
+                                class="mt-1 block w-full"
                                 required
-                                :disablePlaceholder="true"
                             />
                             <InputError
                                 :message="updateForm.errors.ticket_type_id"
@@ -229,11 +257,10 @@ const formatDate = (date: string) => {
                                 id="ticket_status_id"
                                 v-model="updateForm.ticket_status_id"
                                 :options="formData.ticket_status"
-                                placeholder="Selecione um status"
-                                value-key="id"
-                                label-key="title"
+                                option-label="title"
+                                option-value="id"
+                                class="mt-1 block w-full"
                                 required
-                                :disablePlaceholder="true"
                             />
                             <InputError
                                 :message="updateForm.errors.ticket_status_id"
@@ -302,12 +329,10 @@ const formatDate = (date: string) => {
                 </div>
             </div>
 
-            <!-- Anexos -->
             <div class="bg-white rounded-lg shadow p-6">
                 <h2 class="text-xl font-semibold mb-4 text-gray-800">Anexos</h2>
 
                 <div class="space-y-4 mb-6">
-                    <!-- Lista de anexos existentes -->
                     <div
                         v-for="attachment in ticket.attachments"
                         :key="attachment.id"
@@ -322,23 +347,20 @@ const formatDate = (date: string) => {
                                     {{ formatDate(attachment.created_at) }}
                                 </p>
                             </div>
+                            <button
+                                v-if="canDeleteAttachment(attachment)"
+                                @click="deleteAttachment(attachment.id)"
+                                type="button"
+                                class="text-red-600 hover:text-red-800 transition-colors"
+                                title="Excluir anexo"
+                            >
+                                <TrashIcon class="w-5 h-5" />
+                            </button>
                         </div>
                         <div class="flex items-center space-x-3">
-                            <svg
-                                class="w-5 h-5 text-gray-600"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"
-                                />
-                            </svg>
+                            <PaperClipIcon class="w-5 h-5 text-gray-600" />
                             <a
-                                :href="attachment.file_path"
+                                :href="attachment.file_url"
                                 target="_blank"
                                 class="text-blue-600 hover:text-blue-800 hover:underline font-medium"
                             >
@@ -355,7 +377,6 @@ const formatDate = (date: string) => {
                     </div>
                 </div>
 
-                <!-- Formulário para adicionar anexos -->
                 <form @submit.prevent="submitAttachment" class="border-t pt-6">
                     <h3 class="text-lg font-semibold mb-4 text-gray-800">
                         Adicionar Anexos
@@ -383,7 +404,6 @@ const formatDate = (date: string) => {
                 </form>
             </div>
 
-            <!-- Histórico de Mensagens -->
             <div class="bg-white rounded-lg shadow p-6">
                 <h2 class="text-xl font-semibold mb-4 text-gray-800">Mensagens</h2>
 
@@ -402,6 +422,15 @@ const formatDate = (date: string) => {
                                     {{ formatDate(message.created_at) }}
                                 </p>
                             </div>
+                            <button
+                                v-if="canDeleteMessage(message)"
+                                @click="deleteMessage(message.id)"
+                                type="button"
+                                class="text-red-600 hover:text-red-800 transition-colors"
+                                title="Excluir mensagem"
+                            >
+                                <TrashIcon class="w-5 h-5" />
+                            </button>
                         </div>
                         <p class="text-gray-800 whitespace-pre-wrap">
                             {{ message.content }}
@@ -416,7 +445,6 @@ const formatDate = (date: string) => {
                     </div>
                 </div>
 
-                <!-- Formulário de Nova Mensagem -->
                 <form @submit.prevent="submitMessage" class="border-t pt-6">
                     <h3 class="text-lg font-semibold mb-4 text-gray-800">
                         Adicionar Mensagem

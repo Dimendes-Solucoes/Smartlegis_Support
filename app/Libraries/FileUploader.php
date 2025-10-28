@@ -17,11 +17,11 @@ class FileUploader
         $originalName = $file->getClientOriginalName();
         $extension = $file->getClientOriginalExtension();
         
-        $fileName = Str::slug(pathinfo($originalName, PATHINFO_FILENAME)) . '-' . Str::random(10) . '.' . $extension;
+        $fileName = Str::random(40) . '.' . $extension;
         $filePath = rtrim($storagePath, '/') . '/' . $fileName;
 
         $path = StorageCustom::put($filePath, $file->get());
-        
+
         return [
             'file_path' => "/" . $path, 
             'file_name' => $originalName

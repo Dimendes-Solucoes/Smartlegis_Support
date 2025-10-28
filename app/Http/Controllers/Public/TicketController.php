@@ -66,10 +66,24 @@ class TicketController extends Controller
         return redirect()->back()->with('success', "Anexo enviado com sucesso");
     }
 
+    public function deleteAttachment(string $code, int $attachment_id)
+    {
+        $this->service->removeAttachmentsByCode($code, $attachment_id);
+
+        return redirect()->back()->with('success', "Anexo deletado com sucesso");
+    }
+
     public function storeMessage(TicketStoreMessageRequest $request, string $code)
     {
         $this->service->sendMessageByCode($code, $request->validated());
 
         return redirect()->back()->with('success', "Mensagem enviada com sucesso");
+    }
+
+    public function deleteMessage(string $code, int $message_id)
+    {
+        $this->service->removeMessageByCode($code, $message_id);
+
+        return redirect()->back()->with('success', "Mensagem deletada com sucesso");
     }
 }

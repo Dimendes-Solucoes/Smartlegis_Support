@@ -271,7 +271,7 @@ const sortBy = (field: string) => {
                                 @click="sortBy('name')"
                                 class="flex items-center space-x-1"
                             >
-                                <span>Título</span>
+                                <span>TÍTULO</span>
                                 <ChevronUpIcon
                                     v-if="
                                         filters.sort === 'name' &&
