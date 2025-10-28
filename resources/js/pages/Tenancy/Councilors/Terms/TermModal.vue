@@ -23,7 +23,7 @@ const closeModal = () => {
     <Modal :show="show" @close="closeModal">
         <div class="p-6">
             <h2 class="text-lg font-medium text-gray-900 dark:text-gray-200">
-                {{ isEditing ? "Editar Mandato" : "Adicionar Novo Mandato" }}
+                {{ isEditing ? "Editar Mandato" : "Adicionar Mandato" }}
             </h2>
 
             <form @submit.prevent="$emit('submit')" class="mt-6 space-y-6">

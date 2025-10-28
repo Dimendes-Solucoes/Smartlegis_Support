@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import PrimaryButton from "@/components/Common/PrimaryButton.vue";
+
 interface User {
     id: number;
     name: string;
@@ -37,6 +39,10 @@ defineProps<{
     ticket: Ticket;
 }>();
 
+const emit = defineEmits<{
+    (e: "edit"): void;
+}>();
+
 const formatDate = (date: string) => {
     return new Date(date).toLocaleString("pt-BR", {
         day: "2-digit",
@@ -50,7 +56,10 @@ const formatDate = (date: string) => {
 
 <template>
     <div class="bg-white rounded-lg shadow p-6">
-        <h2 class="text-xl font-semibold mb-4 text-gray-800">Informações</h2>
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-xl font-semibold text-gray-800">Informações</h2>
+            <PrimaryButton @click="emit('edit')"> Editar Ticket </PrimaryButton>
+        </div>
 
         <div class="space-y-4">
             <div>

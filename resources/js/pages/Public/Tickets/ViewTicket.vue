@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import AuthenticatedLayout from "@/layouts/AuthenticatedLayout.vue";
-import PrimaryButton from "@/components/Common/PrimaryButton.vue";
 import { Head, useForm, usePage } from "@inertiajs/vue3";
 import BackButtonRow from "@/components/Common/BackButtonRow.vue";
 import ConfirmDeletionModal from "@/components/Common/ConfirmDeletionModal.vue";
@@ -179,18 +178,7 @@ const closeMessageModal = () => {
         <div class="mt-6 space-y-6">
             <TicketHeader :ticket="ticket" />
 
-            <TicketInformation :ticket="ticket" />
-
-            <TicketEditForm
-                v-if="editMode"
-                :update-form="updateForm"
-                :form-data="formData"
-                @submit="submitUpdate"
-                @cancel="editMode = false"
-            />
-            <div v-else class="flex justify-end">
-                <PrimaryButton @click="editMode = true"> Editar Ticket </PrimaryButton>
-            </div>
+            <TicketInformation :ticket="ticket" @edit="editMode = true" />
 
             <TicketAttachments
                 :attachments="ticket.attachments"
@@ -209,6 +197,14 @@ const closeMessageModal = () => {
             />
         </div>
     </AuthenticatedLayout>
+
+    <TicketEditForm
+        :show="editMode"
+        :update-form="updateForm"
+        :form-data="formData"
+        @submit="submitUpdate"
+        @close="editMode = false"
+    />
 
     <ConfirmDeletionModal
         :show="confirmingAttachmentDeletion"

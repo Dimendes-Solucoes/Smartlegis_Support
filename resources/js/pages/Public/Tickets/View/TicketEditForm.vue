@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Modal from "@/components/Common/Modal.vue";
 import PrimaryButton from "@/components/Common/PrimaryButton.vue";
 import SecondaryButton from "@/components/Common/SecondaryButton.vue";
 import SelectInput from "@/components/Form/SelectInput.vue";
@@ -40,13 +41,14 @@ interface FormData {
 }
 
 const props = defineProps<{
+    show: boolean;
     updateForm: UpdateForm;
     formData: FormData;
 }>();
 
 const emit = defineEmits<{
     (e: "submit"): void;
-    (e: "cancel"): void;
+    (e: "close"): void;
 }>();
 
 const credentialOptions = computed(() =>
@@ -58,68 +60,54 @@ const credentialOptions = computed(() =>
 </script>
 
 <template>
-    <div class="bg-white rounded-lg shadow p-6">
-        <h2 class="text-xl font-semibold mb-4 text-gray-800">Editar Ticket</h2>
+    <Modal :show="show" @close="emit('close')" max-width="2xl">
+        <div class="p-6">
+            <h2 class="text-xl font-semibold mb-4 text-gray-800">Editar Ticket</h2>
 
-        <form @submit.prevent="emit('submit')" class="space-y-4">
-            <SelectInput
-                v-model="updateForm.ticket_type_id"
-                label="Tipo"
-                :error="updateForm.errors.ticket_type_id"
-                id="ticket_type_id"
-                required
-            >
-                <option value="">Selecione um tipo</option>
-                <option
-                    v-for="type in formData.ticket_types"
-                    :key="type.id"
-                    :value="type.id"
-                >
-                    {{ type.title }}
-                </option>
-            </SelectInput>
+            <form @submit.prevent="emit('submit')" class="space-y-4">
+                <SelectInput
+                    v-model="updateForm.ticket_type_id"
+                    label="Tipo"
+                    :options="formData.ticket_types"
+                    :error="updateForm.errors.ticket_type_id"
+                    id="ticket_type_id"
+                    required
+                />
 
-            <SelectInput
-                v-model="updateForm.ticket_status_id"
-                label="Status"
-                :error="updateForm.errors.ticket_status_id"
-                id="ticket_status_id"
-                required
-            >
-                <option value="">Selecione um status</option>
-                <option
-                    v-for="status in formData.ticket_status"
-                    :key="status.id"
-                    :value="status.id"
-                >
-                    {{ status.title }}
-                </option>
-            </SelectInput>
+                <SelectInput
+                    v-model="updateForm.ticket_status_id"
+                    label="Status"
+                    :options="formData.ticket_status"
+                    :error="updateForm.errors.ticket_status_id"
+                    id="ticket_status_id"
+                    required
+                />
 
-            <MultiSelect
-                v-model="updateForm.credential_ids"
-                :options="credentialOptions"
-                label="Cidades"
-                placeholder="Selecione as cidades"
-                :error="updateForm.errors.credential_ids"
-                id="credential_ids"
-            />
+                <MultiSelect
+                    v-model="updateForm.credential_ids"
+                    :options="credentialOptions"
+                    label="Cidades"
+                    placeholder="Selecione as cidades"
+                    :error="updateForm.errors.credential_ids"
+                    id="credential_ids"
+                />
 
-            <div class="flex items-center justify-end space-x-3">
-                <SecondaryButton
-                    @click="emit('cancel')"
-                    type="button"
-                    :disabled="updateForm.processing"
-                >
-                    Cancelar
-                </SecondaryButton>
-                <PrimaryButton
-                    :class="{ 'opacity-25': updateForm.processing }"
-                    :disabled="updateForm.processing"
-                >
-                    Salvar Alterações
-                </PrimaryButton>
-            </div>
-        </form>
-    </div>
+                <div class="flex items-center justify-end space-x-3 mt-6">
+                    <SecondaryButton
+                        @click="emit('close')"
+                        type="button"
+                        :disabled="updateForm.processing"
+                    >
+                        Cancelar
+                    </SecondaryButton>
+                    <PrimaryButton
+                        :class="{ 'opacity-25': updateForm.processing }"
+                        :disabled="updateForm.processing"
+                    >
+                        Salvar Alterações
+                    </PrimaryButton>
+                </div>
+            </form>
+        </div>
+    </Modal>
 </template>

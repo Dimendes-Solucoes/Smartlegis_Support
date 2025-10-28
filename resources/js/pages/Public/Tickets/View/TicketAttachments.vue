@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import { ref } from "vue";
+import Modal from "@/components/Common/Modal.vue";
 import PrimaryButton from "@/components/Common/PrimaryButton.vue";
+import SecondaryButton from "@/components/Common/SecondaryButton.vue";
 import FileAttachment from "@/components/Form/FileAttachment.vue";
 import { PaperClipIcon, TrashIcon } from "@heroicons/vue/24/outline";
 
@@ -36,6 +39,8 @@ const emit = defineEmits<{
     (e: "delete", attachmentId: number): void;
 }>();
 
+const showAttachmentModal = ref(false);
+
 const canDeleteAttachment = (attachment: TicketAttachment, currentUserId?: number) => {
     return currentUserId === attachment.user.id;
 };
@@ -49,13 +54,23 @@ const formatDate = (date: string) => {
         minute: "2-digit",
     });
 };
+
+const handleSubmit = () => {
+    emit("submit");
+    showAttachmentModal.value = false;
+};
 </script>
 
 <template>
     <div class="bg-white rounded-lg shadow p-6">
-        <h2 class="text-xl font-semibold mb-4 text-gray-800">Anexos</h2>
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-xl font-semibold text-gray-800">Anexos</h2>
+            <PrimaryButton @click="showAttachmentModal = true">
+                Adicionar Anexos
+            </PrimaryButton>
+        </div>
 
-        <div class="space-y-4 mb-6">
+        <div class="space-y-4">
             <div
                 v-for="attachment in attachments"
                 :key="attachment.id"
@@ -96,11 +111,17 @@ const formatDate = (date: string) => {
                 Nenhum anexo ainda.
             </div>
         </div>
+    </div>
 
-        <form @submit.prevent="emit('submit')" class="border-t pt-6">
-            <h3 class="text-lg font-semibold mb-4 text-gray-800">Adicionar Anexos</h3>
+    <Modal
+        :show="showAttachmentModal"
+        @close="showAttachmentModal = false"
+        max-width="2xl"
+    >
+        <div class="p-6">
+            <h2 class="text-xl font-semibold mb-4 text-gray-800">Adicionar Anexos</h2>
 
-            <div class="space-y-4">
+            <form @submit.prevent="handleSubmit" class="space-y-4">
                 <FileAttachment
                     v-model="attachmentForm.attachments"
                     label="Anexos"
@@ -110,7 +131,14 @@ const formatDate = (date: string) => {
                     :max-files="10"
                 />
 
-                <div class="flex items-center justify-end">
+                <div class="flex items-center justify-end space-x-3 mt-6">
+                    <SecondaryButton
+                        @click="showAttachmentModal = false"
+                        type="button"
+                        :disabled="attachmentForm.processing"
+                    >
+                        Cancelar
+                    </SecondaryButton>
                     <PrimaryButton
                         :class="{ 'opacity-25': attachmentForm.processing }"
                         :disabled="attachmentForm.processing"
@@ -118,7 +146,7 @@ const formatDate = (date: string) => {
                         Enviar Anexos
                     </PrimaryButton>
                 </div>
-            </div>
-        </form>
-    </div>
+            </form>
+        </div>
+    </Modal>
 </template>

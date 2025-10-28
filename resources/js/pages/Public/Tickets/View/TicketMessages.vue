@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import { ref } from "vue";
+import Modal from "@/components/Common/Modal.vue";
 import PrimaryButton from "@/components/Common/PrimaryButton.vue";
+import SecondaryButton from "@/components/Common/SecondaryButton.vue";
 import InputLabel from "@/components/Form/InputLabel.vue";
 import TextareaInput from "@/components/Form/TextareaInput.vue";
 import InputError from "@/components/Form/InputError.vue";
@@ -36,6 +39,8 @@ const emit = defineEmits<{
     (e: "delete", messageId: number): void;
 }>();
 
+const showMessageModal = ref(false);
+
 const canDeleteMessage = (message: TicketMessage, currentUserId?: number) => {
     return currentUserId === message.author.id;
 };
@@ -49,13 +54,23 @@ const formatDate = (date: string) => {
         minute: "2-digit",
     });
 };
+
+const handleSubmit = () => {
+    emit("submit");
+    showMessageModal.value = false;
+};
 </script>
 
 <template>
     <div class="bg-white rounded-lg shadow p-6">
-        <h2 class="text-xl font-semibold mb-4 text-gray-800">Mensagens</h2>
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-xl font-semibold text-gray-800">Mensagens</h2>
+            <PrimaryButton @click="showMessageModal = true">
+                Adicionar Mensagem
+            </PrimaryButton>
+        </div>
 
-        <div class="space-y-4 mb-6">
+        <div class="space-y-4">
             <div
                 v-for="message in messages"
                 :key="message.id"
@@ -89,11 +104,13 @@ const formatDate = (date: string) => {
                 Nenhuma mensagem ainda. Seja o primeiro a enviar!
             </div>
         </div>
+    </div>
 
-        <form @submit.prevent="emit('submit')" class="border-t pt-6">
-            <h3 class="text-lg font-semibold mb-4 text-gray-800">Adicionar Mensagem</h3>
+    <Modal :show="showMessageModal" @close="showMessageModal = false" max-width="2xl">
+        <div class="p-6">
+            <h2 class="text-xl font-semibold mb-4 text-gray-800">Adicionar Mensagem</h2>
 
-            <div class="space-y-4">
+            <form @submit.prevent="handleSubmit" class="space-y-4">
                 <div>
                     <InputLabel for="content" value="Mensagem" />
                     <TextareaInput
@@ -107,7 +124,14 @@ const formatDate = (date: string) => {
                     <InputError :message="messageForm.errors.content" class="mt-2" />
                 </div>
 
-                <div class="flex items-center justify-end">
+                <div class="flex items-center justify-end space-x-3 mt-6">
+                    <SecondaryButton
+                        @click="showMessageModal = false"
+                        type="button"
+                        :disabled="messageForm.processing"
+                    >
+                        Cancelar
+                    </SecondaryButton>
                     <PrimaryButton
                         :class="{ 'opacity-25': messageForm.processing }"
                         :disabled="messageForm.processing"
@@ -115,7 +139,7 @@ const formatDate = (date: string) => {
                         Enviar Mensagem
                     </PrimaryButton>
                 </div>
-            </div>
-        </form>
-    </div>
+            </form>
+        </div>
+    </Modal>
 </template>
