@@ -5,6 +5,8 @@ import TextButton from "@/components/Itens/TextButton.vue";
 import RegularColumn from "@/components/Table/RegularColumn.vue";
 import CustomBadge from "@/components/Common/CustomBadge.vue";
 import Pagination from "@/components/Table/Pagination.vue";
+import { EyeIcon } from "@heroicons/vue/24/outline";
+import IconButton from "@/components/Itens/IconButton.vue";
 
 interface TicketStatus {
     title: string;
@@ -21,6 +23,7 @@ interface Author {
 
 interface Ticket {
     id: number;
+    code: string;
     title: string;
     description: string;
     ticket_status_id: number;
@@ -99,7 +102,14 @@ const props = defineProps<{
                                         :color="ticket.status.color"
                                     />
                                 </td>
-                                <td></td>
+                                <td>
+                                    <IconButton
+                                        :href="route('tickets.view', ticket.code)"
+                                        title="Visualizar"
+                                    >
+                                        <EyeIcon class="h-5 w-5" />
+                                    </IconButton>
+                                </td>
                             </tr>
                         </tbody>
                     </table>

@@ -2,7 +2,7 @@
 
 namespace App\Models\Helpdesk;
 
-use App\Models\Tenant;
+use App\Models\Credential;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -46,9 +46,9 @@ class Ticket extends Model
         return $this->hasMany(TicketAttachment::class);
     }
 
-    public function tenants()
+    public function credentials()
     {
-        return $this->belongsToMany(Tenant::class, 'ticket_tenants')
-            ->using(TicketTenant::class);
+        return $this->belongsToMany(Credential::class, 'ticket_credentials')
+            ->using(TicketCredential::class);
     }
 }

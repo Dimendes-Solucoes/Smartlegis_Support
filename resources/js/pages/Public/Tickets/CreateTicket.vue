@@ -16,7 +16,7 @@ interface TicketStatus {
     color: string;
 }
 
-interface Tenant {
+interface Credential {
     id: string;
     city_name: string;
 }
@@ -25,7 +25,7 @@ const props = defineProps<{
     formData: {
         ticket_types: TicketType[];
         ticket_status: TicketStatus[];
-        tenants: Tenant[];
+        credentials: Credential[];
     };
 }>();
 
@@ -35,7 +35,7 @@ const form = useForm({
     ticket_type_id: "",
     ticket_status_id: "",
     attachments: [] as File[],
-    tenant_ids: [] as string[],
+    credential_ids: [] as string[],
 });
 
 const submit = () => {
@@ -53,7 +53,7 @@ const submit = () => {
                 :form="form"
                 :ticket_types="props.formData.ticket_types"
                 :ticket_status="props.formData.ticket_status"
-                :tenants="props.formData.tenants"
+                :credentials="props.formData.credentials"
             />
 
             <div class="flex items-center justify-end mt-6">

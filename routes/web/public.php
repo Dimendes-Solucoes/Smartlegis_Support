@@ -47,6 +47,9 @@ Route::middleware('auth')->group(function () {
             Route::get('/', 'index')->name('index');
             Route::get('/cadastrar', 'create')->name('create');
             Route::post('/', 'store')->name('store');
+            Route::get('/{code}', 'view')->name('view');
+            Route::put('/{code}', 'update')->name('update');
+            Route::put('/{code}/messages', 'storeMessage')->name('messages.store');
         });
 
     Route::prefix('administradores')

@@ -19,7 +19,7 @@ interface TicketStatus {
     color: string;
 }
 
-interface Tenant {
+interface Credential {
     id: string;
     city_name: string;
 }
@@ -28,13 +28,13 @@ const props = defineProps<{
     form: any;
     ticket_types: TicketType[];
     ticket_status: TicketStatus[];
-    tenants: Tenant[];
+    credentials: Credential[];
 }>();
 
-const tenantOptions = computed(() =>
-    props.tenants.map((tenant) => ({
-        value: tenant.id,
-        label: tenant.city_name,
+const credentialOptions = computed(() =>
+    props.credentials.map((credential) => ({
+        value: credential.id,
+        label: credential.city_name,
     }))
 );
 </script>
@@ -99,12 +99,12 @@ const tenantOptions = computed(() =>
         </div>
 
         <MultiSelect
-            v-model="form.tenant_ids"
-            :options="tenantOptions"
+            v-model="form.credential_ids"
+            :options="credentialOptions"
             label="Cidades"
             placeholder="Selecione as cidades"
-            :error="form.errors.tenant_ids"
-            id="tenant_ids"
+            :error="form.errors.credential_ids"
+            id="credential_ids"
         />
 
         <FileAttachment

@@ -2,50 +2,38 @@
 
 namespace App\Services;
 
+use App\Libraries\FileUploader;
+use App\Models\Credential;
 use App\Models\Helpdesk\Ticket;
 use App\Models\Helpdesk\TicketAttachment;
 use App\Models\Helpdesk\TicketMessage;
-use App\Libraries\FileUploader;
-use App\Models\Credential;
 use App\Models\Helpdesk\TicketStatus;
 use App\Models\Helpdesk\TicketType;
+use Carbon\Carbon;
+use Exception;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Carbon\Carbon;
-use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Arr;
 
 class TicketService
 {
-    public function list(array $filter): LengthAwarePaginator
+    public function list(array $filter = []): LengthAwarePaginator
     {
-        $startDate = $filter['start_date'] ?? Carbon::now()->startOfMonth()->toDateString();
-        $endDate = $filter['end_date'] ?? Carbon::now()->endOfMonth()->toDateString();
+        $query = $this->buildQuery($filter);
 
-        $query = Ticket::query()
-            ->with(['type', 'status', 'author', 'tenants'])
-            ->whereBetween('created_at', [$startDate, $endDate]);
+        return $query->orderBy('id', 'desc')->paginate($filter['per_page'] ?? 15);
+    }
 
-        $query->when($filter['ticket_type_id'] ?? null, function ($query, $typeId) {
-            $query->where('ticket_type_id', $typeId);
-        });
+    public function findByCode(string $code): ?Ticket
+    {
+        $query = $this->buildQuery(['code' => $code]);
 
-        $query->when($filter['ticket_status_id'] ?? null, function ($query, $statusId) {
-            $query->where('ticket_status_id', $statusId);
-        });
-
-        $query->when($filter['author_id'] ?? null, function ($query, $authorId) {
-            $query->where('author_id', $authorId);
-        });
-
-        $query->when($filter['search'] ?? null, function ($query, $search) {
-            $query->where('title', 'ilike', "%{$search}%");
-        });
-
-        return $query->orderBy('id', 'desc')->paginate(15);
+        return $query->first();
     }
 
     public function prepareForCreate()
@@ -57,7 +45,7 @@ class TicketService
         return [
             'ticket_types' => $types,
             'ticket_status' => $status,
-            'tenants' => $credentials
+            'credentials' => $credentials
         ];
     }
 
@@ -75,8 +63,8 @@ class TicketService
                 'description' => $data['description'] ?? null,
             ]);
 
-            if (!empty($data['tenants'])) {
-                $ticket->tenants()->attach($data['tenants']);
+            if (!empty($data['credential_ids'])) {
+                $ticket->credentials()->attach($data['credential_ids']);
             }
 
             if (!empty($data['attachments'])) {
@@ -87,22 +75,24 @@ class TicketService
         });
     }
 
-    public function update(int $id, array $data): Ticket
+    public function updateByCode(string $code, array $data): Ticket
     {
-        $ticket = Ticket::findOrFail($id);
+        $ticket = Ticket::where('code', $code)->first();
+
+        if (!$ticket) {
+            throw new Exception("Ticket não encontrado");
+        }
 
         return DB::transaction(function () use ($ticket, $data) {
             $ticketData = Arr::only($data, [
                 'ticket_type_id',
-                'ticket_status_id',
-                'title',
-                'description'
+                'ticket_status_id'
             ]);
 
             $ticket->update($ticketData);
 
-            if (isset($data['tenants'])) {
-                $ticket->tenants()->sync($data['tenants']);
+            if (isset($data['credential_ids'])) {
+                $ticket->credentials()->sync($data['credential_ids']);
             }
 
             return $ticket;
@@ -145,7 +135,7 @@ class TicketService
             'author_id' => $user->id,
             'author_name' => $user->name,
             'content' => $data['content'],
-            'tenant_id' => $user->tenant_id,
+            'credential_id' => $user->credential_id,
         ]);
     }
 
@@ -160,21 +150,67 @@ class TicketService
             ->delete();
     }
 
+    private function buildQuery(array $filter = []): Builder
+    {
+        $query = Ticket::query()
+            ->with([
+                'type',
+                'status',
+                'author',
+                'credentials',
+                'messages.author',
+                'messages.attachments',
+                'attachments'
+            ]);
+
+        if (isset($filter['start_date']) || isset($filter['end_date'])) {
+            $startDate = $filter['start_date'] ?? Carbon::now()->startOfMonth()->toDateString();
+            $endDate = $filter['end_date'] ?? Carbon::now()->endOfMonth()->toDateString();
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+        }
+
+        $query->when(
+            $filter['ticket_type_id'] ?? null,
+            fn($q, $typeId) => $q->where('ticket_type_id', $typeId)
+        );
+
+        $query->when(
+            $filter['ticket_status_id'] ?? null,
+            fn($q, $statusId) => $q->where('ticket_status_id', $statusId)
+        );
+
+        $query->when(
+            $filter['author_id'] ?? null,
+            fn($q, $authorId) => $q->where('author_id', $authorId)
+        );
+
+        $query->when(
+            $filter['credential_id'] ?? null,
+            fn($q, $credentialId) => $q->whereHas('credentials', fn($q) => $q->where('credential_id', $credentialId))
+        );
+
+        $query->when($filter['search'] ?? null, function ($query, $search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'ilike', "%{$search}%")
+                    ->orWhere('code', 'ilike', "%{$search}%")
+                    ->orWhere('description', 'ilike', "%{$search}%");
+            });
+        });
+
+        return $query;
+    }
+
     private function handleAttachmentUpload(Ticket $ticket, array $files): void
     {
         $user = Auth::user();
-        $tenantId = $ticket->tenant_id;
 
         foreach ($files as $file) {
             if ($file instanceof UploadedFile) {
-
-                $path = "tenants/{$tenantId}/tickets/{$ticket->id}";
-                $uploadData = FileUploader::handleUpload($file, $path);
+                $uploadData = FileUploader::handleUpload($file, "tickets/{$ticket->id}");
 
                 if (!empty($uploadData)) {
                     TicketAttachment::create([
                         'ticket_id' => $ticket->id,
-                        'tenant_id' => $tenantId,
                         'user_id' => $user->id,
                         'file_name' => $uploadData['file_name'],
                         'file_path' => $uploadData['file_path'],

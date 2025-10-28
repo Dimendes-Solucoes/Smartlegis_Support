@@ -11,6 +11,7 @@ class TicketAttachment extends Model
 
     protected $fillable = [
         'ticket_id',
+        'user_id',
         'file_name',
         'file_path',
     ];
