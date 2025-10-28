@@ -9,6 +9,7 @@ use App\Http\Requests\Tickets\TicketStoreRequest;
 use App\Http\Requests\Tickets\TicketUpdateRequest;
 use App\Models\Helpdesk\TicketStatus;
 use App\Models\Helpdesk\TicketType;
+use App\Models\User;
 use App\Services\TicketService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -36,11 +37,13 @@ class TicketController extends Controller
 
         $ticketTypes = TicketType::orderBy('title')->get();
         $ticketStatuses = TicketStatus::orderBy('id')->get();
+        $authors = User::orderBy('name')->get();
 
         return Inertia::render('Public/Tickets/Index', [
             'tickets' => $tickets,
             'ticketTypes' => $ticketTypes,
             'ticketStatuses' => $ticketStatuses,
+            'authors' => $authors,
             'filters' => $filters
         ]);
     }

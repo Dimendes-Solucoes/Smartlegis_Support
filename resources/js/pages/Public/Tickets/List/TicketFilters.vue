@@ -14,15 +14,22 @@ interface TicketType {
     title: string;
 }
 
+interface Author {
+    id: number;
+    name: string;
+}
+
 interface Filters {
     search?: string;
     ticket_type_id?: number;
     ticket_status_id?: number;
+    author_id?: number;
 }
 
 const props = defineProps<{
     ticketTypes?: TicketType[];
     ticketStatuses?: TicketStatus[];
+    authors?: Author[];
     filters?: Filters;
 }>();
 
@@ -34,12 +41,14 @@ const emit = defineEmits<{
 const searchQuery = ref(props.filters?.search || "");
 const selectedType = ref(props.filters?.ticket_type_id || null);
 const selectedStatus = ref(props.filters?.ticket_status_id || null);
+const selectedAuthor = ref(props.filters?.author_id || null);
 
 const activeFiltersCount = computed(() => {
     let count = 0;
     if (searchQuery.value) count++;
     if (selectedType.value) count++;
     if (selectedStatus.value) count++;
+    if (selectedAuthor.value) count++;
     return count;
 });
 
@@ -48,6 +57,7 @@ const applyFilters = () => {
         search: searchQuery.value || undefined,
         ticket_type_id: selectedType.value || undefined,
         ticket_status_id: selectedStatus.value || undefined,
+        author_id: selectedAuthor.value || undefined,
     });
 };
 
@@ -55,6 +65,7 @@ const clearFilters = () => {
     searchQuery.value = "";
     selectedType.value = null;
     selectedStatus.value = null;
+    selectedAuthor.value = null;
     emit("clear");
 };
 </script>
@@ -62,7 +73,7 @@ const clearFilters = () => {
 <template>
     <div class="bg-white dark:bg-gray-800 rounded-lg mb-6">
         <form @submit.prevent="applyFilters">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div v-if="ticketTypes && ticketTypes.length > 0">
                     <label
                         class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
@@ -105,19 +116,40 @@ const clearFilters = () => {
                     </select>
                 </div>
 
-                <div class="md:col-span-2">
+                <div v-if="authors && authors.length > 0">
                     <label
                         class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
                     >
-                        Pesquisar
+                        Autor
                     </label>
-                    <input
-                        v-model="searchQuery"
-                        type="text"
-                        placeholder="Buscar por título ou código..."
+                    <select
+                        v-model="selectedAuthor"
                         class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                    />
+                    >
+                        <option :value="null">Todos os autores</option>
+                        <option
+                            v-for="author in authors"
+                            :key="author.id"
+                            :value="author.id"
+                        >
+                            {{ author.name }}
+                        </option>
+                    </select>
                 </div>
+            </div>
+
+            <div class="mt-4">
+                <label
+                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                >
+                    Pesquisar
+                </label>
+                <input
+                    v-model="searchQuery"
+                    type="text"
+                    placeholder="Buscar por título ou código..."
+                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                />
             </div>
 
             <div class="flex justify-end items-center space-x-4 mt-4">

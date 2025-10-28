@@ -14,12 +14,14 @@ import type {
     TicketType,
     TicketStatus,
     TicketFilters as Filters,
+    Author,
 } from "@/types/ticket";
 
 const props = defineProps<{
     tickets: PaginatedTickets;
     ticketTypes?: TicketType[];
     ticketStatuses?: TicketStatus[];
+    authors?: Author[];
     filters?: Filters;
 }>();
 
@@ -32,6 +34,7 @@ const applyFilters = (filters: Filters) => {
             search: filters.search,
             ticket_type_id: filters.ticket_type_id,
             ticket_status_id: filters.ticket_status_id,
+            author_id: filters.author_id,
         },
         {
             preserveState: true,
@@ -55,7 +58,8 @@ const hasActiveFilters = () => {
     return !!(
         props.filters?.search ||
         props.filters?.ticket_type_id ||
-        props.filters?.ticket_status_id
+        props.filters?.ticket_status_id ||
+        props.filters?.author_id
     );
 };
 </script>
@@ -78,6 +82,7 @@ const hasActiveFilters = () => {
             <TicketFilters
                 :ticket-types="ticketTypes"
                 :ticket-statuses="ticketStatuses"
+                :authors="authors"
                 :filters="filters"
                 @apply="applyFilters"
                 @clear="clearFilters"

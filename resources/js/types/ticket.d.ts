@@ -41,4 +41,5 @@ export interface TicketFilters {
     search?: string;
     ticket_type_id?: number;
     ticket_status_id?: number;
+    author_id?: number;
 }
