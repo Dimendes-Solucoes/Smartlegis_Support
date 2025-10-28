@@ -33,12 +33,19 @@ interface User {
     name: string;
 }
 
+interface TicketAttachement {
+    id: number;
+    user: User;
+    file_path: string;
+    file_name: string;
+    created_at: string;
+}
+
 interface TicketMessage {
     id: number;
     content: string;
     author: User;
     created_at: string;
-    attachments?: any[];
 }
 
 interface Ticket {
@@ -53,7 +60,7 @@ interface Ticket {
     created_at: string;
     updated_at: string;
     messages: TicketMessage[];
-    attachments?: any[];
+    attachments: TicketAttachement[];
 }
 
 const props = defineProps<{
@@ -302,19 +309,48 @@ const formatDate = (date: string) => {
                 <div class="space-y-4 mb-6">
                     <!-- Lista de anexos existentes -->
                     <div
-                        v-if="ticket.attachments && ticket.attachments.length > 0"
-                        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+                        v-for="attachment in ticket.attachments"
+                        :key="attachment.id"
+                        class="border-l-4 border-green-500 bg-gray-50 p-4 rounded-r-lg"
                     >
-                        <div
-                            v-for="attachment in ticket.attachments"
-                            :key="attachment.id"
-                            class="border rounded-lg p-4 hover:bg-gray-50 transition"
-                        >
-                            <!-- Aqui vai ser o conteúdo dos anexos -->
+                        <div class="flex items-start justify-between mb-2">
+                            <div>
+                                <p class="font-semibold text-gray-900">
+                                    {{ attachment.user.name }}
+                                </p>
+                                <p class="text-sm text-gray-600">
+                                    {{ formatDate(attachment.created_at) }}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <svg
+                                class="w-5 h-5 text-gray-600"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"
+                                />
+                            </svg>
+                            <a
+                                :href="attachment.file_path"
+                                target="_blank"
+                                class="text-blue-600 hover:text-blue-800 hover:underline font-medium"
+                            >
+                                {{ attachment.file_name }}
+                            </a>
                         </div>
                     </div>
 
-                    <div v-else class="text-center text-gray-500 py-8">
+                    <div
+                        v-if="ticket.attachments.length === 0"
+                        class="text-center text-gray-500 py-8"
+                    >
                         Nenhum anexo ainda.
                     </div>
                 </div>

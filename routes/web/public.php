@@ -49,7 +49,8 @@ Route::middleware('auth')->group(function () {
             Route::post('/', 'store')->name('store');
             Route::get('/{code}', 'view')->name('view');
             Route::put('/{code}', 'update')->name('update');
-            Route::put('/{code}/messages', 'storeMessage')->name('messages.store');
+            Route::post('/{code}/attachments', 'storeAttachment')->name('attachments.store');
+            Route::post('/{code}/messages', 'storeMessage')->name('messages.store');
         });
 
     Route::prefix('administradores')

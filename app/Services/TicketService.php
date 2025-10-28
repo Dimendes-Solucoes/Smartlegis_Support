@@ -99,9 +99,13 @@ class TicketService
         });
     }
 
-    public function addAttachments(int $id, array $data): void
+    public function addAttachmentsByCode(string $code, array $data): void
     {
-        $ticket = Ticket::findOrFail($id);
+        $ticket = Ticket::where('code', $code)->first();
+
+        if (!$ticket) {
+            throw new Exception("Ticket não encontrado");
+        }
 
         if (empty($data['attachments'])) {
             return;
@@ -110,13 +114,19 @@ class TicketService
         $this->handleAttachmentUpload($ticket, $data['attachments']);
     }
 
-    public function removeAttachments(int $id, array $data): void
+    public function removeAttachmentsByCode(string $code, array $data): void
     {
         if (empty($data['attachment_ids'])) {
             return;
         }
 
-        $attachments = TicketAttachment::where('ticket_id', $id)
+        $ticket = Ticket::where('code', $code)->first();
+
+        if (!$ticket) {
+            throw new Exception("Ticket não encontrado");
+        }
+
+        $attachments = TicketAttachment::where('ticket_id', $ticket->id)
             ->whereIn('id', $data['attachment_ids'])
             ->get();
 
@@ -126,26 +136,36 @@ class TicketService
         }
     }
 
-    public function sendMessage(int $id, array $data): TicketMessage
+    public function sendMessageByCode(string $code, array $data): TicketMessage
     {
+        $ticket = Ticket::where('code', $code)->first();
+
+        if (!$ticket) {
+            throw new Exception("Ticket não encontrado");
+        }
+
         $user = Auth::user();
 
         return TicketMessage::create([
-            'ticket_id' => $id,
+            'ticket_id' => $ticket->id,
             'author_id' => $user->id,
-            'author_name' => $user->name,
-            'content' => $data['content'],
-            'credential_id' => $user->credential_id,
+            'content' => $data['content']
         ]);
     }
 
-    public function removeMessage(int $id, array $data): void
+    public function removeMessageByCode(string $code, array $data): void
     {
         if (empty($data['message_ids'])) {
             return;
         }
 
-        TicketMessage::where('ticket_id', $id)
+        $ticket = Ticket::where('code', $code)->first();
+
+        if (!$ticket) {
+            throw new Exception("Ticket não encontrado");
+        }
+
+        TicketMessage::where('ticket_id', $ticket->id)
             ->whereIn('id', $data['message_ids'])
             ->delete();
     }
@@ -159,8 +179,7 @@ class TicketService
                 'author',
                 'credentials',
                 'messages.author',
-                'messages.attachments',
-                'attachments'
+                'attachments.user'
             ]);
 
         if (isset($filter['start_date']) || isset($filter['end_date'])) {

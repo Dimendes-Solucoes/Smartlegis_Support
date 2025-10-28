@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Tickets\TicketStoreAttachmentRequest;
+use App\Http\Requests\Tickets\TicketStoreMessageRequest;
 use App\Http\Requests\Tickets\TicketStoreRequest;
 use App\Http\Requests\Tickets\TicketUpdateRequest;
 use App\Services\TicketService;
@@ -55,5 +57,19 @@ class TicketController extends Controller
         $this->service->updateByCode($code, $request->validated());
 
         return redirect()->back()->with('success', "Ticket atualizado com sucesso");
+    }
+
+    public function storeAttachment(TicketStoreAttachmentRequest $request, string $code)
+    {
+        $this->service->addAttachmentsByCode($code, $request->validated());
+
+        return redirect()->back()->with('success', "Anexo enviado com sucesso");
+    }
+
+    public function storeMessage(TicketStoreMessageRequest $request, string $code)
+    {
+        $this->service->sendMessageByCode($code, $request->validated());
+
+        return redirect()->back()->with('success', "Mensagem enviada com sucesso");
     }
 }
