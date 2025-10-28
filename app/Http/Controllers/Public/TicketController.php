@@ -61,7 +61,7 @@ class TicketController extends Controller
     {
         $this->service->create($request->validated());
 
-        return redirect()->back()->with('success', "Ticket adicionado com sucesso");
+        return redirect()->route('tickets.index')->with('success', "Ticket adicionado com sucesso");
     }
 
     public function view(string $code)
