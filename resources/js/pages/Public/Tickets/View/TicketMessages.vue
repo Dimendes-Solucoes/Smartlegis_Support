@@ -62,9 +62,13 @@ const handleSubmit = () => {
 </script>
 
 <template>
-    <div class="bg-white rounded-lg shadow p-6">
+    <div
+        class="bg-white dark:bg-gray-800 border dark:border-gray-500 rounded-lg shadow dark:shadow-gray-900/50 p-6"
+    >
         <div class="flex items-center justify-between mb-4">
-            <h2 class="text-xl font-semibold text-gray-800">Mensagens</h2>
+            <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100">
+                Mensagens
+            </h2>
             <PrimaryButton @click="showMessageModal = true">
                 Adicionar Mensagem
             </PrimaryButton>
@@ -74,14 +78,14 @@ const handleSubmit = () => {
             <div
                 v-for="message in messages"
                 :key="message.id"
-                class="border-l-4 border-blue-500 bg-gray-50 p-4 rounded-r-lg"
+                class="border-l-4 border-blue-500 dark:border-blue-400 bg-gray-50 dark:bg-gray-700 p-4 rounded-r-lg"
             >
                 <div class="flex items-start justify-between mb-2">
                     <div>
-                        <p class="font-semibold text-gray-900">
+                        <p class="font-semibold text-gray-900 dark:text-gray-100">
                             {{ message.author.name }}
                         </p>
-                        <p class="text-sm text-gray-600">
+                        <p class="text-sm text-gray-600 dark:text-gray-400">
                             {{ formatDate(message.created_at) }}
                         </p>
                     </div>
@@ -89,18 +93,21 @@ const handleSubmit = () => {
                         v-if="canDeleteMessage(message, currentUserId)"
                         @click="emit('delete', message.id)"
                         type="button"
-                        class="text-red-600 hover:text-red-800 transition-colors"
+                        class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 transition-colors"
                         title="Excluir mensagem"
                     >
                         <TrashIcon class="w-5 h-5" />
                     </button>
                 </div>
-                <p class="text-gray-800 whitespace-pre-wrap">
+                <p class="text-gray-800 dark:text-gray-200 whitespace-pre-wrap">
                     {{ message.content }}
                 </p>
             </div>
 
-            <div v-if="messages.length === 0" class="text-center text-gray-500 py-8">
+            <div
+                v-if="messages.length === 0"
+                class="text-center text-gray-500 dark:text-gray-400 py-8"
+            >
                 Nenhuma mensagem ainda. Seja o primeiro a enviar!
             </div>
         </div>
@@ -108,7 +115,9 @@ const handleSubmit = () => {
 
     <Modal :show="showMessageModal" @close="showMessageModal = false" max-width="2xl">
         <div class="p-6">
-            <h2 class="text-xl font-semibold mb-4 text-gray-800">Adicionar Mensagem</h2>
+            <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100">
+                Adicionar Mensagem
+            </h2>
 
             <form @submit.prevent="handleSubmit" class="space-y-4">
                 <div>

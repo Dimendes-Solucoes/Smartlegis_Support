@@ -20,7 +20,9 @@ const formatDate = (date: string) => {
 </script>
 
 <template>
-    <div class="bg-gray-200 rounded-lg shadow-lg p-6 text-dark">
+    <div
+        class="bg-gray-100 dark:bg-gray-800 border dark:border-gray-500 rounded-lg shadow-lg p-6 text-gray-900 dark:text-gray-100"
+    >
         <div class="flex items-center justify-between">
             <div>
                 <p class="text-sm font-medium opacity-90">Código do Ticket</p>

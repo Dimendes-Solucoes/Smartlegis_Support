@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from "vue";
+import InputLabel from "./InputLabel.vue";
 
 const props = defineProps({
     id: {
@@ -18,6 +19,10 @@ const props = defineProps({
     valueKey: {
         type: String,
         default: "id",
+    },
+    label: {
+        type: String,
+        default: null,
     },
     labelKey: {
         type: String,
@@ -66,6 +71,8 @@ const getOptionLabel = (option) => {
 </script>
 
 <template>
+    <InputLabel v-if="label" :for="id" :value="label" />
+
     <select
         :id="id"
         :value="modelValue"

@@ -55,34 +55,48 @@ const formatDate = (date: string) => {
 </script>
 
 <template>
-    <div class="bg-white rounded-lg shadow p-6">
+    <div
+        class="bg-white dark:bg-gray-800 border dark:border-gray-500 rounded-lg shadow p-6"
+    >
         <div class="flex items-center justify-between mb-4">
-            <h2 class="text-xl font-semibold text-gray-800">Informações</h2>
+            <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100">
+                Informações
+            </h2>
             <PrimaryButton @click="emit('edit')"> Editar Ticket </PrimaryButton>
         </div>
 
         <div class="space-y-4">
             <div>
-                <p class="text-sm font-medium text-gray-600">Título</p>
-                <p class="text-lg text-gray-900 mt-1">{{ ticket.title }}</p>
+                <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Título</p>
+                <p class="text-lg text-gray-900 dark:text-gray-100 mt-1">
+                    {{ ticket.title }}
+                </p>
             </div>
 
             <div>
-                <p class="text-sm font-medium text-gray-600">Descrição</p>
-                <p class="text-gray-900 mt-1 whitespace-pre-wrap">
+                <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
+                    Descrição
+                </p>
+                <p class="text-gray-900 dark:text-gray-100 mt-1 whitespace-pre-wrap">
                     {{ ticket.description }}
                 </p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                    <p class="text-sm font-medium text-gray-600">Autor</p>
-                    <p class="text-gray-900 mt-1">{{ ticket.author.name }}</p>
+                    <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
+                        Autor
+                    </p>
+                    <p class="text-gray-900 dark:text-gray-100 mt-1">
+                        {{ ticket.author.name }}
+                    </p>
                 </div>
 
                 <div>
-                    <p class="text-sm font-medium text-gray-600">Última Atualização</p>
-                    <p class="text-gray-900 mt-1">
+                    <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
+                        Última Atualização
+                    </p>
+                    <p class="text-gray-900 dark:text-gray-100 mt-1">
                         {{ formatDate(ticket.updated_at) }}
                     </p>
                 </div>
@@ -90,14 +104,20 @@ const formatDate = (date: string) => {
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                    <p class="text-sm font-medium text-gray-600">Tipo</p>
-                    <p class="text-gray-900 mt-1">{{ ticket.type.title }}</p>
+                    <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
+                        Tipo
+                    </p>
+                    <p class="text-gray-900 dark:text-gray-100 mt-1">
+                        {{ ticket.type.title }}
+                    </p>
                 </div>
 
                 <div>
-                    <p class="text-sm font-medium text-gray-600">Status</p>
+                    <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
+                        Status
+                    </p>
                     <span
-                        class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border mt-1"
+                        class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 mt-1"
                     >
                         {{ ticket.status.title }}
                     </span>
@@ -105,12 +125,14 @@ const formatDate = (date: string) => {
             </div>
 
             <div>
-                <p class="text-sm font-medium text-gray-600">Cidades Envolvidas</p>
+                <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
+                    Cidades Envolvidas
+                </p>
                 <div class="flex flex-wrap gap-2 mt-2">
                     <span
                         v-for="credential in ticket.credentials"
                         :key="credential.id"
-                        class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800"
+                        class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
                     >
                         {{ credential.city_name }}
                     </span>

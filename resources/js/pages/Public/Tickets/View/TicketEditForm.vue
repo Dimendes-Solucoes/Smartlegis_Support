@@ -61,36 +61,44 @@ const credentialOptions = computed(() =>
 
 <template>
     <Modal :show="show" @close="emit('close')" max-width="2xl">
-        <div class="p-6">
-            <h2 class="text-xl font-semibold mb-4 text-gray-800">Editar Ticket</h2>
+        <div class="p-6 bg-white dark:bg-gray-800">
+            <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100">
+                Editar Ticket
+            </h2>
 
             <form @submit.prevent="emit('submit')" class="space-y-4">
-                <SelectInput
-                    v-model="updateForm.ticket_type_id"
-                    label="Tipo"
-                    :options="formData.ticket_types"
-                    :error="updateForm.errors.ticket_type_id"
-                    id="ticket_type_id"
-                    required
-                />
+                <div>
+                    <SelectInput
+                        v-model="updateForm.ticket_type_id"
+                        label="Tipo"
+                        :options="formData.ticket_types"
+                        :error="updateForm.errors.ticket_type_id"
+                        id="ticket_type_id"
+                        required
+                    />
+                </div>
 
-                <SelectInput
-                    v-model="updateForm.ticket_status_id"
-                    label="Status"
-                    :options="formData.ticket_status"
-                    :error="updateForm.errors.ticket_status_id"
-                    id="ticket_status_id"
-                    required
-                />
+                <div>
+                    <SelectInput
+                        v-model="updateForm.ticket_status_id"
+                        label="Status"
+                        :options="formData.ticket_status"
+                        :error="updateForm.errors.ticket_status_id"
+                        id="ticket_status_id"
+                        required
+                    />
+                </div>
 
-                <MultiSelect
-                    v-model="updateForm.credential_ids"
-                    :options="credentialOptions"
-                    label="Cidades"
-                    placeholder="Selecione as cidades"
-                    :error="updateForm.errors.credential_ids"
-                    id="credential_ids"
-                />
+                <div>
+                    <MultiSelect
+                        v-model="updateForm.credential_ids"
+                        :options="credentialOptions"
+                        label="Cidades"
+                        placeholder="Selecione as cidades"
+                        :error="updateForm.errors.credential_ids"
+                        id="credential_ids"
+                    />
+                </div>
 
                 <div class="flex items-center justify-end space-x-3 mt-6">
                     <SecondaryButton
