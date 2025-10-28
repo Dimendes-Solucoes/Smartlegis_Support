@@ -1,56 +1,63 @@
 <script setup lang="ts">
+import { ref } from "vue";
 import AuthenticatedLayout from "@/layouts/AuthenticatedLayout.vue";
-import { Head } from "@inertiajs/vue3";
+import { Head, router } from "@inertiajs/vue3";
 import TextButton from "@/components/Itens/TextButton.vue";
-import RegularColumn from "@/components/Table/RegularColumn.vue";
-import CustomBadge from "@/components/Common/CustomBadge.vue";
 import Pagination from "@/components/Table/Pagination.vue";
-import { EyeIcon } from "@heroicons/vue/24/outline";
-import IconButton from "@/components/Itens/IconButton.vue";
-
-interface TicketStatus {
-    title: string;
-    color: string;
-}
-
-interface TicketType {
-    title: string;
-}
-
-interface Author {
-    name: string;
-}
-
-interface Ticket {
-    id: number;
-    code: string;
-    title: string;
-    description: string;
-    ticket_status_id: number;
-    ticket_type_id: number;
-    author_id: number;
-    status: TicketStatus;
-    type: TicketType;
-    author: Author;
-}
-
-interface PaginatedTickets {
-    data: Ticket[];
-    links: {
-        url: string | null;
-        label: string;
-        active: boolean;
-    }[];
-}
+import TicketFilters from "./List/TicketFilters.vue";
+import ViewModeToggle from "./List/ViewModeToggle.vue";
+import TicketCard from "./List/TicketCard.vue";
+import TicketTable from "./List/TicketTable.vue";
+import EmptyState from "./List/EmptyState.vue";
+import type {
+    PaginatedTickets,
+    TicketType,
+    TicketStatus,
+    TicketFilters as Filters,
+} from "@/types/ticket";
 
 const props = defineProps<{
     tickets: PaginatedTickets;
-    links: {
-        url: string | null;
-        label: string;
-        active: boolean;
-    }[];
+    ticketTypes?: TicketType[];
+    ticketStatuses?: TicketStatus[];
+    filters?: Filters;
 }>();
+
+const viewMode = ref<"cards" | "table">("cards");
+
+const applyFilters = (filters: Filters) => {
+    router.get(
+        route("tickets.index"),
+        {
+            search: filters.search,
+            ticket_type_id: filters.ticket_type_id,
+            ticket_status_id: filters.ticket_status_id,
+        },
+        {
+            preserveState: true,
+            preserveScroll: true,
+        }
+    );
+};
+
+const clearFilters = () => {
+    router.get(
+        route("tickets.index"),
+        {},
+        {
+            preserveState: true,
+            preserveScroll: true,
+        }
+    );
+};
+
+const hasActiveFilters = () => {
+    return !!(
+        props.filters?.search ||
+        props.filters?.ticket_type_id ||
+        props.filters?.ticket_status_id
+    );
+};
 </script>
 
 <template>
@@ -58,67 +65,45 @@ const props = defineProps<{
         <Head title="Tickets" />
 
         <AuthenticatedLayout>
-            <div class="flex justify-end items-center mb-6">
-                <TextButton :href="route('tickets.create')">Novo Ticket</TextButton>
-            </div>
             <div
-                class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg"
+                class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6"
             >
-                <div v-if="tickets.data.length > 0" class="overflow-x-auto">
-                    <table
-                        class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm"
-                    >
-                        <thead class="bg-gray-50 dark:bg-gray-700/50">
-                            <tr>
-                                <RegularColumn>Título</RegularColumn>
-                                <RegularColumn>Autor</RegularColumn>
-                                <RegularColumn>Tipo</RegularColumn>
-                                <RegularColumn>Status</RegularColumn>
-                                <th class="relative px-6 py-3">
-                                    <span class="sr-only">Ações</span>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody
-                            class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700"
-                        >
-                            <tr
-                                v-for="ticket in props.tickets.data"
-                                :key="ticket.id"
-                                class="hover:bg-gray-50 dark:hover:bg-gray-700/50"
-                            >
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    {{ ticket.title }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    {{ ticket.author.name }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    {{ ticket.type.title }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <CustomBadge
-                                        :title="ticket.status.title"
-                                        :color="ticket.status.color"
-                                    />
-                                </td>
-                                <td>
-                                    <IconButton
-                                        :href="route('tickets.view', ticket.code)"
-                                        title="Visualizar"
-                                    >
-                                        <EyeIcon class="h-5 w-5" />
-                                    </IconButton>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                <ViewModeToggle v-model="viewMode" />
 
-                <div v-else class="p-6 text-center text-gray-500">
-                    <p>Nenhum ticket encontrado.</p>
+                <div class="flex gap-2">
+                    <TextButton :href="route('tickets.create')"> Novo Ticket </TextButton>
                 </div>
             </div>
+
+            <TicketFilters
+                :ticket-types="ticketTypes"
+                :ticket-statuses="ticketStatuses"
+                :filters="filters"
+                @apply="applyFilters"
+                @clear="clearFilters"
+            />
+
+            <div v-if="viewMode === 'cards' && tickets.data.length > 0">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                    <TicketCard
+                        v-for="ticket in tickets.data"
+                        :key="ticket.id"
+                        :ticket="ticket"
+                        :view-route="route('tickets.view', ticket.code)"
+                    />
+                </div>
+            </div>
+
+            <TicketTable
+                v-if="viewMode === 'table' && tickets.data.length > 0"
+                :tickets="tickets.data"
+            />
+
+            <EmptyState
+                v-if="tickets.data.length === 0"
+                :has-active-filters="hasActiveFilters()"
+                @clear-filters="clearFilters"
+            />
 
             <Pagination :paginator="tickets" />
         </AuthenticatedLayout>

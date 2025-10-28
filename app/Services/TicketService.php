@@ -19,7 +19,6 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class TicketService
@@ -234,8 +233,7 @@ class TicketService
         $query->when($filter['search'] ?? null, function ($query, $search) {
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'ilike', "%{$search}%")
-                    ->orWhere('code', 'ilike', "%{$search}%")
-                    ->orWhere('description', 'ilike', "%{$search}%");
+                    ->orWhere('code', 'ilike', "%{$search}%");
             });
         });
 

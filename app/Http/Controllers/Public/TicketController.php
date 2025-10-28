@@ -7,7 +7,10 @@ use App\Http\Requests\Tickets\TicketStoreAttachmentRequest;
 use App\Http\Requests\Tickets\TicketStoreMessageRequest;
 use App\Http\Requests\Tickets\TicketStoreRequest;
 use App\Http\Requests\Tickets\TicketUpdateRequest;
+use App\Models\Helpdesk\TicketStatus;
+use App\Models\Helpdesk\TicketType;
 use App\Services\TicketService;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class TicketController extends Controller
@@ -16,12 +19,29 @@ class TicketController extends Controller
         protected TicketService $service
     ) {}
 
-    public function index()
+    public function index(Request $request)
     {
-        $tickets = $this->service->list([]);
+        $filters = $request->only([
+            'search',
+            'ticket_type_id',
+            'ticket_status_id',
+            'start_date',
+            'end_date',
+            'author_id',
+            'credential_id',
+            'per_page'
+        ]);
+
+        $tickets = $this->service->list($filters);
+
+        $ticketTypes = TicketType::orderBy('title')->get();
+        $ticketStatuses = TicketStatus::orderBy('id')->get();
 
         return Inertia::render('Public/Tickets/Index', [
-            'tickets' => $tickets
+            'tickets' => $tickets,
+            'ticketTypes' => $ticketTypes,
+            'ticketStatuses' => $ticketStatuses,
+            'filters' => $filters
         ]);
     }
 
