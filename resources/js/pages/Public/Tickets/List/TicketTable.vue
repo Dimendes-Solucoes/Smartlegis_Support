@@ -3,36 +3,7 @@ import { EyeIcon } from "@heroicons/vue/24/outline";
 import RegularColumn from "@/components/Table/RegularColumn.vue";
 import CustomBadge from "@/components/Common/CustomBadge.vue";
 import IconButton from "@/components/Itens/IconButton.vue";
-
-interface TicketStatus {
-    id: number;
-    title: string;
-    color: string;
-}
-
-interface TicketType {
-    id: number;
-    title: string;
-}
-
-interface Author {
-    id: number;
-    name: string;
-}
-
-interface Ticket {
-    id: number;
-    code: string;
-    title: string;
-    description: string;
-    ticket_status_id: number;
-    ticket_type_id: number;
-    author_id: number;
-    status: TicketStatus;
-    type: TicketType;
-    author: Author;
-    created_at: string;
-}
+import { Ticket } from "@/types/ticket";
 
 defineProps<{
     tickets: Ticket[];
@@ -59,7 +30,6 @@ const formatDate = (date: string) => {
             >
                 <thead class="bg-gray-50 dark:bg-gray-700/50">
                     <tr>
-                        <RegularColumn>Código</RegularColumn>
                         <RegularColumn>Ticket</RegularColumn>
                         <RegularColumn>Tipo</RegularColumn>
                         <RegularColumn>Status</RegularColumn>
@@ -78,13 +48,14 @@ const formatDate = (date: string) => {
                         class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
                     >
                         <td class="px-6 py-4">
-                            {{ ticket.code }}
-                        </td>
-                        <td class="px-6 py-4">
                             {{ ticket.title }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            {{ ticket.type.title }}
+                            <CustomBadge
+                                :title="ticket.type.title"
+                                color="#666666"
+                                v-if="ticket.type"
+                            />
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <CustomBadge

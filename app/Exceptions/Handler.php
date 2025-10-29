@@ -2,6 +2,7 @@
 
 namespace App\Exceptions;
 
+use BadMethodCallException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -41,6 +42,10 @@ class Handler extends ExceptionHandler
         }
 
         if ($e instanceof NotFoundHttpException) {
+            return redirect()->route('dashboard')->with('error', $e->getMessage() ?? 'Erro ao realizar requisição');
+        }
+
+        if ($e instanceof BadMethodCallException) {
             return redirect()->route('dashboard')->with('error', $e->getMessage() ?? 'Erro ao realizar requisição');
         }
 

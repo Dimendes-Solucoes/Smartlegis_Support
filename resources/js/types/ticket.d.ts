@@ -26,6 +26,9 @@ export interface Ticket {
     type: TicketType;
     author: Author;
     created_at: string;
+    updated_at: string;
+    messages_count?: number;
+    attachments_count?: number;
 }
 
 export interface PaginatedTickets {

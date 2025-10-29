@@ -10,10 +10,10 @@ use App\Models\Helpdesk\TicketAttachment;
 use App\Models\Helpdesk\TicketMessage;
 use App\Models\Helpdesk\TicketStatus;
 use App\Models\Helpdesk\TicketType;
+use App\Models\User;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Contracts\Database\Eloquent\Builder;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
@@ -23,11 +23,26 @@ use Illuminate\Support\Str;
 
 class TicketService
 {
-    public function list(array $filter = []): LengthAwarePaginator
+    public function listForIndex(array $filter = []): array
     {
         $query = $this->buildQuery($filter);
 
-        return $query->orderBy('id', 'desc')->paginate($filter['per_page'] ?? 15);
+        $tickets = $query
+            ->with(['status', 'type', 'author'])
+            ->withCount(['messages', 'attachments'])
+            ->orderBy('id', 'desc')
+            ->paginate($filter['per_page'] ?? 15);
+
+        $ticketTypes = TicketType::orderBy('title')->get();
+        $ticketStatuses = TicketStatus::orderBy('id')->get();
+        $authors = User::orderBy('name')->get();
+
+        return [
+            'tickets' => $tickets,
+            'ticketTypes' => $ticketTypes,
+            'ticketStatuses' => $ticketStatuses,
+            'authors' => $authors,
+        ];
     }
 
     public function findByCode(string $code): ?Ticket
@@ -223,6 +238,11 @@ class TicketService
         $query->when(
             $filter['author_id'] ?? null,
             fn($q, $authorId) => $q->where('author_id', $authorId)
+        );
+
+        $query->when(
+            $filter['code'] ?? null,
+            fn($q, $code) => $q->where('code', $code)
         );
 
         $query->when(
