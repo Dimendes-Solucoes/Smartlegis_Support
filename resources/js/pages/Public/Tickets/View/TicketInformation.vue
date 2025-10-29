@@ -1,39 +1,6 @@
 <script setup lang="ts">
 import PrimaryButton from "@/components/Common/PrimaryButton.vue";
-
-interface User {
-    id: number;
-    name: string;
-}
-
-interface TicketType {
-    id: number;
-    title: string;
-}
-
-interface TicketStatus {
-    id: number;
-    title: string;
-    color: string;
-}
-
-interface Credential {
-    id: string;
-    city_name: string;
-}
-
-interface Ticket {
-    id: number;
-    code: string;
-    title: string;
-    description: string;
-    type: TicketType;
-    status: TicketStatus;
-    author: User;
-    credentials: Credential[];
-    created_at: string;
-    updated_at: string;
-}
+import { Ticket } from "@/types/ticket";
 
 defineProps<{
     ticket: Ticket;
@@ -115,9 +82,14 @@ const formatDate = (date: string) => {
                         Status
                     </p>
                     <span
-                        class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 mt-1"
+                        class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border mt-1"
+                        :style="{
+                            backgroundColor: ticket.status_details.color,
+                            borderColor: ticket.status_details.color,
+                            color: '#ffffff',
+                        }"
                     >
-                        {{ ticket.status.title }}
+                        {{ ticket.status_details.title }}
                     </span>
                 </div>
             </div>

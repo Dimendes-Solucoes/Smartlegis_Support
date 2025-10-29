@@ -31,7 +31,11 @@ const truncate = (text: string, length: number = 80) => {
     >
         <div class="px-4 pt-4 pb-3 flex items-center justify-between">
             <div class="flex items-center gap-2">
-                <CustomBadge :title="ticket.status.title" :color="ticket.status.color" />
+                {{ console.log(ticket) }}
+                <CustomBadge
+                    :title="ticket.status_details.title"
+                    :color="ticket.status_details.color"
+                />
                 <CustomBadge
                     :title="ticket.type.title"
                     color="#666666"

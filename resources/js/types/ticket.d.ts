@@ -1,5 +1,5 @@
 export interface TicketStatus {
-    id: number;
+    value: 'new' | 'open' | 'pending' | 'resolved' | 'closed' | 'canceled'; 
     title: string;
     color: string;
 }
@@ -40,10 +40,10 @@ export interface Ticket {
     code: string;
     title: string;
     description: string;
-    ticket_status_id: number;
     ticket_type_id: number;
     author_id: number;
     status: TicketStatus;
+    status_details: TicketStatus;
     type: TicketType;
     author: Author;
     created_at: string;
@@ -67,6 +67,6 @@ export interface PaginatedTickets {
 export interface TicketFilters {
     search?: string;
     ticket_type_id?: number;
-    ticket_status_id?: number;
+    status?: string;
     author_id?: number;
 }

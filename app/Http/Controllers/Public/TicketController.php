@@ -22,7 +22,7 @@ class TicketController extends Controller
         $filters = $request->only([
             'search',
             'ticket_type_id',
-            'ticket_status_id',
+            'status',
             'start_date',
             'end_date',
             'author_id',

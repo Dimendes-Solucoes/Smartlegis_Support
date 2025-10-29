@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Tickets;
 
+use App\Enums\TicketStatus;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class TicketUpdateRequest extends FormRequest
 {
@@ -23,7 +25,7 @@ class TicketUpdateRequest extends FormRequest
     {
         return [
             'ticket_type_id' => ['required', 'integer', 'exists:ticket_types,id'],
-            'ticket_status_id' => ['required', 'integer', 'exists:ticket_status,id'],
+            'status' => ['required', 'string', Rule::enum(TicketStatus::class)],
             'credential_ids' => ['nullable', 'array'],
             'credential_ids.*' => ['integer', 'exists:credentials,id'],
         ];
@@ -38,7 +40,7 @@ class TicketUpdateRequest extends FormRequest
     {
         return [
             'ticket_type_id' => 'tipo de ticket',
-            'ticket_status_id' => 'status do ticket',
+            'status' => 'status do ticket',
             'credential_ids' => 'cidades',
         ];
     }
@@ -53,8 +55,8 @@ class TicketUpdateRequest extends FormRequest
         return [
             'ticket_type_id.required' => 'O tipo de ticket é obrigatório.',
             'ticket_type_id.exists' => 'O tipo de ticket selecionado não existe.',
-            'ticket_status_id.required' => 'O status do ticket é obrigatório.',
-            'ticket_status_id.exists' => 'O status selecionado não existe.',
+            'status.required' => 'O status do ticket é obrigatório.',
+            'status.enum' => 'O status do ticket selecionado é inválido.',
             'credential_ids.*.exists' => 'Uma ou mais cidades selecionados não existem.'
         ];
     }

@@ -35,7 +35,7 @@ const ticketToDelete = ref<Ticket | null>(null);
 
 const updateForm = useForm({
     ticket_type_id: props.ticket.type.id,
-    ticket_status_id: props.ticket.status.id,
+    status: props.ticket.status_details.value,
     credential_ids: props.ticket.credentials.map((t) => t.id),
 });
 

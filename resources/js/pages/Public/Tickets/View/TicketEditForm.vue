@@ -5,30 +5,15 @@ import SecondaryButton from "@/components/Common/SecondaryButton.vue";
 import SelectInput from "@/components/Form/SelectInput.vue";
 import MultiSelect from "@/components/Form/MultiSelect.vue";
 import { computed } from "vue";
-
-interface TicketType {
-    id: number;
-    title: string;
-}
-
-interface TicketStatus {
-    id: number;
-    title: string;
-    color: string;
-}
-
-interface Credential {
-    id: string;
-    city_name: string;
-}
+import { Credential, TicketStatus, TicketType } from "@/types/ticket";
 
 interface UpdateForm {
     ticket_type_id: number;
-    ticket_status_id: number;
+    status: string;
     credential_ids: string[];
     errors: {
         ticket_type_id?: string;
-        ticket_status_id?: string;
+        status?: string;
         credential_ids?: string;
     };
     processing: boolean;
@@ -80,11 +65,11 @@ const credentialOptions = computed(() =>
 
                 <div>
                     <SelectInput
-                        v-model="updateForm.ticket_status_id"
+                        v-model="updateForm.status"
                         label="Status"
                         :options="formData.ticket_status"
-                        :error="updateForm.errors.ticket_status_id"
-                        id="ticket_status_id"
+                        :error="updateForm.errors.status"
+                        id="status"
                         required
                     />
                 </div>

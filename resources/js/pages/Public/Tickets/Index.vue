@@ -33,7 +33,7 @@ const applyFilters = (filters: Filters) => {
         {
             search: filters.search,
             ticket_type_id: filters.ticket_type_id,
-            ticket_status_id: filters.ticket_status_id,
+            status: filters.status,
             author_id: filters.author_id,
         },
         {
@@ -58,7 +58,7 @@ const hasActiveFilters = () => {
     return !!(
         props.filters?.search ||
         props.filters?.ticket_type_id ||
-        props.filters?.ticket_status_id ||
+        props.filters?.status ||
         props.filters?.author_id
     );
 };

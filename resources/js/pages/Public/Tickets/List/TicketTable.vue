@@ -59,8 +59,8 @@ const formatDate = (date: string) => {
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <CustomBadge
-                                :title="ticket.status.title"
-                                :color="ticket.status.color"
+                                :title="ticket.status_details.title"
+                                :color="ticket.status_details.color"
                             />
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">

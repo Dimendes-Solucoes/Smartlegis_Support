@@ -27,7 +27,7 @@ interface Credential {
 const props = defineProps<{
     form: any;
     ticket_types: TicketType[];
-    ticket_status: TicketStatus[];
+    status: TicketStatus[];
     credentials: Credential[];
 }>();
 
@@ -55,21 +55,6 @@ const credentialOptions = computed(() =>
                     :disablePlaceholder="true"
                 />
                 <InputError :message="form.errors.ticket_type_id" class="mt-2" />
-            </div>
-
-            <div class="md:flex-1">
-                <InputLabel for="ticket_status_id" value="Status" />
-                <SelectInput
-                    id="ticket_status_id"
-                    v-model="form.ticket_status_id"
-                    :options="ticket_status"
-                    placeholder="Selecione um status"
-                    value-key="id"
-                    label-key="title"
-                    required
-                    :disablePlaceholder="true"
-                />
-                <InputError :message="form.errors.ticket_status_id" class="mt-2" />
             </div>
         </div>
 

@@ -23,7 +23,6 @@ class TicketStoreRequest extends FormRequest
     {
         return [
             'ticket_type_id' => ['required', 'integer', 'exists:ticket_types,id'],
-            'ticket_status_id' => ['required', 'integer', 'exists:ticket_status,id'],
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:5000'],
             'credential_ids' => ['nullable', 'array'],
@@ -42,7 +41,6 @@ class TicketStoreRequest extends FormRequest
     {
         return [
             'ticket_type_id' => 'tipo de ticket',
-            'ticket_status_id' => 'status do ticket',
             'title' => 'título',
             'description' => 'descrição',
             'credential_ids' => 'cidades',
@@ -60,8 +58,6 @@ class TicketStoreRequest extends FormRequest
         return [
             'ticket_type_id.required' => 'O tipo de ticket é obrigatório.',
             'ticket_type_id.exists' => 'O tipo de ticket selecionado não existe.',
-            'ticket_status_id.required' => 'O status do ticket é obrigatório.',
-            'ticket_status_id.exists' => 'O status selecionado não existe.',
             'title.required' => 'O título é obrigatório.',
             'title.max' => 'O título não pode ter mais de 255 caracteres.',
             'description.max' => 'A descrição não pode ter mais de 5000 caracteres.',

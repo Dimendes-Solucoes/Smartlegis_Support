@@ -2,27 +2,12 @@
 import { ref, computed } from "vue";
 import { MagnifyingGlassIcon } from "@heroicons/vue/24/outline";
 import PrimaryButton from "@/components/Common/PrimaryButton.vue";
-
-interface TicketStatus {
-    id: number;
-    title: string;
-    color: string;
-}
-
-interface TicketType {
-    id: number;
-    title: string;
-}
-
-interface Author {
-    id: number;
-    name: string;
-}
+import { Author, TicketStatus, TicketType } from "@/types/ticket";
 
 interface Filters {
     search?: string;
     ticket_type_id?: number;
-    ticket_status_id?: number;
+    status?: string;
     author_id?: number;
 }
 
@@ -40,7 +25,7 @@ const emit = defineEmits<{
 
 const searchQuery = ref(props.filters?.search || "");
 const selectedType = ref(props.filters?.ticket_type_id || null);
-const selectedStatus = ref(props.filters?.ticket_status_id || null);
+const selectedStatus = ref(props.filters?.status || null);
 const selectedAuthor = ref(props.filters?.author_id || null);
 
 const activeFiltersCount = computed(() => {
@@ -56,7 +41,7 @@ const applyFilters = () => {
     emit("apply", {
         search: searchQuery.value || undefined,
         ticket_type_id: selectedType.value || undefined,
-        ticket_status_id: selectedStatus.value || undefined,
+        status: selectedStatus.value || undefined,
         author_id: selectedAuthor.value || undefined,
     });
 };
@@ -108,8 +93,8 @@ const clearFilters = () => {
                         <option :value="null">Todos os status</option>
                         <option
                             v-for="status in ticketStatuses"
-                            :key="status.id"
-                            :value="status.id"
+                            :key="status.value"
+                            :value="status.value"
                         >
                             {{ status.title }}
                         </option>

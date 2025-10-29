@@ -24,7 +24,7 @@ interface Credential {
 const props = defineProps<{
     formData: {
         ticket_types: TicketType[];
-        ticket_status: TicketStatus[];
+        status: TicketStatus[];
         credentials: Credential[];
     };
 }>();
@@ -33,7 +33,7 @@ const form = useForm({
     title: "",
     description: "",
     ticket_type_id: "",
-    ticket_status_id: "",
+    status: "",
     attachments: [] as File[],
     credential_ids: [] as string[],
 });
@@ -52,7 +52,7 @@ const submit = () => {
             <TicketForm
                 :form="form"
                 :ticket_types="props.formData.ticket_types"
-                :ticket_status="props.formData.ticket_status"
+                :status="props.formData.status"
                 :credentials="props.formData.credentials"
             />
 

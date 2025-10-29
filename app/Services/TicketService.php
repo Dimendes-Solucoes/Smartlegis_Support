@@ -2,13 +2,13 @@
 
 namespace App\Services;
 
+use App\Enums\TicketStatus;
 use App\Libraries\FileUploader;
 use App\Libraries\StorageCustom;
 use App\Models\Credential;
 use App\Models\Helpdesk\Ticket;
 use App\Models\Helpdesk\TicketAttachment;
 use App\Models\Helpdesk\TicketMessage;
-use App\Models\Helpdesk\TicketStatus;
 use App\Models\Helpdesk\TicketType;
 use App\Models\User;
 use Carbon\Carbon;
@@ -28,13 +28,19 @@ class TicketService
         $query = $this->buildQuery($filter);
 
         $tickets = $query
-            ->with(['status', 'type', 'author'])
+            ->with(['type', 'author'])
             ->withCount(['messages', 'attachments'])
             ->orderBy('id', 'desc')
             ->paginate($filter['per_page'] ?? 15);
 
         $ticketTypes = TicketType::orderBy('title')->get();
-        $ticketStatuses = TicketStatus::orderBy('id')->get();
+
+        $ticketStatuses = collect(TicketStatus::cases())->map(fn($status) => [
+            'value' => $status->value,
+            'title' => $status->title(),
+            'color' => $status->color(),
+        ])->toArray();
+
         $authors = User::orderBy('name')->get();
 
         return [
@@ -59,13 +65,20 @@ class TicketService
 
     public function prepareForCreate()
     {
-        $types = TicketType::orderBy('title')->get();
-        $status = TicketStatus::orderBy('id')->get();
+        $ticketTypes = TicketType::orderBy('title')->get();
+
+        $ticketStatuses = collect(TicketStatus::cases())->map(fn($status) => [
+            'id' => $status->value,
+            'value' => $status->value,
+            'title' => $status->title(),
+            'color' => $status->color(),
+        ])->toArray();
+
         $credentials = Credential::orderBy('city_name')->get();
 
         return [
-            'ticket_types' => $types,
-            'ticket_status' => $status,
+            'ticket_types' => $ticketTypes,
+            'ticket_status' => $ticketStatuses,
             'credentials' => $credentials
         ];
     }
@@ -77,7 +90,6 @@ class TicketService
 
             $ticket = Ticket::create([
                 'ticket_type_id' => $data['ticket_type_id'],
-                'ticket_status_id' => $data['ticket_status_id'],
                 'author_id' => $user->id,
                 'code' => Str::uuid(),
                 'title' => $data['title'],
@@ -107,7 +119,7 @@ class TicketService
         return DB::transaction(function () use ($ticket, $data) {
             $ticketData = Arr::only($data, [
                 'ticket_type_id',
-                'ticket_status_id'
+                'status'
             ]);
 
             $ticket->update($ticketData);
@@ -223,7 +235,6 @@ class TicketService
         $query = Ticket::query()
             ->with([
                 'type',
-                'status',
                 'author',
                 'credentials',
                 'messages.author',
@@ -242,8 +253,8 @@ class TicketService
         );
 
         $query->when(
-            $filter['ticket_status_id'] ?? null,
-            fn($q, $statusId) => $q->where('ticket_status_id', $statusId)
+            $filter['status'] ?? null,
+            fn($q, $status) => $q->where('status', $status)
         );
 
         $query->when(
