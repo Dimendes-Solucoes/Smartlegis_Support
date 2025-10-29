@@ -14,6 +14,27 @@ export interface Author {
     name: string;
 }
 
+interface Credential {
+    id: string;
+    city_name: string;
+}
+
+interface TicketAttachement {
+    id: number;
+    user: User;
+    file_name: string;
+    file_path: string;
+    file_url: string;
+    created_at: string;
+}
+
+interface TicketMessage {
+    id: number;
+    content: string;
+    author: User;
+    created_at: string;
+}
+
 export interface Ticket {
     id: number;
     code: string;
@@ -29,6 +50,9 @@ export interface Ticket {
     updated_at: string;
     messages_count?: number;
     attachments_count?: number;
+    credentials: Credential[];
+    messages: TicketMessage[];
+    attachments: TicketAttachement[];
 }
 
 export interface PaginatedTickets {

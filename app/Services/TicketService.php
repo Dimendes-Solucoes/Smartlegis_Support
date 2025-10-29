@@ -48,8 +48,13 @@ class TicketService
     public function findByCode(string $code): ?Ticket
     {
         $query = $this->buildQuery(['code' => $code]);
+        $ticket = $query->first();
 
-        return $query->first();
+        if (!$ticket) {
+            throw new ModelNotFoundException("Ticket não encontrado");
+        }
+
+        return $ticket;
     }
 
     public function prepareForCreate()
@@ -113,6 +118,12 @@ class TicketService
 
             return $ticket;
         });
+    }
+
+    public function delete(int $id)
+    {
+        $ticket = Ticket::findOrFail($id);
+        $ticket->delete();
     }
 
     public function addAttachmentsByCode(string $code, array $data): void

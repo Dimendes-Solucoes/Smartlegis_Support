@@ -49,6 +49,7 @@ Route::middleware('auth')->group(function () {
             Route::post('/', 'store')->name('store');
             Route::get('/{code}', 'view')->name('view');
             Route::put('/{code}', 'update')->name('update');
+            Route::delete('/{id}', 'delete')->name('delete');
             Route::post('/{code}/attachments', 'storeAttachment')->name('attachments.store');
             Route::delete('/{code}/attachments/{attachment_id}', 'deleteAttachment')->name('attachments.delete');
             Route::post('/{code}/messages', 'storeMessage')->name('messages.store');

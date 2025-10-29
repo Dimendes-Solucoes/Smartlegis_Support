@@ -75,6 +75,13 @@ class TicketController extends Controller
         return redirect()->back()->with('success', "Ticket atualizado com sucesso");
     }
 
+    public function delete(int $id)
+    {
+        $this->service->delete($id);
+
+        return redirect()->back()->with('success', "Ticket deletado com sucesso");
+    }
+
     public function storeAttachment(TicketStoreAttachmentRequest $request, string $code)
     {
         $this->service->addAttachmentsByCode($code, $request->validated());

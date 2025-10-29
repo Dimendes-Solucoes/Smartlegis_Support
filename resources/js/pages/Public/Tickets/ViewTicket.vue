@@ -9,58 +9,8 @@ import TicketInformation from "./View/TicketInformation.vue";
 import TicketEditForm from "./View/TicketEditForm.vue";
 import TicketAttachments from "./View/TicketAttachments.vue";
 import TicketMessages from "./View/TicketMessages.vue";
-
-interface TicketType {
-    id: number;
-    title: string;
-}
-
-interface TicketStatus {
-    id: number;
-    title: string;
-    color: string;
-}
-
-interface Credential {
-    id: string;
-    city_name: string;
-}
-
-interface User {
-    id: number;
-    name: string;
-}
-
-interface TicketAttachement {
-    id: number;
-    user: User;
-    file_name: string;
-    file_path: string;
-    file_url: string;
-    created_at: string;
-}
-
-interface TicketMessage {
-    id: number;
-    content: string;
-    author: User;
-    created_at: string;
-}
-
-interface Ticket {
-    id: number;
-    code: string;
-    title: string;
-    description: string;
-    type: TicketType;
-    status: TicketStatus;
-    author: User;
-    credentials: Credential[];
-    created_at: string;
-    updated_at: string;
-    messages: TicketMessage[];
-    attachments: TicketAttachement[];
-}
+import TextButton from "@/components/Itens/TextButton.vue";
+import { Credential, Ticket, TicketStatus, TicketType } from "@/types/ticket";
 
 const props = defineProps<{
     ticket: Ticket;
@@ -78,8 +28,10 @@ const editMode = ref(false);
 
 const confirmingAttachmentDeletion = ref(false);
 const confirmingMessageDeletion = ref(false);
+const confirmingTicketDeletion = ref(false);
 const attachmentToDelete = ref<number | null>(null);
 const messageToDelete = ref<number | null>(null);
+const ticketToDelete = ref<Ticket | null>(null);
 
 const updateForm = useForm({
     ticket_type_id: props.ticket.type.id,
@@ -168,12 +120,47 @@ const closeMessageModal = () => {
     confirmingMessageDeletion.value = false;
     messageToDelete.value = null;
 };
+
+const openConfirmDeleteTicketModal = (ticket: Ticket) => {
+    ticketToDelete.value = ticket;
+    confirmingTicketDeletion.value = true;
+};
+
+const deleteTicket = () => {
+    if (!ticketToDelete.value) return;
+
+    useForm({}).delete(
+        route("tickets.delete", {
+            id: ticketToDelete.value.id,
+        }),
+        {
+            preserveScroll: true,
+            onSuccess: () => closeMessageModal(),
+        }
+    );
+};
+
+const closeTicketModal = () => {
+    confirmingTicketDeletion.value = false;
+    ticketToDelete.value = null;
+};
 </script>
 
 <template>
     <Head :title="`Ticket #${ticket.code}`" />
     <AuthenticatedLayout>
-        <BackButtonRow :href="route('tickets.index')" />
+        <div class="flex justify-between">
+            <BackButtonRow :href="route('tickets.index')" />
+
+            <TextButton
+                @click="openConfirmDeleteTicketModal(ticket)"
+                color="red"
+                title="Deletar Ticket"
+                v-if="currentUserId == ticket.author_id"
+            >
+                Deletar Ticket
+            </TextButton>
+        </div>
 
         <div class="mt-6 space-y-6">
             <TicketHeader :ticket="ticket" />
@@ -220,5 +207,13 @@ const closeMessageModal = () => {
         message="Tem certeza que deseja excluir esta mensagem? Esta ação não pode ser desfeita."
         @close="closeMessageModal"
         @confirm="deleteMessage"
+    />
+
+    <ConfirmDeletionModal
+        :show="confirmingTicketDeletion"
+        title="Excluir Ticket"
+        message="Tem certeza que deseja este ticket? Esta ação não pode ser desfeita."
+        @close="closeTicketModal"
+        @confirm="deleteTicket"
     />
 </template>
