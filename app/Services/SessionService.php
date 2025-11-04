@@ -9,6 +9,7 @@ use App\Models\Tenancy\Session;
 use App\Models\Tenancy\SessionStatus;
 use App\Models\Tenancy\Vote;
 use App\Models\Tenancy\VoteCategory;
+use App\Models\Tenancy\DocumentHistory;
 use Exception;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
@@ -426,12 +427,21 @@ class SessionService
             $this->clearBigDiscussions($session->id);
             $this->clearQuestionOrders($session->id);
 
+            DocumentHistory::where('session_id', $session->id)->delete();
+
             $documentIds = $session->documents->pluck('id');
 
             if ($documentIds->isNotEmpty()) {
                 Vote::where('session_id', $session->id)
                     ->whereIn('document_id', $documentIds)
                     ->delete();
+
+                DocumentSession::where('session_id', $session->id)
+                    ->whereIn('document_id', $documentIds)
+                    ->update([
+                        'is_read' => false,
+                        'is_approved' => false,
+                    ]);    
 
                 foreach ($session->documents as $document) {
                     $lastVoteOrder = Vote::where('document_id', $document->id)->max('order');
@@ -448,7 +458,6 @@ class SessionService
                     $document->update($updateData);
                 }
             }
-
             $session->update(['session_status_id' => 1]);
         });
     }
