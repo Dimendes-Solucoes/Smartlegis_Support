@@ -17,6 +17,8 @@ class DocumentSession extends Pivot
         'ordem_do_dia',
         'order',
         'secret_vote',
+        'is_read',
+        'is_approved',
     ];
 
     public function session()

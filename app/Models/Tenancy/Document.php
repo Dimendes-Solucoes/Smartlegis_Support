@@ -58,4 +58,9 @@ class Document extends Model
     {
         return $this->belongsTo(DocumentStatusMovement::class, 'document_status_movement_id');
     }
+
+    public function history()
+    {
+        return $this->hasMany(DocumentHistory::class, 'document_id');
+    }
 }
