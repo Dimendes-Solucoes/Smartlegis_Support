@@ -274,6 +274,12 @@ class SessionService
         }
     }
 
+    public function clearHistory(int $id)
+    {
+        $session = Session::findOrFail($id);
+        DocumentHistory::where('session_id', $session->id)->delete();
+    }
+
     public function delete(int $id): void
     {
         $session = Session::findOrFail($id);
@@ -426,9 +432,8 @@ class SessionService
             $this->clearDiscussions($session->id);
             $this->clearBigDiscussions($session->id);
             $this->clearQuestionOrders($session->id);
-
-            DocumentHistory::where('session_id', $session->id)->delete();
-
+            $this->clearHistory($session->id);
+            
             $documentIds = $session->documents->pluck('id');
 
             if ($documentIds->isNotEmpty()) {

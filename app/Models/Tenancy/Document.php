@@ -61,6 +61,6 @@ class Document extends Model
 
     public function history()
     {
-        return $this->hasMany(\App\Models\Tenancy\DocumentHistory::class, 'document_id');
+        return $this->hasMany(DocumentHistory::class, 'document_id');
     }
 }
