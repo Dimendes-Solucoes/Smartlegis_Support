@@ -84,9 +84,11 @@ Route::middleware(['auth', 'tenant.connection'])
             });
 
         Route::prefix('autores')
-            ->name('authors')
+            ->name('authors.')
             ->controller(AuthorController::class)
             ->group(function () {
+                Route::post('/', 'store')->name('store');
+                Route::put('/{id}', 'update')->name('update');
                 Route::delete('/{id}', 'destroy')->name('destroy');
             });
 

@@ -19,6 +19,8 @@ import {
 } from "@heroicons/vue/24/outline";
 import Modal from "@/components/Common/Modal.vue";
 import ConfirmActionModal from "@/components/Common/ConfirmActionModal.vue";
+import ConfirmDeletionModal from "@/components/Common/ConfirmDeletionModal.vue";
+import { getImageUrl } from "@/utils/image";
 
 interface Author {
     id: number;
@@ -95,6 +97,9 @@ const showConfirmSignature = ref(false);
 const signatureActionType = ref<"sign" | "unsign" | null>(null);
 const signatureAuthor = ref<Author | null>(null);
 
+const showConfirmDeleteAuthor = ref(false);
+const authorToDelete = ref<Author | null>(null);
+
 const form = useForm({
     _method: "put",
     name: props.data.document.name,
@@ -107,9 +112,7 @@ const form = useForm({
 
 const availableAuthorsOptions = computed(() => {
     const allAvailable = props.data.all_available_authors ?? [];
-
     const currentAuthorUserIds = currentAuthors.value.map((a) => a.user_id);
-
     return allAvailable.filter((user) => !currentAuthorUserIds.includes(user.id));
 });
 
@@ -123,35 +126,94 @@ const closeModal = () => {
     showConfirmSignature.value = false;
     signatureActionType.value = null;
     signatureAuthor.value = null;
+    showConfirmDeleteAuthor.value = false;
+    authorToDelete.value = null;
 };
 
 const addAuthorToDocument = () => {
-    if (newAuthorUserId.value !== null) {
-        const userToAdd = props.data.all_available_authors.find(
-            (user) => user.id === newAuthorUserId.value
-        );
-
-        if (userToAdd) {
-            const newAuthor: Author = {
-                id: Date.now(),
-                status_sign: 0,
-                user_id: userToAdd.id,
-                document_id: props.data.document.id,
-                user: userToAdd,
-                document: props.data.document,
-            };
-            currentAuthors.value.push(newAuthor);
-            form.authors = currentAuthors.value.map((author) => author.id);
-            closeModal();
-        }
+    if (newAuthorUserId.value === null) {
+        return;
     }
+
+    const userToAdd = props.data.all_available_authors.find(
+        (user) => user.id == newAuthorUserId.value
+    );
+
+    if (!userToAdd) {
+        console.error("Usuário selecionado não encontrado.");
+        return;
+    }
+
+    router.post(
+        route("authors.store"),
+        {
+            user_id: newAuthorUserId.value,
+            document_id: props.data.document.id,
+        },
+        {
+            preserveScroll: true,
+            onSuccess: (page) => {
+                const newAuthorData = page.props.newAuthor;
+
+                const tempAuthor: Author = {
+                    id: Date.now() * -1,
+                    status_sign: 0,
+                    user_id: userToAdd.id,
+                    document_id: props.data.document.id,
+                    user: userToAdd,
+                    document: props.data.document,
+                };
+
+                currentAuthors.value.push(tempAuthor);
+                form.authors = currentAuthors.value.map((author) => author.id);
+                closeModal();
+
+                console.log(`Autor ${userToAdd.name} adicionado com sucesso!`);
+            },
+            onError: (errors) => {
+                console.error("Erro ao adicionar autor:", errors);
+            },
+        }
+    );
 };
 
-const removeAuthor = (authorId: number) => {
-    currentAuthors.value = currentAuthors.value.filter(
-        (author) => author.id !== authorId
-    );
-    form.authors = currentAuthors.value.map((author) => author.id);
+const removeAuthor = (author: Author) => {
+    authorToDelete.value = author;
+    showConfirmDeleteAuthor.value = true;
+};
+
+const confirmRemoveAuthor = () => {
+    if (!authorToDelete.value) {
+        closeModal();
+        return;
+    }
+
+    const authorId = authorToDelete.value.id;
+
+    if (authorId < 0) {
+        currentAuthors.value = currentAuthors.value.filter(
+            (author) => author.id !== authorId
+        );
+        form.authors = currentAuthors.value.map((author) => author.id);
+        closeModal();
+        return;
+    }
+
+    router.delete(route("authors.destroy", authorId), {
+        preserveScroll: true,
+        onSuccess: () => {
+            currentAuthors.value = currentAuthors.value.filter(
+                (author) => author.id !== authorId
+            );
+            form.authors = currentAuthors.value.map((author) => author.id);
+            closeModal();
+            console.log(`Autor ${authorId} removido com sucesso.`);
+        },
+        onError: (errors) => {
+            console.error("Erro ao remover autor:", errors);
+            closeModal();
+        },
+    });
 };
 
 const prepareSignatureAction = (author: Author, type: "sign" | "unsign") => {
@@ -169,13 +231,8 @@ const confirmSignatureAction = () => {
     const authorId = signatureAuthor.value.id;
     const newStatus = signatureActionType.value === "sign" ? 2 : 0;
 
-    const index = currentAuthors.value.findIndex((a) => a.id === authorId);
-    if (index !== -1) {
-        currentAuthors.value[index].status_sign = newStatus;
-    }
-
     router.put(
-        route("authors.update_signature_status", authorId),
+        route("authors.update", authorId),
         {
             status_sign: newStatus,
             _method: "put",
@@ -183,9 +240,7 @@ const confirmSignatureAction = () => {
         {
             preserveScroll: true,
             onSuccess: () => {
-                console.log(
-                    `Status de assinatura do autor ${authorId} atualizado para ${newStatus}.`
-                );
+                window.location.reload();
             },
             onError: (errors) => {
                 console.error("Erro ao atualizar status de assinatura:", errors);
@@ -197,7 +252,7 @@ const confirmSignatureAction = () => {
 };
 
 const submit = () => {
-    form.authors = currentAuthors.value.map((author) => author.id);
+    form.authors = currentAuthors.value.map((author) => author.id).filter((id) => id > 0);
     form.post(route("documents.update", props.data.document.id));
 };
 </script>
@@ -309,8 +364,10 @@ const submit = () => {
                             <div class="flex items-center space-x-4">
                                 <img
                                     :src="
-                                        author.user.path_image ??
-                                        'https://smartlegis-production.s3.us-east-1.amazonaws.com/public/default_user.webp'
+                                        getImageUrl(
+                                            author.user.path_image ??
+                                                '/public/default_user.webp'
+                                        )
                                     "
                                     :alt="author.user.name"
                                     class="w-10 h-10 rounded-full object-cover"
@@ -359,7 +416,7 @@ const submit = () => {
                                 </IconButton>
 
                                 <IconButton
-                                    @click.prevent="removeAuthor(author.id)"
+                                    @click.prevent="removeAuthor(author)"
                                     color="red"
                                     title="Excluir Autor"
                                     as="button"
@@ -382,7 +439,7 @@ const submit = () => {
             </div>
         </form>
 
-        <Modal :show="showAddAuthorModal" :max-width="'sm'" @close="closeModal">
+        <Modal :show="showAddAuthorModal" :max-width="'md'" @close="closeModal">
             <div class="p-6">
                 <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
                     Adicionar Novo Autor
@@ -435,6 +492,18 @@ const submit = () => {
             cancel-button-text="Cancelar"
             @close="closeModal"
             @confirm="confirmSignatureAction"
+        />
+
+        <ConfirmDeletionModal
+            :show="showConfirmDeleteAuthor"
+            title="Excluir Autor"
+            :message="
+                authorToDelete?.id && authorToDelete.id < 0
+                    ? `Tem certeza que deseja remover o autor temporário '${authorToDelete?.user.name}'? Ele ainda não foi salvo no sistema.`
+                    : `Tem certeza que deseja excluir o autor '${authorToDelete?.user.name}' deste documento? Esta ação não pode ser desfeita.`
+            "
+            @close="closeModal"
+            @confirm="confirmRemoveAuthor"
         />
     </AuthenticatedLayout>
 </template>

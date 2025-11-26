@@ -73,7 +73,10 @@ class DocumentService
     public function getDocumentForEdit(int $id): array
     {
         $document = Document::with('authors.user')->findOrFail($id);
-        $authors_available = User::whereIn('user_category_id', [2, 3])->get();
+
+        $authors_available = User::whereIn('user_category_id', [2, 3])
+            ->where('status_user', User::USUARIO_VEREADOR)
+            ->get();
 
         return [
             'document' => $document,
