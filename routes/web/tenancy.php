@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Tenancy\AuthorController;
 use App\Http\Controllers\Tenancy\BigDiscussionController;
 use App\Http\Controllers\Tenancy\CommissionController;
 use App\Http\Controllers\Tenancy\CouncilorController;
@@ -79,6 +80,13 @@ Route::middleware(['auth', 'tenant.connection'])
                 Route::get('/', 'index')->name('index');
                 Route::get('/{id}/editar', 'edit')->name('edit');
                 Route::put('/{id}', 'update')->name('update');
+                Route::delete('/{id}', 'destroy')->name('destroy');
+            });
+
+        Route::prefix('autores')
+            ->name('authors')
+            ->controller(AuthorController::class)
+            ->group(function () {
                 Route::delete('/{id}', 'destroy')->name('destroy');
             });
 

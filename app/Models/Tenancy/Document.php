@@ -36,6 +36,11 @@ class Document extends Model
         'votes_are_secret' => 'boolean',
     ];
 
+    public function authors()
+    {
+        return $this->hasMany(Author::class, 'document_id');
+    }
+
     public function category()
     {
         return $this->belongsTo(DocumentCategory::class, 'document_category_id');

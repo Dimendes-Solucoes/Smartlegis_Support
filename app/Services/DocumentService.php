@@ -6,6 +6,7 @@ use App\Models\Tenancy\Document;
 use App\Models\Tenancy\DocumentCategory;
 use App\Models\Tenancy\DocumentStatusMovement;
 use App\Models\Tenancy\DocumentStatusVote;
+use App\Models\Tenancy\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -71,11 +72,15 @@ class DocumentService
 
     public function getDocumentForEdit(int $id): array
     {
+        $document = Document::with('authors.user')->findOrFail($id);
+        $authors_available = User::whereIn('user_category_id', [2, 3])->get();
+
         return [
-            'document' => Document::findOrFail($id),
+            'document' => $document,
             'vote_statuses' => DocumentStatusVote::all(),
             'movement_statuses' => DocumentStatusMovement::all(),
             'categories' => DocumentCategory::orderBy('is_active', 'desc')->orderBy('name')->get(),
+            'all_available_authors' => $authors_available
         ];
     }
 

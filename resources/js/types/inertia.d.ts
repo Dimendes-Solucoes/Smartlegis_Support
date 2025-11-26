@@ -11,6 +11,7 @@ interface User {
     id: number;
     name: string;
     email: string;
+    path_image: string;
 }
 
 interface Tenant {
