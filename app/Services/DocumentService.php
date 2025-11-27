@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Libraries\StorageCustom;
 use App\Models\Tenancy\Document;
 use App\Models\Tenancy\DocumentCategory;
 use App\Models\Tenancy\DocumentStatusMovement;
@@ -9,8 +10,10 @@ use App\Models\Tenancy\DocumentStatusVote;
 use App\Models\Tenancy\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class DocumentService
 {
@@ -97,7 +100,12 @@ class DocumentService
             'document_status_vote_id',
             'document_status_movement_id',
             'document_category_id',
+            'status_sign',
         ]);
+
+        if (isset($data['attachment']) && $data['attachment'] instanceof \Illuminate\Http\UploadedFile) {
+            $fieldsToUpdate['attachment'] = $this->uploadAttachment($data['attachment'], $document->attachment_path);
+        }
 
         $document->update($fieldsToUpdate);
 
@@ -108,5 +116,18 @@ class DocumentService
     {
         $document = Document::findOrFail($id);
         $document->delete();
+    }
+
+    private function uploadAttachment(UploadedFile $file): string
+    {
+        $extension = $file->getClientOriginalExtension();
+        $fileName = Str::random(40) . '.' . $extension;
+
+        $storagePath = 'documents/attachments';
+        $filePath = $storagePath . '/' . $fileName;
+
+        $path = StorageCustom::put($filePath, file_get_contents($file->getRealPath()));
+
+        return '/' . $path;
     }
 }

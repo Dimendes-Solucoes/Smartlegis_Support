@@ -31,7 +31,7 @@ class DocumentController extends Controller
     public function update(UpdateDocumentRequest $request, int $id)
     {
         $this->service->updateDocument($id, $request->validated());
-        return redirect()->route('documents.index')->with('success', 'Documento atualizado com sucesso!');
+        return redirect()->route('documents.edit', $id)->with('success', 'Documento atualizado com sucesso!');
     }
 
     public function destroy(int $id)

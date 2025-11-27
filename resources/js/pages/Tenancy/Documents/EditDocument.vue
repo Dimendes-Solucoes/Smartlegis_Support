@@ -21,6 +21,8 @@ import Modal from "@/components/Common/Modal.vue";
 import ConfirmActionModal from "@/components/Common/ConfirmActionModal.vue";
 import ConfirmDeletionModal from "@/components/Common/ConfirmDeletionModal.vue";
 import { getImageUrl } from "@/utils/image";
+import TextButton from "@/components/Itens/TextButton.vue";
+import DocumentAttachmentUpload from "@/components/Form/DocumentAttachmentUpload.vue";
 
 interface Author {
     id: number;
@@ -38,6 +40,8 @@ interface Document {
     document_status_vote_id: number;
     document_status_movement_id: number;
     document_category_id: number;
+    status_sign: 0 | 1 | 2;
+    attachment?: string | null;
     authors: Author[];
 }
 
@@ -83,11 +87,11 @@ const movementStatuses = props.data.movement_statuses || [
     { id: 8, name: "Reprovado" },
 ];
 
-const signatureStatusMap = {
-    0: { title: "Pendente", color: "#f97316" },
-    1: { title: "Assinado Clicksign", color: "#22c55e" },
-    2: { title: "Assinado Manualmente", color: "#3b82f6" },
-};
+const signatureStatusMap = [
+    { id: 0, name: "Pendente", color: "#f97316" },
+    { id: 1, name: "Assinado Clicksign", color: "#22c55e" },
+    { id: 2, name: "Assinado Manualmente", color: "#3b82f6" },
+];
 
 const currentAuthors = ref<Author[]>(props.data.document.authors);
 const showAddAuthorModal = ref(false);
@@ -107,7 +111,8 @@ const form = useForm({
     document_status_vote_id: props.data.document.document_status_vote_id,
     document_status_movement_id: props.data.document.document_status_movement_id,
     document_category_id: props.data.document.document_category_id,
-    authors: props.data.document.authors.map((author) => author.id),
+    status_sign: props.data.document.status_sign,
+    attachment: null as File | null,
 });
 
 const availableAuthorsOptions = computed(() => {
@@ -153,22 +158,8 @@ const addAuthorToDocument = () => {
         {
             preserveScroll: true,
             onSuccess: (page) => {
-                const newAuthorData = page.props.newAuthor;
-
-                const tempAuthor: Author = {
-                    id: Date.now() * -1,
-                    status_sign: 0,
-                    user_id: userToAdd.id,
-                    document_id: props.data.document.id,
-                    user: userToAdd,
-                    document: props.data.document,
-                };
-
-                currentAuthors.value.push(tempAuthor);
-                form.authors = currentAuthors.value.map((author) => author.id);
                 closeModal();
-
-                console.log(`Autor ${userToAdd.name} adicionado com sucesso!`);
+                window.location.reload();
             },
             onError: (errors) => {
                 console.error("Erro ao adicionar autor:", errors);
@@ -190,22 +181,12 @@ const confirmRemoveAuthor = () => {
 
     const authorId = authorToDelete.value.id;
 
-    if (authorId < 0) {
-        currentAuthors.value = currentAuthors.value.filter(
-            (author) => author.id !== authorId
-        );
-        form.authors = currentAuthors.value.map((author) => author.id);
-        closeModal();
-        return;
-    }
-
     router.delete(route("authors.destroy", authorId), {
         preserveScroll: true,
         onSuccess: () => {
             currentAuthors.value = currentAuthors.value.filter(
                 (author) => author.id !== authorId
             );
-            form.authors = currentAuthors.value.map((author) => author.id);
             closeModal();
             console.log(`Autor ${authorId} removido com sucesso.`);
         },
@@ -240,6 +221,7 @@ const confirmSignatureAction = () => {
         {
             preserveScroll: true,
             onSuccess: () => {
+                closeModal();
                 window.location.reload();
             },
             onError: (errors) => {
@@ -252,7 +234,6 @@ const confirmSignatureAction = () => {
 };
 
 const submit = () => {
-    form.authors = currentAuthors.value.map((author) => author.id).filter((id) => id > 0);
     form.post(route("documents.update", props.data.document.id));
 };
 </script>
@@ -337,16 +318,56 @@ const submit = () => {
                             :message="form.errors.document_status_movement_id"
                         />
                     </div>
+
+                    <div class="flex-1">
+                        <InputLabel for="signature_status" value="Status de Assinatura" />
+                        <SelectInput
+                            v-model="form.status_sign"
+                            :options="signatureStatusMap"
+                            value-key="id"
+                            label-key="name"
+                            placeholder="Selecione um status"
+                        />
+                        <InputError class="mt-2" :message="form.errors.status_sign" />
+                    </div>
                 </div>
+
+                <!-- Seção de Anexo do Documento -->
+                <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <DocumentAttachmentUpload
+                        v-model="form.attachment"
+                        label="Anexo do Documento"
+                        :initial-file-url="data.document.attachment"
+                        :initial-file-name="data.document.attachment?.split('/').pop()"
+                        :error="form.errors.attachment"
+                        :max-size="50"
+                    />
+                </div>
+
+                <div>
+                    <div class="flex items-center justify-end mt-6">
+                        <PrimaryButton
+                            :class="{ 'opacity-25': form.processing }"
+                            :disabled="form.processing"
+                        >
+                            Salvar Alterações
+                        </PrimaryButton>
+                    </div>
+                </div>
+
                 <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">
                             Autores do Documento
                         </h3>
-                        <PrimaryButton @click.prevent="openAddAuthorModal">
-                            <PlusIcon class="h-4 w-4 mr-2" />
-                            Adicionar Autor
-                        </PrimaryButton>
+
+                        <TextButton
+                            @click.prevent="openAddAuthorModal"
+                            class="p-4 justify-center text-center"
+                            color="yellow"
+                        >
+                            Adicionar autor
+                        </TextButton>
                     </div>
 
                     <div class="space-y-4">
@@ -381,7 +402,7 @@ const submit = () => {
                                     </p>
                                     <CustomBadge
                                         :title="
-                                            signatureStatusMap[author.status_sign].title
+                                            signatureStatusMap[author.status_sign].name
                                         "
                                         :color="
                                             signatureStatusMap[author.status_sign].color
@@ -428,15 +449,6 @@ const submit = () => {
                     </div>
                 </div>
             </div>
-
-            <div class="flex items-center justify-end mt-6">
-                <PrimaryButton
-                    :class="{ 'opacity-25': form.processing }"
-                    :disabled="form.processing"
-                >
-                    Salvar Alterações
-                </PrimaryButton>
-            </div>
         </form>
 
         <Modal :show="showAddAuthorModal" :max-width="'md'" @close="closeModal">
@@ -446,14 +458,14 @@ const submit = () => {
                 </h2>
 
                 <div class="mt-4">
-                    <InputLabel for="new_author" value="Selecionar Usuário" />
+                    <InputLabel for="new_author" value="Selecionar vereador" />
                     <SelectInput
                         id="new_author"
                         v-model="newAuthorUserId"
                         :options="availableAuthorsOptions"
                         value-key="id"
                         label-key="name"
-                        placeholder="Selecione um usuário"
+                        placeholder="Selecione um vereador"
                         class="mt-1 block w-full"
                     />
                 </div>

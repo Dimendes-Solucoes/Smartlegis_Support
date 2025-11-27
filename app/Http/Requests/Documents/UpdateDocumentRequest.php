@@ -19,6 +19,8 @@ class UpdateDocumentRequest extends FormRequest
             'document_status_vote_id' => ['required', 'integer', 'exists:document_status_vote,id'],
             'document_status_movement_id' => ['required', 'integer', 'exists:document_status_movement,id'],
             'document_category_id' => ['required', 'integer', 'exists:document_categories,id'],
+            'status_sign' => ['required', 'integer', 'in:0,1,2'],
+            'attachment' => ['nullable', 'file', 'mimes:pdf,doc,docx,xls,xlsx,txt', 'max:51200']
         ];
     }
 }
