@@ -3,16 +3,14 @@
 namespace App\Services;
 
 use App\Models\Tenancy\DocumentModel;
-use App\Models\Tenancy\DocumentCategory; 
-use App\Models\User; 
+use App\Models\Tenancy\DocumentCategory;
 use Illuminate\Support\Arr;
 
 class DocumentModelService
 {
-
     public function getAllModels()
     {
-        return DocumentModel::with(['user', 'category'])
+        return DocumentModel::with(['category'])
             ->orderBy('title')
             ->get();
     }
@@ -21,12 +19,10 @@ class DocumentModelService
     {
         $documentModel = DocumentModel::findOrFail($id);
         $categories = DocumentCategory::where('is_active', true)->orderBy('name')->get();
-        $users = User::orderBy('name')->get();
 
         return [
             'documentModel' => $documentModel,
-            'categories' => $categories,
-            'users' => $users,
+            'categories' => $categories
         ];
     }
 
@@ -49,7 +45,6 @@ class DocumentModelService
     private function prepareModelData(array $data): array
     {
         $fields = [
-            'user_id',
             'document_category_id',
             'title',
             'body',

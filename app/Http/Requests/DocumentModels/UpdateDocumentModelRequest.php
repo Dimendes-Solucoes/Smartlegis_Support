@@ -17,7 +17,6 @@ class UpdateDocumentModelRequest extends FormRequest
         $id = $this->route('id');
 
         return [
-            'user_id' => ['required', 'integer', 'exists:users,id'],
             'document_category_id' => ['required', 'integer', 'exists:document_categories,id'],
             'title' => ['required', 'string', 'max:255'],
             'body' => ['nullable', 'string'],
