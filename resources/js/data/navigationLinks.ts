@@ -15,6 +15,7 @@ import {
     DocumentTextIcon,
     KeyIcon,
     TicketIcon,
+    DocumentDuplicateIcon,
 } from '@heroicons/vue/24/outline';
 import type { Method } from "@inertiajs/core";
 
@@ -104,6 +105,12 @@ export const staticNavigationLinks: NavigationLink[] = [
         label: 'Categorias de Documentos',
         icon: NewspaperIcon,
         route: 'document-categories.index',
+        type: 'link',
+    },
+    {
+        label: 'Modelos de Documentos',
+        icon: DocumentDuplicateIcon,
+        route: 'document-models.index',
         type: 'link',
     },
     {
