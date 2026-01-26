@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { Link } from "@inertiajs/vue3";
 import { PencilSquareIcon, TrashIcon } from "@heroicons/vue/24/outline";
+import IconButton from "@/components/Itens/IconButton.vue";
 
 interface DocumentModel {
     id: number;
@@ -46,22 +46,18 @@ const emit = defineEmits(["open-confirm-delete-modal"]);
                 <td class="px-6 py-4 whitespace-nowrap">
                     <span
                         class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                        {{ console.log(model)  }}
                         {{ model.category?.name || "Sem categoria" }}
                     </span>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                    <Link :href="route('document-models.edit', model.id)"
-                        class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300 inline-block"
-                        title="Editar">
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <IconButton :href="route('document-models.edit', model.id)" color="yellow" title="Editar">
                         <PencilSquareIcon class="h-5 w-5" />
-                    </Link>
+                    </IconButton>
 
-                    <button @click="emit('open-confirm-delete-modal', model)"
-                        class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 inline-block"
-                        title="Excluir">
+                    <IconButton @click="emit('open-confirm-delete-modal', model)"
+                        color="red" title="Desativar" class="ml-1">
                         <TrashIcon class="h-5 w-5" />
-                    </button>
+                    </IconButton>
                 </td>
             </tr>
             <tr v-if="models.length === 0">
