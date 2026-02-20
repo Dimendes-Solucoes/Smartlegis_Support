@@ -9,12 +9,9 @@ use Inertia\Inertia;
 
 class DocumentModelController extends Controller
 {
-    protected $service;
-
-    public function __construct(DocumentModelService $service)
-    {
-        $this->service = $service;
-    }
+    public function __construct(
+        protected DocumentModelService $service
+    ) {}
 
     public function index()
     {
