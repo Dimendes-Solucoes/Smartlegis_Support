@@ -1,0 +1,58 @@
+<script setup lang="ts">
+import SelectInput from "@/components/Form/SelectInput.vue";
+import AuthenticatedLayout from "@/layouts/AuthenticatedLayout.vue";
+import { Head, useForm } from "@inertiajs/vue3";
+
+interface Tenant {
+    id: string;
+    name: string;
+    city: string;
+}
+
+const props = defineProps<{
+    tenants: Tenant[];
+}>();
+
+const form = useForm({
+    tenant_id: "",
+});
+
+const submit = () => {
+    form.post(route("tenant.change"), {
+        forceFormData: true,
+    });
+};
+</script>
+
+<template>
+    <Head title="Configurações" />
+
+    <AuthenticatedLayout>
+        <p>Selecione a cidade que deseja editar</p>
+
+        <form @submit.prevent="submit">
+            <SelectInput
+                id="tenant-select"
+                v-model="form.tenant_id"
+                :options="tenants"
+                value-key="id"
+                :format-label="(tenant: Tenant) => tenant.city ?? tenant.name"
+                placeholder="Selecione"
+                :disable-placeholder="true"
+                custom-class="mt-3 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
+            />
+
+            <div v-if="form.errors.tenant_id" class="text-red-500 text-sm mt-1">
+                {{ form.errors.tenant_id }}
+            </div>
+
+            <button
+                type="submit"
+                :disabled="form.processing || !form.tenant_id"
+                class="mt-4 inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:border-indigo-900 focus:ring ring-indigo-300 disabled:opacity-25 transition ease-in-out duration-150"
+            >
+                Confirmar Seleção
+            </button>
+        </form>
+    </AuthenticatedLayout>
+</template>
