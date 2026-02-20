@@ -90,6 +90,12 @@ export const staticNavigationLinks: NavigationLink[] = [
         type: 'link',
     },
     {
+        label: 'Legislaturas',
+        icon: BuildingOfficeIcon,
+        route: 'legislatures.index',
+        type: 'link',
+    },
+    {
         label: 'Comissões',
         icon: UserGroupIcon,
         route: 'commissions.index',

@@ -7,6 +7,7 @@ use App\Http\Controllers\Tenancy\DiscussionController;
 use App\Http\Controllers\Tenancy\DocumentCategoryController;
 use App\Http\Controllers\Tenancy\DocumentModelController;
 use App\Http\Controllers\Tenancy\DocumentController;
+use App\Http\Controllers\Tenancy\LegislatureController;
 use App\Http\Controllers\Tenancy\QuestionOrderController;
 use App\Http\Controllers\Tenancy\QuorumController;
 use App\Http\Controllers\Tenancy\SessionController;
@@ -45,7 +46,19 @@ Route::middleware(['auth', 'tenant.connection'])
                 Route::post('/{id}/mandatos', 'termsStore')->name('terms.store');
                 Route::put('/mandatos/{termId}', 'termsUpdate')->name('terms.update');
                 Route::delete('/mandatos/{termId}', 'termsDestroy')->name('terms.destroy');
-                    });
+            });
+
+        Route::prefix('legislaturas')
+            ->name('legislatures.')
+            ->controller(LegislatureController::class)
+            ->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/cadastrar', 'create')->name('create');
+                Route::post('/', 'store')->name('store');
+                Route::get('/{id}/editar', 'edit')->name('edit');
+                Route::put('/{id}', 'update')->name('update');
+                Route::put('/{id}/users', 'updateUsers')->name('update_users');
+            });
 
         Route::prefix('comissoes')
             ->name('commissions.')
@@ -81,7 +94,7 @@ Route::middleware(['auth', 'tenant.connection'])
                 Route::get('/{id}/editar', 'edit')->name('edit');
                 Route::put('/{id}', 'update')->name('update');
                 Route::delete('/{id}', 'destroy')->name('destroy');
-            });    
+            });
 
         Route::prefix('documentos')
             ->name('documents.')
