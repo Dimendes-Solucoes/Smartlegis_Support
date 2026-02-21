@@ -31,7 +31,9 @@ class CouncilorStoreRequest extends FormRequest
             'category_id' => ['required', 'exists:user_categories,id'],
             'party_id' => ['required', 'exists:category_parties,id'],
             'is_leader' => ['nullable', 'boolean'],
-            'is_first_secretary' => ['nullable', 'boolean']
+            'is_first_secretary' => ['nullable', 'boolean'],
+            'birthdate' => ['nullable', 'date', 'before:today'],
+            'summary'   => ['nullable', 'string', 'max:2000'],
         ];
     }
 
