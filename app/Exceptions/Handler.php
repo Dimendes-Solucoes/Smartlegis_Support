@@ -51,6 +51,9 @@ class Handler extends ExceptionHandler
         }
 
         if ($e instanceof Error) {
+            if (app()->environment('local')) {
+                return parent::render($request, $e);
+            }
             return redirect()->route('dashboard')->with('error', $e->getMessage() ?? 'Erro ao realizar requisição');
         }
 

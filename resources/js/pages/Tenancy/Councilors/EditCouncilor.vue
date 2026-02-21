@@ -27,6 +27,8 @@ interface User {
     category_party_id: number;
     status_lider: boolean | null;
     is_first_secretary: boolean | null;
+    birthdate: string | null;
+    summary: string | null;
 }
 
 const props = defineProps<{
@@ -47,7 +49,9 @@ const form = useForm({
     category_id: props.user.user_category_id,
     party_id: props.user.category_party_id,
     is_leader: props.user.status_lider ?? null,
-    is_first_secretary: props.user.is_first_secretary ?? false
+    is_first_secretary: props.user.is_first_secretary ?? false,
+    birthdate: props.user.birthdate ?? '',
+    summary: props.user.summary ?? '',
 });
 
 const submit = () => {

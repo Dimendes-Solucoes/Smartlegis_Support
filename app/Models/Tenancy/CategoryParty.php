@@ -11,6 +11,7 @@ class CategoryParty extends Model
 
     protected $fillable = [
         'name_party',
-        'timer'
+        'timer',
+        'logo'
     ];
 }
