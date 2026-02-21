@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Tenancy\BigDiscussionController;
+use App\Http\Controllers\Tenancy\CategoryPartyController;
 use App\Http\Controllers\Tenancy\CommissionController;
 use App\Http\Controllers\Tenancy\CouncilorController;
 use App\Http\Controllers\Tenancy\DiscussionController;
@@ -31,6 +32,19 @@ Route::middleware(['auth', 'tenant.connection'])
                 Route::put('/{id}', 'update')->name('update');
                 Route::delete('/{id}', 'destroy')->name('destroy');
             });
+
+        Route::prefix('partidos')
+            ->name('category-parties.')
+            ->controller(CategoryPartyController::class)
+            ->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/cadastrar', 'create')->name('create');
+                Route::post('/', 'store')->name('store');
+                Route::get('/{id}/editar', 'edit')->name('edit');
+                Route::put('/{id}', 'update')->name('update');
+                Route::delete('/{id}', 'destroy')->name('destroy');
+            });
+
 
         Route::prefix('vereadores')
             ->name('councilors.')

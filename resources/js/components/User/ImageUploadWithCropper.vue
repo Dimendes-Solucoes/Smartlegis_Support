@@ -14,8 +14,10 @@ interface Props {
     error?: string;
     id?: string;
     accept?: string;
-    maxSize?: number; // em MB
+    maxSize?: number;
     initialImageUrl?: string | null;
+    enableCropper?: boolean;
+    aspectRatio?: number | null;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -23,6 +25,8 @@ const props = withDefaults(defineProps<Props>(), {
     id: "attachment",
     accept: "image/*",
     maxSize: 10,
+    enableCropper: true,
+    aspectRatio: 1
 });
 
 const emit = defineEmits<{
@@ -96,9 +100,14 @@ const handleFileChange = (event: Event) => {
         return;
     }
 
-    imageSource.value = URL.createObjectURL(selectedFile);
-    showCropperModal.value = true;
-    target.value = "";
+    if (props.enableCropper) {
+        imageSource.value = URL.createObjectURL(selectedFile);
+        showCropperModal.value = true;
+        target.value = "";
+    } else {
+        file.value = selectedFile;
+        target.value = "";
+    }
 };
 
 const cropImage = () => {
@@ -146,13 +155,8 @@ const removeFile = () => {
     <div>
         <InputLabel :for="id" :value="label" />
 
-        <input
-            :id="id"
-            type="file"
-            :accept="accept"
-            @change="handleFileChange"
-            class="mt-1 block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 dark:file:bg-indigo-900 file:text-indigo-700 dark:file:text-indigo-300 hover:file:bg-indigo-100 dark:hover:file:bg-indigo-800 cursor-pointer"
-        />
+        <input :id="id" type="file" :accept="accept" @change="handleFileChange"
+            class="mt-1 block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 dark:file:bg-indigo-900 file:text-indigo-700 dark:file:text-indigo-300 hover:file:bg-indigo-100 dark:hover:file:bg-indigo-800 cursor-pointer" />
 
         <InputError class="mt-2" :message="error" />
 
@@ -165,37 +169,26 @@ const removeFile = () => {
                 <p class="text-sm text-gray-500 dark:text-gray-400">
                     Pré-visualização da Imagem:
                 </p>
-                <button
-                    v-if="file"
-                    type="button"
-                    @click="removeFile"
-                    class="text-xs text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 font-medium transition duration-150 ease-in-out"
-                >
+                <button v-if="file" type="button" @click="removeFile"
+                    class="text-xs text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 font-medium transition duration-150 ease-in-out">
                     Remover
                 </button>
             </div>
 
             <div
-                class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border border-gray-300 dark:border-gray-600 shadow-sm"
-            >
-                <img
-                    :src="previewImageUrl"
-                    alt="Pré-visualização da imagem"
-                    class="w-36 h-36 object-cover rounded-lg shadow-md mx-auto"
-                />
-                <p
-                    v-if="file"
-                    class="text-xs text-gray-500 dark:text-gray-400 text-center mt-2"
-                >
+                class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border border-gray-300 dark:border-gray-600 shadow-sm">
+                <img :src="previewImageUrl" alt="Pré-visualização da imagem" :class="[
+                    'rounded-lg shadow-md mx-auto',
+                    props.enableCropper ? 'w-36 h-36 object-cover' : 'max-w-full max-h-64 object-contain'
+                ]" />
+                <p v-if="file" class="text-xs text-gray-500 dark:text-gray-400 text-center mt-2">
                     {{ file.name }} ({{ formatFileSize(file.size) }})
                 </p>
             </div>
         </div>
 
-        <div
-            v-else-if="!showCropperModal"
-            class="mt-4 text-center py-8 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700"
-        >
+        <div v-else-if="!showCropperModal"
+            class="mt-4 text-center py-8 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700">
             <DocumentPlusIcon class="mx-auto h-12 w-12 text-gray-400" />
             <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
                 Nenhuma foto selecionada
@@ -203,30 +196,19 @@ const removeFile = () => {
         </div>
 
         <!-- Modal de Cropper -->
-        <div
-            v-if="showCropperModal"
-            class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75"
-        >
-            <div
-                class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl max-w-lg w-full"
-            >
+        <div v-if="showCropperModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl max-w-lg w-full">
                 <h3 class="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">
                     Cortar Imagem
                 </h3>
                 <div class="max-h-96 overflow-hidden mb-4">
-                    <Cropper
-                        ref="cropperRef"
-                        :src="imageSource"
-                        :stencil-props="{ aspectRatio: 1 / 1 }"
-                        class="cropper"
-                    />
+                    <Cropper ref="cropperRef" :src="imageSource"
+                        :stencil-props="props.aspectRatio !== null ? { aspectRatio: props.aspectRatio } : {}"
+                        class="cropper" />
                 </div>
                 <div class="flex justify-end space-x-4">
-                    <button
-                        @click="cancelCrop"
-                        type="button"
-                        class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition duration-150 ease-in-out"
-                    >
+                    <button @click="cancelCrop" type="button"
+                        class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition duration-150 ease-in-out">
                         Cancelar
                     </button>
                     <PrimaryButton @click="cropImage" type="button">

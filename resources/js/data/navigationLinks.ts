@@ -84,6 +84,12 @@ export const staticNavigationLinks: NavigationLink[] = [
         type: 'link',
     },
     {
+        label: 'Partidos',
+        icon: BuildingOfficeIcon,
+        route: 'category-parties.index',
+        type: 'link',
+    },
+    {
         label: 'Vereadores',
         icon: BuildingOfficeIcon,
         route: 'councilors.index',
