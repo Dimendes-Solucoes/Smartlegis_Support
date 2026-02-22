@@ -42,8 +42,9 @@ class CategoryPartyService
         try {
             DB::beginTransaction();
 
+            $data = $this->prepareData($data);
+
             $party = CategoryParty::findOrFail($id);
-            $data = $this->prepareData($data, $party);
             $party->update($data);
 
             DB::commit();
@@ -70,10 +71,10 @@ class CategoryPartyService
         }
     }
 
-    private function prepareData(array $data, ?CategoryParty $existing = null): array
+    private function prepareData(array $data): array
     {
         if (isset($data['logo']) && !empty($data['logo'])) {
-            $data['logo'] = ImageUploader::handleImageUpload($data['logo']);
+            $data['logo'] = ImageUploader::handleImageUpload($data['logo'], 'category-parties');
         } else {
             unset($data['logo']);
         }

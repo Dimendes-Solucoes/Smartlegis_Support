@@ -14,16 +14,16 @@ class CategoryPartyStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name_party' => ['required', 'string', 'max:255'],
-            'logo'       => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp,svg', 'max:2048'],
+            'name_party'   => ['required', 'string', 'max:255'],
+            'logo'         => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp,svg', 'max:2048'],
         ];
     }
 
     public function attributes(): array
     {
         return [
-            'name_party' => 'nome do partido',
-            'logo'       => 'logo',
+            'name_party'   => 'nome do partido',
+            'logo'         => 'logo',
         ];
     }
 }

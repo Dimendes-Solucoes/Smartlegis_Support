@@ -24,7 +24,7 @@ const submit = () => {
     <AuthenticatedLayout>
         <BackButtonRow :href="route('category-parties.index')" />
 
-        <form @submit.prevent="submit" class="max-w-lg">
+        <form @submit.prevent="submit">
             <CategoryPartyForm :form="form" />
 
             <div class="flex items-center justify-end mt-6">
