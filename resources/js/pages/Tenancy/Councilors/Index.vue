@@ -16,7 +16,7 @@ interface User {
     path_image: string | null;
     nickname: string | null;
     category: { id: number; name: string } | null;
-    party: { id: number; name_party: string } | null;
+    party: { id: number; name_party: string; logo: string | null } | null;
     status_lider: string | null;
     status_user: number;
     is_first_secretary: boolean | null;
@@ -130,11 +130,17 @@ watch(showInactive, (value) => {
                 <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
                     <tr v-for="user in props.users" :key="user.id">
                         <td class="px-4 py-4 whitespace-nowrap">
-                            <img v-if="user.path_image" :src="getImage(user.path_image)" alt="Foto do Usuário"
-                                class="h-10 w-10 rounded-full object-cover">
-                            <div v-else
-                                class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 text-sm">
-                                <span>N/A</span>
+                            <div class="relative inline-block">
+                                <img v-if="user.path_image" :src="getImage(user.path_image)" alt="Foto do Usuário"
+                                    class="h-10 w-10 rounded-full object-cover">
+                                <div v-else
+                                    class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 text-sm">
+                                    <span>N/A</span>
+                                </div>
+                                <img v-if="user.party?.logo" :src="getImage(user.party.logo)"
+                                    :alt="user.party.name_party"
+                                    class="absolute -bottom-1 -right-1 h-5 w-5 rounded-full object-contain border border-white dark:border-gray-800 bg-white"
+                                    :title="user.party.name_party">
                             </div>
                         </td>
                         <td class="px-4 py-4 whitespace-nowrap">
@@ -165,7 +171,8 @@ watch(showInactive, (value) => {
                         </td>
                         <td class="px-4 py-4 whitespace-nowrap text-left text-sm font-medium">
                             <div class="flex items-center justify-end space-x-1">
-                                <IconButton :href="route('councilors.terms.index', user.id)" color="blue" title="Mandatos">
+                                <IconButton :href="route('councilors.terms.index', user.id)" color="blue"
+                                    title="Mandatos">
                                     <ClipboardDocumentListIcon class="h-5 w-5" />
                                 </IconButton>
 
@@ -173,7 +180,8 @@ watch(showInactive, (value) => {
                                     <PencilSquareIcon class="h-5 w-5" />
                                 </IconButton>
 
-                                <IconButton @click="changeStatus(user.id)" :color="user.status_user === 1 ? 'red' : 'green'"
+                                <IconButton @click="changeStatus(user.id)"
+                                    :color="user.status_user === 1 ? 'red' : 'green'"
                                     :title="user.status_user === 1 ? 'Desativar usuário' : 'Ativar usuário'"
                                     v-if="user.category?.id === 2">
                                     <template v-if="user.status_user === 1">
