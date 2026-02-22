@@ -41,8 +41,12 @@ const props = defineProps<{ legislatures: Legislature[] }>();
                 <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
                     <tr v-for="legislature in props.legislatures" :key="legislature.id">
                         <td class="px-4 py-4 whitespace-nowrap">{{ legislature.title }}</td>
-                        <td class="px-4 py-4 whitespace-nowrap">{{ legislature.start_at }}</td>
-                        <td class="px-4 py-4 whitespace-nowrap">{{ legislature.end_at }}</td>
+                        <td class="px-4 py-4 whitespace-nowrap">
+                            {{ new Date(legislature.start_at).toLocaleDateString('pt-BR') }}
+                        </td>
+                        <td class="px-4 py-4 whitespace-nowrap">
+                            {{ new Date(legislature.end_at).toLocaleDateString('pt-BR') }}
+                        </td>
                         <td class="px-4 py-4 whitespace-nowrap">
                             <span :class="legislature.is_current
                                 ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'

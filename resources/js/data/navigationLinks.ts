@@ -5,7 +5,6 @@ import {
     UsersIcon,
     NewspaperIcon,
     CalendarDateRangeIcon,
-    BuildingOfficeIcon,
     Cog6ToothIcon,
     ClockIcon,
     ClipboardDocumentListIcon,
@@ -16,6 +15,9 @@ import {
     KeyIcon,
     TicketIcon,
     DocumentDuplicateIcon,
+    FlagIcon,
+    IdentificationIcon,
+    BookOpenIcon,
 } from '@heroicons/vue/24/outline';
 import type { Method } from "@inertiajs/core";
 
@@ -85,19 +87,19 @@ export const staticNavigationLinks: NavigationLink[] = [
     },
     {
         label: 'Partidos',
-        icon: BuildingOfficeIcon,
+        icon: FlagIcon,
         route: 'category-parties.index',
         type: 'link',
     },
     {
         label: 'Vereadores',
-        icon: BuildingOfficeIcon,
+        icon: IdentificationIcon,
         route: 'councilors.index',
         type: 'link',
     },
     {
         label: 'Legislaturas',
-        icon: BuildingOfficeIcon,
+        icon: BookOpenIcon,
         route: 'legislatures.index',
         type: 'link',
     },
