@@ -25,4 +25,9 @@ class UserTerm extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    public function legislature()
+    {
+        return $this->belongsTo(Legislature::class, 'legislature_id');
+    }
 }

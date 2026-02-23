@@ -7,7 +7,7 @@ import TextInput from '@/components/Form/TextInput.vue';
 import IconButton from '@/components/Itens/IconButton.vue';
 import BackButtonRow from '@/components/Common/BackButtonRow.vue';
 import SelectInput from '@/components/Form/SelectInput.vue';
-import { TrashIcon } from '@heroicons/vue/24/outline';
+import { TrashIcon, PencilIcon, CheckIcon, XMarkIcon } from '@heroicons/vue/24/outline';
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
 
@@ -20,11 +20,12 @@ interface Legislature {
 }
 
 interface UserTerm {
-    id: number | null; // null quando ainda não foi salvo
+    id: number | null;
     user_id: number;
     name: string;
     start_date: string;
     end_date: string | null;
+    has_conflict: boolean;
 }
 
 interface Councilor {
@@ -38,7 +39,6 @@ const props = defineProps<{
     councilors: Councilor[];
 }>();
 
-// --- Form detalhes ---
 const legislatureForm = useForm({
     title: props.legislature.title,
     start_at: props.legislature.start_at,
@@ -50,7 +50,6 @@ const submitDetails = () => {
     legislatureForm.put(route('legislatures.update', props.legislature.id));
 };
 
-// --- Form vereadores ---
 const usersForm = useForm({
     users: props.userTerms.map((t) => ({
         id: t.id,
@@ -58,24 +57,30 @@ const usersForm = useForm({
         name: t.name,
         start_date: t.start_date,
         end_date: t.end_date ?? '',
+        has_conflict: t.has_conflict,
     })),
 });
+
+const sortUsers = () => {
+    usersForm.users.sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
+};
 
 const newTerm = ref({
     user_id: null as number | null,
     start_date: props.legislature.start_at ?? '',
-    end_date: props.legislature.end_at ?? ''
+    end_date: props.legislature.end_at ?? '',
 });
 
-// Todos os vereadores podem ser selecionados (podem ter múltiplos mandatos)
 const councilorsNotAdded = ref<Councilor[]>([]);
 
 watch(
     () => props.councilors,
     () => {
-        councilorsNotAdded.value = props.councilors;
+        councilorsNotAdded.value = [...props.councilors].sort((a, b) =>
+            a.name.localeCompare(b.name, 'pt-BR'),
+        );
     },
-    { immediate: true }
+    { immediate: true },
 );
 
 const addTerm = () => {
@@ -84,7 +89,9 @@ const addTerm = () => {
         return;
     }
 
-    const councilor = props.councilors.find((c) => Number(c.id) === Number(newTerm.value.user_id));
+    const councilor = props.councilors.find(
+        (c) => Number(c.id) === Number(newTerm.value.user_id),
+    );
 
     usersForm.users.push({
         id: null,
@@ -92,16 +99,40 @@ const addTerm = () => {
         name: councilor?.name ?? '',
         start_date: newTerm.value.start_date,
         end_date: newTerm.value.end_date ?? '',
+        has_conflict: false,
     });
+
+    sortUsers();
 
     newTerm.value = { user_id: null, start_date: '', end_date: '' };
     submitUsers();
 };
 
-// Remove pelo índice do id do UserTerm
-const removeTerm = (termId: number | null, index: number) => {
+const removeTerm = (index: number) => {
     usersForm.users.splice(index, 1);
     submitUsers();
+};
+
+const editingIndex = ref<number | null>(null);
+const editBuffer = ref({ start_date: '', end_date: '' });
+
+const startEdit = (index: number) => {
+    editingIndex.value = index;
+    editBuffer.value = {
+        start_date: usersForm.users[index].start_date,
+        end_date: usersForm.users[index].end_date ?? '',
+    };
+};
+
+const confirmEdit = (index: number) => {
+    usersForm.users[index].start_date = editBuffer.value.start_date;
+    usersForm.users[index].end_date = editBuffer.value.end_date;
+    editingIndex.value = null;
+    submitUsers();
+};
+
+const cancelEdit = () => {
+    editingIndex.value = null;
 };
 
 const submitUsers = () => {
@@ -115,7 +146,6 @@ const submitUsers = () => {
     <AuthenticatedLayout>
         <BackButtonRow :href="route('legislatures.index')" />
 
-        <!-- Detalhes -->
         <form @submit.prevent="submitDetails" class="mb-8 p-4 border rounded-lg">
             <h3 class="text-md font-semibold mb-4">Detalhes da Legislatura</h3>
 
@@ -154,7 +184,6 @@ const submitUsers = () => {
             </div>
         </form>
 
-        <!-- Vereadores -->
         <div class="p-4 border rounded-lg">
             <h3 class="text-md font-semibold mb-4">Gerenciar Vereadores</h3>
 
@@ -202,16 +231,47 @@ const submitUsers = () => {
                     </thead>
                     <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                         <tr v-for="(user, index) in usersForm.users" :key="`${user.user_id}-${index}`">
-                            <td class="px-3 py-2 text-sm font-medium text-gray-900 dark:text-gray-100">{{ user.name }}
+                            <td class="px-3 py-2 text-sm font-medium" :class="user.has_conflict
+                                ? 'text-red-600 dark:text-red-400'
+                                : 'text-gray-900 dark:text-gray-100'"
+                                :title="user.has_conflict ? 'Conflito com outra legislatura' : ''">
+                                {{ user.name }}
+                                <span v-if="user.has_conflict" class="ml-1 text-xs">(conflito)</span>
                             </td>
-                            <td class="px-3 py-2 text-sm text-gray-500 dark:text-gray-300">{{ user.start_date }}</td>
-                            <td class="px-3 py-2 text-sm text-gray-500 dark:text-gray-300">{{ user.end_date || '-' }}
+
+                            <td class="px-3 py-2 text-sm text-gray-500 dark:text-gray-300">
+                                <TextInput v-if="editingIndex === index" type="date" class="block w-full py-0.5 text-sm"
+                                    v-model="editBuffer.start_date" />
+                                <span v-else>{{ user.start_date }}</span>
                             </td>
-                            <td class="px-3 py-2 text-right">
-                                <IconButton @click="removeTerm(user.id, index)" color="red" title="Remover"
-                                    :disabled="usersForm.processing">
-                                    <TrashIcon class="h-5 w-5" />
-                                </IconButton>
+
+                            <td class="px-3 py-2 text-sm text-gray-500 dark:text-gray-300">
+                                <TextInput v-if="editingIndex === index" type="date" class="block w-full py-0.5 text-sm"
+                                    v-model="editBuffer.end_date" />
+                                <span v-else>{{ user.end_date || '-' }}</span>
+                            </td>
+
+                            <td class="px-3 py-2 text-right space-x-1">
+                                <template v-if="editingIndex === index">
+                                    <IconButton @click="confirmEdit(index)" color="green" title="Confirmar"
+                                        :disabled="usersForm.processing">
+                                        <CheckIcon class="h-5 w-5" />
+                                    </IconButton>
+                                    <IconButton @click="cancelEdit" color="gray" title="Cancelar">
+                                        <XMarkIcon class="h-5 w-5" />
+                                    </IconButton>
+                                </template>
+
+                                <template v-else>
+                                    <IconButton @click="startEdit(index)" color="blue" title="Editar datas"
+                                        :disabled="usersForm.processing">
+                                        <PencilIcon class="h-5 w-5" />
+                                    </IconButton>
+                                    <IconButton @click="removeTerm(index)" color="red" title="Remover"
+                                        :disabled="usersForm.processing">
+                                        <TrashIcon class="h-5 w-5" />
+                                    </IconButton>
+                                </template>
                             </td>
                         </tr>
                     </tbody>

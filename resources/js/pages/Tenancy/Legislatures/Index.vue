@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import IconButton from '@/components/Itens/IconButton.vue';
+import TextButton from '@/components/Itens/TextButton.vue';
 import AuthenticatedLayout from '@/layouts/AuthenticatedLayout.vue';
 import { PencilSquareIcon } from '@heroicons/vue/24/outline';
 import { Head } from '@inertiajs/vue3';
@@ -19,6 +20,14 @@ const props = defineProps<{ legislatures: Legislature[] }>();
 
     <Head title="Legislaturas" />
     <AuthenticatedLayout>
+        <div class="flex justify-end items-center mb-4">
+            <div class="flex items-center space-x-2">
+                <TextButton :href="route('legislatures.create')" class="p-4 justify-center text-center">
+                    Nova Legislatura
+                </TextButton>
+            </div>
+        </div>
+
         <div v-if="props.legislatures.length > 0" class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
                 <thead class="bg-gray-50 dark:bg-gray-700">
