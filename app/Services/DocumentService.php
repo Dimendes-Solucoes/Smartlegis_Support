@@ -17,6 +17,8 @@ class DocumentService
     {
         $search = $request->input('search');
         $categoryId = $request->input('category_id');
+        $voteStatusId = $request->input('vote_status_id');         // ← novo
+        $movementStatusId = $request->input('movement_status_id'); // ← novo
         $sortField = $request->input('sort', 'id');
         $sortDirection = $request->input('direction', 'desc');
 
@@ -37,6 +39,12 @@ class DocumentService
                 if ($categoryId !== 'null' && $categoryId !== null && $categoryId !== '') {
                     $query->where('document_category_id', $categoryId);
                 }
+            })
+            ->when($voteStatusId, function ($query, $voteStatusId) {   // ← novo
+                $query->where('document_status_vote_id', $voteStatusId);
+            })
+            ->when($movementStatusId, function ($query, $movementStatusId) { // ← novo
+                $query->where('document_status_movement_id', $movementStatusId);
             });
 
         $query->orderBy($sortField, $sortDirection);
@@ -56,7 +64,14 @@ class DocumentService
 
     public function getDocumentsForIndex(Request $request): array
     {
-        $filters = $request->only(['search', 'category_id', 'sort', 'direction']);
+        $filters = $request->only([
+            'search',
+            'category_id',
+            'vote_status_id',
+            'movement_status_id',
+            'sort',
+            'direction',
+        ]);
 
         $categories = DocumentCategory::where('is_active', true)
             ->orderBy('name')
@@ -64,8 +79,8 @@ class DocumentService
 
         return [
             'documents' => $this->getAllDocuments($request),
-            'filters' => $filters,
-            'categories' => $categories
+            'filters'   => $filters,
+            'categories' => $categories,
         ];
     }
 
