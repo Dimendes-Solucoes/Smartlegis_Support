@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { defineProps, defineEmits } from 'vue';
 import { EyeIcon, ExclamationCircleIcon, ChevronDownIcon, ChevronUpIcon, ClipboardDocumentListIcon, TrashIcon } from '@heroicons/vue/24/outline';
 import LinkButton from '@/components/Common/LinkButton.vue';
 import IconButton from '@/components/Itens/IconButton.vue';
@@ -79,7 +78,7 @@ const removeDocument = (document: Document) => {
                     </button>
                 </div>
 
-                <span class="flex-1 mx-2 font-medium text-gray-800 dark:text-gray-200">{{ element.name }}</span>
+                <span class="flex-1 mx-2 font-medium text-gray-800 dark:text-gray-200">{{ element.id }} | {{ element.name }}</span>
 
                 <div class="flex flex-col space-y-1 md:flex-row md:space-y-0 md:space-x-1">
                     <LinkButton :link="element.attachment" title="Visualizar documento">

@@ -436,7 +436,7 @@ class SessionService
             $this->clearBigDiscussions($session->id);
             $this->clearQuestionOrders($session->id);
             $this->clearHistory($session->id);
-            
+
             $documentIds = $session->documents->pluck('id');
 
             if ($documentIds->isNotEmpty()) {
@@ -449,7 +449,7 @@ class SessionService
                     ->update([
                         'is_read' => false,
                         'is_approved' => false,
-                    ]);    
+                    ]);
 
                 foreach ($session->documents as $document) {
                     $lastVoteOrder = Vote::where('document_id', $document->id)->max('order');
@@ -530,6 +530,43 @@ class SessionService
 
             DB::commit();
         } catch (\Throwable $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
+    public function sortByProtocol(int $id): void
+    {
+        $session = Session::with('documents')->findOrFail($id);
+
+        DB::beginTransaction();
+        try {
+            $expediente = $session->documents
+                ->filter(fn($d) => $d->pivot->ordem_do_dia == 0)
+                ->sortBy('id')
+                ->values();
+
+            foreach ($expediente as $index => $document) {
+                DocumentSession::where('session_id', $id)
+                    ->where('document_id', $document->id)
+                    ->where('ordem_do_dia', 0)
+                    ->update(['order' => $index + 1]);
+            }
+
+            $ordemDoDia = $session->documents
+                ->filter(fn($d) => $d->pivot->ordem_do_dia == 1)
+                ->sortBy('id')
+                ->values();
+
+            foreach ($ordemDoDia as $index => $document) {
+                DocumentSession::where('session_id', $id)
+                    ->where('document_id', $document->id)
+                    ->where('ordem_do_dia', 1)
+                    ->update(['order' => $index + 1]);
+            }
+
+            DB::commit();
+        } catch (Exception $e) {
             DB::rollBack();
             throw $e;
         }

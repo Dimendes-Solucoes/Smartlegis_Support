@@ -145,6 +145,7 @@ Route::middleware(['auth', 'tenant.connection'])
                 Route::get('/{id}/documentos', 'documents')->name('documents');
                 Route::put('/{id}/documentos', 'updateDocuments')->name('update_documents');
                 Route::put('/{id}/resetar-documentos', 'resetDocuments')->name('reset_documents');
+                Route::put('/{id}/ordenar-por-protocolo', 'sortByProtocol')->name('sort_by_protocol');
                 Route::delete('/{id}/documentos/{document_id}/expendient', 'removeDocumentFromExpedient')->name('documents.destroy_expendient');
                 Route::delete('/{id}/documentos/{document_id}/order', 'removeDocumentFromOrder')->name('documents.destroy_order');
                 Route::get('/{id}/documentos/{document_id}/votos', 'documentVotes')->name('documents.votes');

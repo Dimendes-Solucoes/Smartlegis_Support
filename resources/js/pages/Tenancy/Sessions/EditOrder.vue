@@ -41,6 +41,7 @@ watch(() => props.orderDocuments, (newOrderDocuments) => {
 
 const isSaving = ref(false);
 const isReseting = ref(false);
+const isSortingByProtocol = ref(false);
 
 const confirmingDocRemoval = ref(false);
 const docToRemove = ref<DocumentToRemove | null>(null);
@@ -62,6 +63,14 @@ const resetOrder = () => {
     router.put(route('sessions.reset_documents', props.session.id), {}, {
         preserveScroll: true,
         onFinish: () => isReseting.value = false,
+    });
+};
+
+const sortByProtocol = () => {
+    isSortingByProtocol.value = true;
+    router.put(route('sessions.sort_by_protocol', props.session.id), {}, {
+        preserveScroll: true,
+        onFinish: () => isSortingByProtocol.value = false,
     });
 };
 
@@ -107,7 +116,13 @@ const deleteDocumentFromSession = () => {
     <AuthenticatedLayout>
         <BackButtonRow :href="route('sessions.index')" />
         <div class="flex items-center justify-end mb-4">
-            <PrimaryButton @click="resetOrder" :disabled="isReseting" :class="{ 'opacity-25': isReseting }">
+            <PrimaryButton @click="sortByProtocol" :disabled="isSortingByProtocol"
+                :class="{ 'opacity-25': isSortingByProtocol }">
+                <span v-if="isSortingByProtocol">Ordenando...</span>
+                <span v-else>Ordenar por Protocolo</span>
+            </PrimaryButton>
+
+            <PrimaryButton @click="resetOrder" :disabled="isReseting" :class="{ 'opacity-25': isReseting, 'ml-1': true }">
                 <span v-if="isReseting">Restaurando...</span>
                 <span v-else>Restaurar Ordem</span>
             </PrimaryButton>

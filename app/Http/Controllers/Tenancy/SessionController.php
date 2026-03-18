@@ -201,4 +201,11 @@ class SessionController extends Controller
 
         return redirect()->route('sessions.documents', $id)->with('success', 'Documento removido da ordem com sucesso!');
     }
+
+    public function sortByProtocol(int $id)
+    {
+        $this->service->sortByProtocol($id);
+
+        return redirect()->back()->with('success', 'Ordenação concluída com sucesso!');
+    }
 }
