@@ -5,18 +5,25 @@ import PrimaryButton from "@/components/Common/PrimaryButton.vue";
 import SecondaryButton from "@/components/Common/SecondaryButton.vue";
 import { computed } from "vue";
 
+interface Legislature {
+    id: number;
+    title: string;
+    start_at: string;
+    end_at: string | null;
+    is_current: boolean;
+}
+
 const props = defineProps<{
     show: boolean;
     form: any;
+    legislatures: Legislature[];
 }>();
 
 const emit = defineEmits(["close", "submit"]);
 
 const isEditing = computed(() => !!props.form.id);
 
-const closeModal = () => {
-    emit("close");
-};
+const closeModal = () => emit("close");
 </script>
 
 <template>
@@ -27,7 +34,7 @@ const closeModal = () => {
             </h2>
 
             <form @submit.prevent="$emit('submit')" class="mt-6 space-y-6">
-                <TermForm :form="form" />
+                <TermForm :form="form" :legislatures="legislatures" />
 
                 <div class="flex justify-end space-x-2">
                     <SecondaryButton @click="closeModal" type="button">
