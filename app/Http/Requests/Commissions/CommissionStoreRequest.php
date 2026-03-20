@@ -25,7 +25,8 @@ class CommissionStoreRequest extends FormRequest
     {
         return [
             'comission_name' => ['required', 'string'],
-            'type' => ['required', Rule::in(Comission::TYPES)]
+            'type' => ['required', Rule::in(Comission::TYPES)],
+            'legislature_id' => ['required', 'exists:legislatures,id'],
         ];
     }
 }
