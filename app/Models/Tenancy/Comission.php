@@ -29,13 +29,19 @@ class Comission extends Model
     ];
 
     protected $fillable = [
+        'legislature_id',
         'comission_name',
-        'type'
+        'type',
     ];
 
     public function users()
     {
         return $this->belongsToMany(User::class, 'comission_users', 'comission_id', 'user_id')
             ->withPivot('function');
+    }
+
+    public function legislature()
+    {
+        return $this->belongsTo(Legislature::class);
     }
 }

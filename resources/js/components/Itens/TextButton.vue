@@ -20,10 +20,7 @@ const props = defineProps({
 </script>
 
 <template>
-    <BaseButtonLink v-if="href" :href="href" :color="color" class="px-4 py-2">
+    <BaseButtonLink :href="href" :color="color" :disabled="disabled" class="px-4 py-2">
         <slot></slot>
     </BaseButtonLink>
-    <button v-else :disabled="disabled" :class="['px-4 py-2']">
-        <slot></slot>
-    </button>
 </template>

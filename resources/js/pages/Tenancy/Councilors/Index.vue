@@ -3,7 +3,7 @@ import { ref, watch } from 'vue';
 import AuthenticatedLayout from '@/layouts/AuthenticatedLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
 import { getImageUrl } from '@/utils/image';
-import { ClipboardDocumentListIcon, PencilSquareIcon, UserMinusIcon, UserPlusIcon } from '@heroicons/vue/24/outline';
+import { CalendarDaysIcon, PencilSquareIcon, UserMinusIcon, UserPlusIcon } from '@heroicons/vue/24/outline';
 import TextButton from '@/components/Itens/TextButton.vue';
 import IconButton from '@/components/Itens/IconButton.vue';
 import UserStatusBadge from '@/components/User/UserStatusBadge.vue';
@@ -173,7 +173,7 @@ watch(showInactive, (value) => {
                             <div class="flex items-center justify-end space-x-1">
                                 <IconButton :href="route('councilors.terms.index', user.id)" color="blue"
                                     title="Mandatos">
-                                    <ClipboardDocumentListIcon class="h-5 w-5" />
+                                    <CalendarDaysIcon class="h-5 w-5" />
                                 </IconButton>
 
                                 <IconButton :href="route('councilors.edit', user.id)" color="yellow" title="Editar">

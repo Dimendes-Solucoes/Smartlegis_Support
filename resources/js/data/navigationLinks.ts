@@ -80,9 +80,9 @@ export const staticNavigationLinks: NavigationLink[] = [
 
     { type: 'separator' },
     {
-        label: 'Usuários',
-        icon: UsersIcon,
-        route: 'users.index',
+        label: 'Legislaturas',
+        icon: BookOpenIcon,
+        route: 'legislatures.index',
         type: 'link',
     },
     {
@@ -92,15 +92,15 @@ export const staticNavigationLinks: NavigationLink[] = [
         type: 'link',
     },
     {
-        label: 'Vereadores',
-        icon: IdentificationIcon,
-        route: 'councilors.index',
+        label: 'Usuários',
+        icon: UsersIcon,
+        route: 'users.index',
         type: 'link',
     },
     {
-        label: 'Legislaturas',
-        icon: BookOpenIcon,
-        route: 'legislatures.index',
+        label: 'Vereadores',
+        icon: IdentificationIcon,
+        route: 'councilors.index',
         type: 'link',
     },
     {

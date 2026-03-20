@@ -18,9 +18,9 @@ class Legislature extends Model
     ];
 
     protected $casts = [
-        'start_at'  => 'date',
-        'end_at'    => 'date',
-        'is_active' => 'boolean',
+        'start_at'   => 'date',
+        'end_at'     => 'date',
+        'is_current' => 'boolean'
     ];
 
     public function userTerms()
@@ -31,5 +31,10 @@ class Legislature extends Model
     public function users()
     {
         return $this->hasManyThrough(User::class, UserTerm::class, 'legislature_id', 'id', 'id', 'user_id');
+    }
+
+    public function comissions()
+    {
+        return $this->hasMany(Comission::class);
     }
 }

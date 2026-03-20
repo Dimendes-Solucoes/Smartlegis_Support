@@ -4,6 +4,7 @@ use App\Http\Controllers\Tenancy\BigDiscussionController;
 use App\Http\Controllers\Tenancy\CategoryPartyController;
 use App\Http\Controllers\Tenancy\CommissionController;
 use App\Http\Controllers\Tenancy\CouncilorController;
+use App\Http\Controllers\Tenancy\CouncilorTermController;
 use App\Http\Controllers\Tenancy\DiscussionController;
 use App\Http\Controllers\Tenancy\DocumentCategoryController;
 use App\Http\Controllers\Tenancy\DocumentModelController;
@@ -56,10 +57,16 @@ Route::middleware(['auth', 'tenant.connection'])
                 Route::get('/{id}/editar', 'edit')->name('edit');
                 Route::put('/{id}', 'update')->name('update');
                 Route::patch('/{id}/trocar-status', 'changeStatus')->name('change_status');
-                Route::get('/{id}/mandatos', 'termsIndex')->name('terms.index');
-                Route::post('/{id}/mandatos', 'termsStore')->name('terms.store');
-                Route::put('/mandatos/{termId}', 'termsUpdate')->name('terms.update');
-                Route::delete('/mandatos/{termId}', 'termsDestroy')->name('terms.destroy');
+
+                Route::prefix('/{councilorId}/mandatos')
+                    ->name('terms.')
+                    ->controller(CouncilorTermController::class)
+                    ->group(function () {
+                        Route::get('/', 'index')->name('index');
+                        Route::post('/', 'store')->name('store');
+                        Route::put('/{termId}', 'update')->name('update');
+                        Route::delete('/{termId}', 'destroy')->name('destroy');
+                    });
             });
 
         Route::prefix('legislaturas')

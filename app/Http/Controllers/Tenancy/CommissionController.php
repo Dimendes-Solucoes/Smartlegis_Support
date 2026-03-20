@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Commissions\CommissionStoreRequest;
 use App\Http\Requests\Commissions\CommissionUpdateUsersRequest;
 use App\Services\CommissionService;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class CommissionController extends Controller
@@ -14,12 +15,13 @@ class CommissionController extends Controller
         protected CommissionService $service
     ) {}
 
-    public function index()
+    public function index(Request $request)
     {
-        $commissions = $this->service->list();
+        $legislatureId = $request->integer('legislature_id') ?: null;
 
         return Inertia::render('Tenancy/Commissions/Index', [
-            'commissions' => $commissions
+            ...$this->service->prepareDataForIndex($legislatureId),
+            'filters' => $request->only('legislature_id'),
         ]);
     }
 

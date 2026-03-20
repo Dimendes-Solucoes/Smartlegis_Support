@@ -4,14 +4,18 @@ namespace App\Services;
 
 use App\Models\Tenancy\Comission;
 use App\Models\Tenancy\ComissionUser;
+use App\Models\Tenancy\Legislature;
 use App\Models\Tenancy\User;
 use Illuminate\Database\Eloquent\Collection;
 
 class CommissionService
 {
-    public function list(): Collection
+    public function list(?int $legislatureId = null): Collection
     {
-        $commissions = Comission::orderBy('comission_name')->get();
+        $commissions = Comission::with('legislature')
+            ->orderBy('comission_name')
+            ->when($legislatureId, fn($q) => $q->where('legislature_id', $legislatureId))
+            ->get();
 
         $commissionTypesMap = collect(Comission::LIST_TYPES)->pluck('title', 'id')->all();
 
@@ -21,10 +25,25 @@ class CommissionService
         });
     }
 
+    public function prepareDataForIndex(?int $legislatureId = null): array
+    {
+        return [
+            'commissions'  => $this->list($legislatureId),
+            'legislatures' => Legislature::orderBy('start_at', 'desc')
+                ->get(['id', 'title', 'is_current'])
+                ->map(fn($legislature) => [
+                    'id'       => $legislature->id,
+                    'title'    => $legislature->is_current ? "{$legislature->title} - Atual" : $legislature->title,
+                    'is_current' => $legislature->is_current,
+                ]),
+        ];
+    }
+
     public function getCreationFormData(): array
     {
         return [
-            'commissionTypes' => Comission::LIST_TYPES
+            'commissionTypes' => Comission::LIST_TYPES,
+            'legislatures'    => Legislature::orderBy('start_at', 'desc')->get(['id', 'title', 'is_current']),
         ];
     }
 
@@ -34,9 +53,9 @@ class CommissionService
 
         $commissionUsers = $commission->users->map(function ($user) {
             return [
-                'id' => $user->id,
-                'name' => $user->name,
-                'function' => $user->pivot->function
+                'id'       => $user->id,
+                'name'     => $user->name,
+                'function' => $user->pivot->function,
             ];
         })->sortBy('function')->values();
 
@@ -44,17 +63,18 @@ class CommissionService
 
         $functions = [
             ['id' => ComissionUser::PRESIDENT, 'title' => 'Presidente'],
-            ['id' => ComissionUser::VICE, 'title' => 'Vice'],
-            ['id' => ComissionUser::REPORTER, 'title' => 'Relator'],
-            ['id' => ComissionUser::BOARD, 'title' => 'Membro da Mesa'],
+            ['id' => ComissionUser::VICE,      'title' => 'Vice'],
+            ['id' => ComissionUser::REPORTER,  'title' => 'Relator'],
+            ['id' => ComissionUser::BOARD,     'title' => 'Membro da Mesa'],
         ];
 
         return [
-            'comission' => $commission,
-            'comissionUsers' => $commissionUsers,
-            'functions' => $functions,
-            'counciliors' => $counciliors,
-            'commissionTypes' => Comission::LIST_TYPES
+            'comission'       => $commission,
+            'comissionUsers'  => $commissionUsers,
+            'functions'       => $functions,
+            'counciliors'     => $counciliors,
+            'commissionTypes' => Comission::LIST_TYPES,
+            'legislatures'    => Legislature::orderBy('start_at', 'desc')->get(['id', 'title', 'is_current']),
         ];
     }
 
@@ -71,15 +91,13 @@ class CommissionService
         return $commission;
     }
 
-    public function updateUsers(int $id, array $data)
+    public function updateUsers(int $id, array $data): void
     {
         $commission = Comission::findOrFail($id);
         $usersToAttach = [];
 
         foreach ($data['users'] as $user) {
-            $usersToAttach[$user['id']] = [
-                'function' => $user['function']
-            ];
+            $usersToAttach[$user['id']] = ['function' => $user['function']];
         }
 
         $commission->users()->sync($usersToAttach);
