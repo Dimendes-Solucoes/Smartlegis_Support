@@ -5,7 +5,7 @@ import InputError from "@/components/Form/InputError.vue";
 import InputLabel from "@/components/Form/InputLabel.vue";
 import TextInput from "@/components/Form/TextInput.vue";
 import { Head, useForm } from "@inertiajs/vue3";
-import { ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import IconButton from "@/components/Itens/IconButton.vue";
 import { TrashIcon } from "@heroicons/vue/24/outline";
 import BackButtonRow from "@/components/Common/BackButtonRow.vue";
@@ -33,6 +33,12 @@ interface UserFunction {
     title: string;
 }
 
+interface Legislature {
+    id: number;
+    title: string;
+    is_current: boolean;
+}
+
 interface FormErrors {
     comission_name?: string;
     type?: string;
@@ -47,19 +53,23 @@ const props = defineProps<{
         id: number;
         comission_name: string;
         type: number;
+        legislature_id: number;
     };
     commissionTypes: CommissionType[];
     counciliors: User[];
     comissionUsers: CommissionUser[];
     functions: UserFunction[];
+    legislatures: Legislature[];
 }>();
 
 const commissionForm = useForm({
     comission_name: props.comission.comission_name,
     type: props.comission.type,
+    legislature_id: props.comission.legislature_id,
 }) as {
     comission_name: string;
     type: number;
+    legislature_id: number;
     errors: FormErrors;
     processing: boolean;
     put: (url: string, options?: any) => void;
@@ -103,14 +113,17 @@ watch(
 
 const addUser = () => {
     if (newUserToAdd.value.id && newUserToAdd.value.function) {
+        const userId = Number(newUserToAdd.value.id);
+        const userFunction = Number(newUserToAdd.value.function);
+
         const isUserAlreadyAdded = usersForm.users.some(
-            (user) => user.id === newUserToAdd.value.id
+            (user) => user.id === userId
         );
 
         if (!isUserAlreadyAdded) {
             usersForm.users.push({
-                id: newUserToAdd.value.id,
-                function: newUserToAdd.value.function,
+                id: userId,
+                function: userFunction,
             });
             newUserToAdd.value.id = null;
             newUserToAdd.value.function = null;
@@ -131,56 +144,49 @@ const removeUser = (userId: number) => {
 const submitUsers = () => {
     usersForm.put(route("commissions.update_users", props.comission.id));
 };
+
+const legislatureOptions = computed(() =>
+    props.legislatures.map((l) => ({
+        ...l,
+        title: l.is_current ? `${l.title} - Atual` : l.title,
+    }))
+);
 </script>
 
 <template>
+
     <Head title="Editar Comissão" />
 
     <AuthenticatedLayout>
         <BackButtonRow :href="route('commissions.index')" />
 
-        <form
-            @submit.prevent="submitCommissionDetails"
-            class="mb-8 p-4 border rounded-lg"
-        >
+        <form @submit.prevent="submitCommissionDetails" class="mb-8 p-4 border rounded-lg">
             <h3 class="text-md font-semibold mb-4">Detalhes da Comissão</h3>
+
+            <div class="mb-4">
+                <InputLabel for="legislature_id" value="Legislatura" />
+                <SelectInput id="legislature_id" v-model="commissionForm.legislature_id" :options="legislatureOptions"
+                    value-key="id" label-key="title" placeholder="Selecione uma legislatura" :disable-placeholder="true"
+                    class="mt-1 block w-full" required />
+                <InputError class="mt-2" :message="commissionForm.errors.legislature_id" />
+            </div>
+
             <div class="mb-4">
                 <InputLabel for="comission_name" value="Nome da Comissão" />
-                <TextInput
-                    id="comission_name"
-                    type="text"
-                    class="mt-1 block w-full"
-                    v-model="commissionForm.comission_name"
-                    required
-                    autofocus
-                    autocomplete="off"
-                />
-                <InputError
-                    class="mt-2"
-                    :message="commissionForm.errors.comission_name"
-                />
+                <TextInput id="comission_name" type="text" class="mt-1 block w-full"
+                    v-model="commissionForm.comission_name" required autofocus autocomplete="off" />
+                <InputError class="mt-2" :message="commissionForm.errors.comission_name" />
             </div>
 
             <div class="mb-4">
                 <InputLabel value="Tipo de Comissão" />
                 <div class="mt-2 flex space-x-4">
-                    <div
-                        v-for="typeOption in props.commissionTypes"
-                        :key="typeOption.id"
-                        class="flex items-center"
-                    >
-                        <input
-                            :id="`type-${typeOption.id}`"
-                            type="radio"
-                            :value="typeOption.id"
+                    <div v-for="typeOption in props.commissionTypes" :key="typeOption.id" class="flex items-center">
+                        <input :id="`type-${typeOption.id}`" type="radio" :value="typeOption.id"
                             v-model="commissionForm.type"
                             class="rounded dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-indigo-600 shadow-sm focus:ring-indigo-500 dark:focus:ring-indigo-600 dark:focus:ring-offset-gray-800"
-                            required
-                        />
-                        <label
-                            :for="`type-${typeOption.id}`"
-                            class="ml-2 text-sm text-gray-600 dark:text-gray-400"
-                        >
+                            required />
+                        <label :for="`type-${typeOption.id}`" class="ml-2 text-sm text-gray-600 dark:text-gray-400">
                             {{ typeOption.title }}
                         </label>
                     </div>
@@ -189,10 +195,8 @@ const submitUsers = () => {
             </div>
 
             <div class="flex items-center justify-end">
-                <PrimaryButton
-                    :class="{ 'opacity-25': commissionForm.processing }"
-                    :disabled="commissionForm.processing"
-                >
+                <PrimaryButton :class="{ 'opacity-25': commissionForm.processing }"
+                    :disabled="commissionForm.processing">
                     Atualizar Detalhes
                 </PrimaryButton>
             </div>
@@ -201,108 +205,65 @@ const submitUsers = () => {
         <div class="p-4 border rounded-lg">
             <h3 class="text-md font-semibold mb-4">Gerenciar Membros da Comissão</h3>
 
-            <div
-                class="mb-4 flex flex-col sm:flex-row items-end sm:space-x-4 space-y-4 sm:space-y-0"
-            >
+            <div class="mb-4 flex flex-col sm:flex-row items-end sm:space-x-4 space-y-4 sm:space-y-0">
                 <div class="flex-1 w-full">
                     <InputLabel for="select-user" value="Selecionar Vereador" />
-                    <SelectInput
-                        id="select-user"
-                        v-model="newUserToAdd.id"
-                        :options="usersNotYetAdded"
-                        value-key="id"
-                        label-key="name"
-                        placeholder="Selecione um vereador"
-                        :disable-placeholder="true"
-                    />
+                    <SelectInput id="select-user" v-model="newUserToAdd.id" :options="usersNotYetAdded" value-key="id"
+                        label-key="name" placeholder="Selecione um vereador" :disable-placeholder="true" />
                     <InputError class="mt-2" :message="usersForm.errors['users.id']" />
                 </div>
 
                 <div class="flex-1 w-full">
                     <InputLabel for="select-function" value="Selecionar Função" />
-                    <SelectInput
-                        id="select-function"
-                        v-model="newUserToAdd.function"
-                        :options="props.functions"
-                        value-key="id"
-                        label-key="title"
-                        placeholder="Selecione uma função"
-                        :disable-placeholder="true"
-                    />
-                    <InputError
-                        class="mt-2"
-                        :message="usersForm.errors['users.function']"
-                    />
+                    <SelectInput id="select-function" v-model="newUserToAdd.function" :options="props.functions"
+                        value-key="id" label-key="title" placeholder="Selecione uma função"
+                        :disable-placeholder="true" />
+                    <InputError class="mt-2" :message="usersForm.errors['users.function']" />
                 </div>
             </div>
 
             <div class="flex justify-end">
-                <PrimaryButton
-                    type="button"
-                    @click="addUser"
-                    class="sm:w-auto mb-2 sm:mt-0"
-                    :disabled="
-                        !newUserToAdd.id || !newUserToAdd.function || usersForm.processing
-                    "
-                >
+                <PrimaryButton type="button" @click="addUser" class="sm:w-auto mb-2 sm:mt-0" :disabled="!newUserToAdd.id || !newUserToAdd.function || usersForm.processing
+                    ">
                     Adicionar Membro
                 </PrimaryButton>
             </div>
 
             <div v-if="usersForm.users.length > 0" class="mt-4">
-                <table
-                    class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 table-sm border"
-                >
+                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 table-sm border">
                     <thead class="bg-gray-50 dark:bg-gray-700">
                         <tr>
-                            <th
-                                scope="col"
-                                class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
-                            >
+                            <th scope="col"
+                                class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                 Nome
                             </th>
-                            <th
-                                scope="col"
-                                class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
-                            >
+                            <th scope="col"
+                                class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                 Função
                             </th>
-                            <th
-                                scope="col"
-                                class="px-3 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
-                            >
+                            <th scope="col"
+                                class="px-3 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                 Ações
                             </th>
                         </tr>
                     </thead>
-                    <tbody
-                        class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700"
-                    >
+                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                         <tr v-for="(user, index) in usersForm.users" :key="user.id">
                             <td
-                                class="px-3 py-2 whitespace-normal text-sm font-medium text-gray-900 dark:text-gray-100"
-                            >
+                                class="px-3 py-2 whitespace-normal text-sm font-medium text-gray-900 dark:text-gray-100">
                                 {{
                                     props.counciliors.find((u) => u.id === user.id)?.name
                                 }}
                             </td>
-                            <td
-                                class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300"
-                            >
+                            <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                                 {{
                                     props.functions.find((r) => r.id === user.function)
                                         ?.title
                                 }}
                             </td>
-                            <td
-                                class="px-3 py-2 whitespace-nowrap text-right text-sm font-medium"
-                            >
-                                <IconButton
-                                    @click="removeUser(user.id)"
-                                    color="red"
-                                    title="Deletar"
-                                    :disabled="usersForm.processing"
-                                >
+                            <td class="px-3 py-2 whitespace-nowrap text-right text-sm font-medium">
+                                <IconButton @click="removeUser(user.id)" color="red" title="Deletar"
+                                    :disabled="usersForm.processing">
                                     <TrashIcon class="h-5 w-5" />
                                 </IconButton>
                             </td>
