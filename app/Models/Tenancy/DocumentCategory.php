@@ -37,6 +37,11 @@ class DocumentCategory extends Model
         return $this->hasMany(ProtocolReservation::class);
     }
 
+    public function protocolMinimums()
+    {
+        return $this->hasMany(DocumentCategoryProtocolMinimum::class);
+    }
+
     public function getActiveReservedProtocolsAttribute()
     {
         return $this->protocols()
@@ -47,21 +52,33 @@ class DocumentCategory extends Model
 
     public function getNextAvailableProtocolAttribute()
     {
+        $currentYear = now()->year;
+
+        $minProtocol = $this->protocolMinimums()
+            ->where('year', $currentYear)
+            ->value('min_protocol');
+
+        if (is_null($minProtocol)) {
+            return null;
+        }
+
         $used_in_documents = $this->documents()
-            ->whereRaw("CAST(protocol_number AS INTEGER) >= ?", [$this->min_protocol])
+            ->whereRaw("CAST(protocol_number AS INTEGER) >= ?", [$minProtocol])
             ->whereRaw("protocol_number ~ '^[0-9]+$'")
+            ->whereYear('created_at', $currentYear)
             ->pluck('protocol_number')
-            ->map(fn($protocol_number) => (int) $protocol_number)
+            ->map(fn($p) => (int) $p)
             ->toArray();
 
         $active_reservations = $this->protocols()
-            ->where('protocol_number', '>=', $this->min_protocol)
+            ->where('protocol_number', '>=', $minProtocol)
             ->where('expires_at', '>', now())
+            ->whereYear('created_at', $currentYear)
             ->pluck('protocol_number')
             ->toArray();
 
         $all_used_protocols = array_merge($used_in_documents, $active_reservations);
-        $next_protocol = (int) $this->min_protocol;
+        $next_protocol = $minProtocol;
 
         while (in_array($next_protocol, $all_used_protocols)) {
             $next_protocol++;

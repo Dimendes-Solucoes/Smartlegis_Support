@@ -17,8 +17,8 @@ class DocumentService
     {
         $search = $request->input('search');
         $categoryId = $request->input('category_id');
-        $voteStatusId = $request->input('vote_status_id');         // ← novo
-        $movementStatusId = $request->input('movement_status_id'); // ← novo
+        $voteStatusId = $request->input('vote_status_id');
+        $movementStatusId = $request->input('movement_status_id');
         $sortField = $request->input('sort', 'id');
         $sortDirection = $request->input('direction', 'desc');
 
@@ -40,10 +40,10 @@ class DocumentService
                     $query->where('document_category_id', $categoryId);
                 }
             })
-            ->when($voteStatusId, function ($query, $voteStatusId) {   // ← novo
+            ->when($voteStatusId, function ($query, $voteStatusId) {
                 $query->where('document_status_vote_id', $voteStatusId);
             })
-            ->when($movementStatusId, function ($query, $movementStatusId) { // ← novo
+            ->when($movementStatusId, function ($query, $movementStatusId) {
                 $query->where('document_status_movement_id', $movementStatusId);
             });
 

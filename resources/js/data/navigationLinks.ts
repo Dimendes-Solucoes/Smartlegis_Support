@@ -18,6 +18,7 @@ import {
     FlagIcon,
     IdentificationIcon,
     BookOpenIcon,
+    HashtagIcon,
 } from '@heroicons/vue/24/outline';
 import type { Method } from "@inertiajs/core";
 
@@ -116,13 +117,19 @@ export const staticNavigationLinks: NavigationLink[] = [
         type: 'link',
     },
     {
-        label: 'Categorias de Documentos',
+        label: 'Categorias',
         icon: NewspaperIcon,
         route: 'document-categories.index',
         type: 'link',
     },
     {
-        label: 'Modelos de Documentos',
+        label: 'Protocolos',
+        icon: HashtagIcon,
+        route: 'protocol-minimums.index',
+        type: 'link',
+    },
+    {
+        label: 'Modelos',
         icon: DocumentDuplicateIcon,
         route: 'document-models.index',
         type: 'link',

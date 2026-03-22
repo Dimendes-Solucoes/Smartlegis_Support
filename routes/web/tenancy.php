@@ -10,6 +10,7 @@ use App\Http\Controllers\Tenancy\DocumentCategoryController;
 use App\Http\Controllers\Tenancy\DocumentModelController;
 use App\Http\Controllers\Tenancy\DocumentController;
 use App\Http\Controllers\Tenancy\LegislatureController;
+use App\Http\Controllers\Tenancy\ProtocolMinimumController;
 use App\Http\Controllers\Tenancy\QuestionOrderController;
 use App\Http\Controllers\Tenancy\QuorumController;
 use App\Http\Controllers\Tenancy\SessionController;
@@ -181,6 +182,16 @@ Route::middleware(['auth', 'tenant.connection'])
             ->group(function () {
                 Route::put('/{id}/reordenar-usuarios', 'reorderUsers')->name('users.reorder');
                 Route::delete('/{id}/inscricoes', 'removeUser')->name('users.destroy');
+            });
+
+        Route::prefix('protocolos-minimos')
+            ->name('protocol-minimums.')
+            ->controller(ProtocolMinimumController::class)
+            ->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::post('/', 'store')->name('store');
+                Route::put('/{id}', 'update')->name('update');
+                Route::delete('/{id}', 'destroy')->name('destroy');
             });
 
         Route::delete('quorums/{id}/inscricoes', [QuorumController::class, 'removeUser'])->name('quorums.users.destroy');

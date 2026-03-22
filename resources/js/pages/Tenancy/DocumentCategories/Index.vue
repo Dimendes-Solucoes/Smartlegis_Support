@@ -6,7 +6,6 @@ import { Head, router } from '@inertiajs/vue3';
 import Checkbox from '@/components/Form/Checkbox.vue';
 import ConfirmDeletionModal from '@/components/Common/ConfirmDeletionModal.vue';
 import DocumentCategoryTable from './DocumentCategoryTable.vue';
-import ProtocolTable from './ProtocolTable.vue';
 
 interface DocumentCategory {
     id: number;
@@ -96,13 +95,6 @@ const resetOrder = () => {
         <div class="flex justify-between items-center mb-4">
             <div class="flex items-center space-x-4">
                 <div class="flex items-center">
-                    <Checkbox id="show_protocols" v-model:checked="localFilters.show_protocols" />
-                    <label for="show_protocols" class="ml-2 text-sm text-gray-600 dark:text-gray-400">
-                        Protocolos
-                    </label>
-                </div>
-
-                <div class="flex items-center">
                     <Checkbox id="show_inactive" v-model:checked="localFilters.show_inactive" />
                     <label for="show_inactive" class="ml-2 text-sm text-gray-600 dark:text-gray-400">
                         Exibir inativas
@@ -122,10 +114,8 @@ const resetOrder = () => {
             </div>
         </div>
 
-        <DocumentCategoryTable v-if="!props.filters.show_protocols" :categories="props.categories"
+        <DocumentCategoryTable :categories="props.categories"
             @open-confirm-delete-modal="openConfirmDeleteModal" @change-status="changeStatus" />
-
-        <ProtocolTable v-else :categories="props.categories" />
     </AuthenticatedLayout>
 
     <ConfirmDeletionModal :show="categoryToInactive !== null" title="Inativar categoria"
