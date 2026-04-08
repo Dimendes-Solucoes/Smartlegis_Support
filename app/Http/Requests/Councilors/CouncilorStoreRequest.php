@@ -33,7 +33,7 @@ class CouncilorStoreRequest extends FormRequest
             'is_leader' => ['nullable', 'boolean'],
             'is_first_secretary' => ['nullable', 'boolean'],
             'birthdate' => ['nullable', 'date', 'before:today'],
-            'summary'   => ['nullable', 'string', 'max:2000'],
+            'summary' => ['nullable', 'string', 'max:65535'],
         ];
     }
 
