@@ -25,6 +25,7 @@ import {
 
 interface Author {
     id: number;
+    user_id: number;
     name: string;
     email: string | null;
     status: number;
@@ -379,7 +380,7 @@ const sortBy = (field: string) => {
                             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-100 dark:divide-gray-700">
                                 <tr v-for="author in selectedDocumentAuthors.authors" :key="author.id">
                                     <td class="px-4 py-3 text-gray-500 dark:text-gray-400 font-mono text-xs">
-                                        #{{ author.id }}
+                                    #{{ author.user_id }}
                                     </td>
                                     <td class="px-4 py-3">
                                         <p class="font-medium text-gray-900 dark:text-gray-100">{{ author.name }}</p>

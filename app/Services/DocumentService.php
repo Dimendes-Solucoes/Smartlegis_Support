@@ -66,6 +66,7 @@ class DocumentService
             'status_sign' => $document->status_sign,
             'authors' => $document->authors->map(fn($author) => [
                 'id' => $author->id,
+                'user_id' => $author->user_id,
                 'name' => $author->user?->name ?? 'Usuário não encontrado',
                 'email' => $author->user?->email,
                 'status' => $author->status_sign
@@ -107,9 +108,10 @@ class DocumentService
                 ->where('document_id', $id)
                 ->get()
                 ->map(fn($a) => [
-                    'id'     => $a->id,
-                    'name'   => $a->user?->name ?? 'Usuário não encontrado',
-                    'email'  => $a->user?->email,
+                    'id' => $a->id,
+                    'user_id' => $a->user_id,
+                    'name' => $a->user?->name ?? 'Usuário não encontrado',
+                    'email' => $a->user?->email,
                     'status' => $a->status_sign,
                 ]),
         ];

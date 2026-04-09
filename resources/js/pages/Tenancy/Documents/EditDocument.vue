@@ -27,6 +27,7 @@ interface Category {
 }
 interface Author {
     id: number;
+    user_id: number;
     name: string;
     email: string | null;
     status: number;
@@ -151,6 +152,10 @@ const submit = () => {
                                 <tr>
                                     <th
                                         class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                        ID
+                                    </th>
+                                    <th
+                                        class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                         Autor
                                     </th>
                                     <th
@@ -162,6 +167,9 @@ const submit = () => {
                             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-100 dark:divide-gray-700">
                                 <tr v-for="author in data.authors" :key="author.id"
                                     class="hover:bg-gray-50 dark:hover:bg-gray-700/40">
+                                    <td class="px-4 py-3 text-gray-500 dark:text-gray-400 font-mono text-xs">
+                                        #{{ author.user_id }}
+                                    </td>
                                     <td class="px-4 py-3">
                                         <p class="font-medium text-gray-900 dark:text-gray-100">{{ author.name }}</p>
                                         <p v-if="author.email" class="text-xs text-gray-400 mt-0.5">{{ author.email }}
@@ -171,6 +179,9 @@ const submit = () => {
                                         <span
                                             class="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-semibold rounded-full"
                                             :class="getSignatureStatusColor(author.status)">
+                                            <ExclamationCircleIcon v-if="author.status === 3" class="h-3.5 w-3.5" />
+                                            <CheckCircleIcon v-else-if="author.status > 0" class="h-3.5 w-3.5" />
+                                            <ClockIcon v-else class="h-3.5 w-3.5" />
                                             {{ getSignatureStatusText(author.status) }}
                                         </span>
                                     </td>
