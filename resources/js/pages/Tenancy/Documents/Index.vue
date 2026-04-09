@@ -359,12 +359,15 @@ const sortBy = (field: string) => {
                 </div>
 
                 <!-- Body -->
-                <div class="p-5">
+                <div class="p-5 max-h-96 overflow-y-auto">
                     <div v-if="selectedDocumentAuthors?.authors.length"
                         class="overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
                         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
                             <thead class="bg-gray-50 dark:bg-gray-700/50">
                                 <tr>
+                                    <th
+                                        class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                                        ID</th>
                                     <th
                                         class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
                                         Autor</th>
@@ -375,6 +378,9 @@ const sortBy = (field: string) => {
                             </thead>
                             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-100 dark:divide-gray-700">
                                 <tr v-for="author in selectedDocumentAuthors.authors" :key="author.id">
+                                    <td class="px-4 py-3 text-gray-500 dark:text-gray-400 font-mono text-xs">
+                                        #{{ author.id }}
+                                    </td>
                                     <td class="px-4 py-3">
                                         <p class="font-medium text-gray-900 dark:text-gray-100">{{ author.name }}</p>
                                         <p v-if="author.email" class="text-xs text-gray-400">{{ author.email }}</p>
