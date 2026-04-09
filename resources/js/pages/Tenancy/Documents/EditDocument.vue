@@ -64,13 +64,14 @@ const movementStatuses = [
 ];
 
 const getSignatureStatusText = (status: number) =>
-    ({ 0: "Pendente", 1: "Assinado Digitalmente", 2: "Assinado" } as Record<number, string>)[status] ?? "Desconhecido";
+    ({ 0: "Pendente", 1: "Assinado Digitalmente", 2: "Assinado", 3: "Expirado" } as Record<number, string>)[status] ?? "Desconhecido";
 
 const getSignatureStatusColor = (status: number) =>
     ({
         0: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
         1: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
         2: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
+        3: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
     } as Record<number, string>)[status] ?? "bg-gray-100 text-gray-800";
 
 const form = useForm({

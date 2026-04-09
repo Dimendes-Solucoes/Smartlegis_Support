@@ -95,10 +95,11 @@ const signatureStatusOptions: StatusOption[] = [
     { id: 0, name: "Pendente" },
     { id: 1, name: "Assinado Digitalmente" },
     { id: 2, name: "Assinado" },
+    { id: 3, name: "Expirado" },
 ];
 
 const getSignatureStatusText = (status: number) =>
-    ({ 0: "Pendente", 1: "Assinado Digitalmente", 2: "Assinado" } as Record<number, string>)[status] ?? "Desconhecido";
+    ({ 0: "Pendente", 1: "Assinado Digitalmente", 2: "Assinado", 3: "Expirado" } as Record<number, string>)[status] ?? "Desconhecido";
 
 const getSignatureStatusColor = (status: number) =>
     ({
