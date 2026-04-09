@@ -46,22 +46,30 @@ const shouldShow = computed(() => {
         props.paginator.links.length > props.minLinks
     );
 });
+
+const buildUrl = (linkUrl: string | null): string => {
+    if (!linkUrl) return "";
+
+    const current = new URL(window.location.href);
+    const target = new URL(linkUrl);
+
+    current.searchParams.forEach((value, key) => {
+        if (key !== "page") {
+            target.searchParams.set(key, value);
+        }
+    });
+
+    return target.toString();
+};
 </script>
 
 <template>
     <div v-if="shouldShow" class="mt-6 flex justify-center">
-        <Link
-            v-for="(link, index) in paginator.links"
-            :key="index"
-            :href="link.url || ''"
-            class="px-4 py-2 text-sm"
+        <Link v-for="(link, index) in paginator.links" :key="index" :href="buildUrl(link.url)" class="px-4 py-2 text-sm"
             :class="{
                 'bg-indigo-500 text-white rounded-md': link.active,
                 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200': !link.active,
                 'cursor-not-allowed text-gray-400 dark:text-gray-600': !link.url,
-            }"
-            :disabled="!link.url"
-            v-html="link.label"
-        />
+            }" :disabled="!link.url" v-html="link.label" />
     </div>
 </template>
