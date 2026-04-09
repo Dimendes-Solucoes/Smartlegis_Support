@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Tenancy\Author;
 use App\Models\Tenancy\Document;
 use App\Models\Tenancy\DocumentCategory;
 use App\Models\Tenancy\DocumentStatusMovement;
@@ -29,7 +30,7 @@ class DocumentService
         }
 
         $query = Document::query()
-            ->with(['voteStatus', 'movementStatus'])
+            ->with(['voteStatus', 'movementStatus', 'authors.user'])
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('name', 'ilike', "%{$search}%")
@@ -63,6 +64,12 @@ class DocumentService
             'document_status_vote_id' => $document->document_status_vote_id,
             'document_status_movement_id' => $document->document_status_movement_id,
             'status_sign' => $document->status_sign,
+            'authors' => $document->authors->map(fn($author) => [
+                'id' => $author->id,
+                'name' => $author->user?->name ?? 'Usuário não encontrado',
+                'email' => $author->user?->email,
+                'status' => $author->status_sign
+            ]),
         ]);
     }
 
@@ -96,6 +103,15 @@ class DocumentService
             'vote_statuses' => DocumentStatusVote::all(),
             'movement_statuses' => DocumentStatusMovement::all(),
             'categories' => DocumentCategory::orderBy('is_active', 'desc')->orderBy('name')->get(),
+            'authors' => Author::with('user')
+                ->where('document_id', $id)
+                ->get()
+                ->map(fn($a) => [
+                    'id'     => $a->id,
+                    'name'   => $a->user?->name ?? 'Usuário não encontrado',
+                    'email'  => $a->user?->email,
+                    'status' => $a->status_sign,
+                ]),
         ];
     }
 

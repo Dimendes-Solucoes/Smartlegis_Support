@@ -63,4 +63,9 @@ class Document extends Model
     {
         return $this->hasMany(DocumentHistory::class, 'document_id');
     }
+
+    public function authors()
+    {
+        return $this->hasMany(Author::class, 'document_id');
+    }
 }
