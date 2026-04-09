@@ -44,6 +44,11 @@ interface StatusOption {
     name: string;
 }
 
+interface StatusSign {
+    id: number;
+    name: string;
+}
+
 const props = defineProps<{
     documents: PaginatedDocuments;
     categories: Category[];
@@ -54,6 +59,7 @@ const props = defineProps<{
         category_id: number | null;
         vote_status_id: number | null;
         movement_status_id: number | null;
+        status_sign: number | null;
     };
 }>();
 
@@ -75,6 +81,12 @@ const movementStatusOptions: StatusOption[] = [
     { id: 6, name: "Prefeitura" },
     { id: 7, name: "Em analise" },
     { id: 8, name: "Reprovado" },
+];
+
+const signatureStatusOptions: StatusSign[] = [
+    { id: 0, name: "Pendente" },
+    { id: 1, name: "Assinado Digitalmente" },
+    { id: 2, name: "Assinado" },
 ];
 
 const getSignatureStatusText = (status: number) => {
@@ -174,12 +186,14 @@ const search = ref(props.filters.search || "");
 const selectedCategory = ref(props.filters.category_id ?? null);
 const selectedVoteStatus = ref(props.filters.vote_status_id ?? null);
 const selectedMovementStatus = ref(props.filters.movement_status_id ?? null);
+const selectedSignatureStatus = ref(props.filters.status_sign ?? null);
 
 const buildFilterParams = () => ({
     search: search.value,
     category_id: selectedCategory.value,
     vote_status_id: selectedVoteStatus.value,
     movement_status_id: selectedMovementStatus.value,
+    status_sign: selectedSignatureStatus.value,
     sort: props.filters.sort,
     direction: props.filters.direction,
 });
@@ -196,6 +210,7 @@ const clearFilters = () => {
     selectedCategory.value = null;
     selectedVoteStatus.value = null;
     selectedMovementStatus.value = null;
+    selectedSignatureStatus.value = null;
     router.get(
         route("documents.index"),
         { sort: props.filters.sort, direction: props.filters.direction },
@@ -225,7 +240,7 @@ const sortBy = (field: string) => {
             <div class="flex flex-col gap-4">
                 <TextInput type="text" v-model="search" placeholder="Buscar por nome ou protocolo..." />
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
                     <SelectInput id="category-filter" v-model="selectedCategory" :options="categories" value-key="id"
                         label-key="name" placeholder="Todas as categorias" />
 
@@ -235,6 +250,10 @@ const sortBy = (field: string) => {
                     <SelectInput id="movement-status-filter" v-model="selectedMovementStatus"
                         :options="movementStatusOptions" value-key="id" label-key="name"
                         placeholder="Todos os status de movimentação" />
+
+                    <SelectInput id="signature-status-filter" v-model="selectedSignatureStatus"
+                        :options="signatureStatusOptions" value-key="id" label-key="name"
+                        placeholder="Todos os status de assinatura" />
                 </div>
             </div>
 
@@ -248,7 +267,8 @@ const sortBy = (field: string) => {
                     search ||
                     selectedCategory !== null ||
                     selectedVoteStatus !== null ||
-                    selectedMovementStatus !== null
+                    selectedMovementStatus !== null ||
+                    selectedSignatureStatus !== null
                 " type="button" @click="clearFilters" class="h-9">
                     Limpar
                 </SecondaryButton>

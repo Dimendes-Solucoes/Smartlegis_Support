@@ -19,6 +19,7 @@ class DocumentService
         $categoryId = $request->input('category_id');
         $voteStatusId = $request->input('vote_status_id');
         $movementStatusId = $request->input('movement_status_id');
+        $statusSign = $request->input('status_sign');
         $sortField = $request->input('sort', 'id');
         $sortDirection = $request->input('direction', 'desc');
 
@@ -45,6 +46,9 @@ class DocumentService
             })
             ->when($movementStatusId, function ($query, $movementStatusId) {
                 $query->where('document_status_movement_id', $movementStatusId);
+            })
+            ->when($statusSign !== null && $statusSign !== '', function ($query) use ($statusSign) {
+                $query->where('status_sign', $statusSign);
             });
 
         $query->orderBy($sortField, $sortDirection);
@@ -69,6 +73,7 @@ class DocumentService
             'category_id',
             'vote_status_id',
             'movement_status_id',
+            'status_sign',
             'sort',
             'direction',
         ]);
