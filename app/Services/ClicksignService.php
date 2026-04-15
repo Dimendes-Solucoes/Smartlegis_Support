@@ -47,13 +47,13 @@ class ClicksignService
         return $this->orderCities($allClicksignData);
     }
 
-    public function getReport(array $filters = [], bool $isDev = false): array
+    public function getReport(array $filters = []): array
     {
         $tenants    = Tenant::with('credentials')->get();
         $reportData = [];
 
         $startDate = $filters['start_date'] ?? null;
-        $endDate   = $filters['end_date'] ?? null;
+        $endDate   = $filters['end_date']   ?? null;
 
         foreach ($tenants as $tenant) {
             $dbName = $tenant->data['tenancy_db_name'];
@@ -71,36 +71,20 @@ class ClicksignService
                 if ($startDate) $comDocQuery->whereDate('created_at', '>=', $startDate);
                 if ($endDate)   $comDocQuery->whereDate('created_at', '<=', $endDate);
 
-                $totalDocs    = (clone $docQuery)->count()                                          + (clone $comDocQuery)->count();
-                $totalSigned  = (clone $docQuery)->where('status_sign', 1)->count()                 + (clone $comDocQuery)->where('status_sign_comission', 1)->count();
-                $totalPending = (clone $docQuery)->where('status_sign', 0)->count()                 + (clone $comDocQuery)->where('status_sign_comission', 0)->count();
-                $totalExpired = (clone $docQuery)->where('status_sign', 3)->count()                 + (clone $comDocQuery)->where('status_sign_comission', 3)->count();
+                $totalDocs    = (clone $docQuery)->count()                           + (clone $comDocQuery)->count();
+                $totalSigned  = (clone $docQuery)->where('status_sign', 1)->count()  + (clone $comDocQuery)->where('status_sign_comission', 1)->count();
+                $totalPending = (clone $docQuery)->where('status_sign', 0)->count()  + (clone $comDocQuery)->where('status_sign_comission', 0)->count();
+                $totalExpired = (clone $docQuery)->where('status_sign', 3)->count()  + (clone $comDocQuery)->where('status_sign_comission', 3)->count();
 
-                $authorQuery = Author::whereNotNull('request_signature_key');
-                if ($startDate) $authorQuery->whereDate('created_at', '>=', $startDate);
-                if ($endDate)   $authorQuery->whereDate('created_at', '<=', $endDate);
-
-                $comSigQuery = DocumentSignatureComission::whereNotNull('signature_key_comission');
-                if ($startDate) $comSigQuery->whereDate('created_at', '>=', $startDate);
-                if ($endDate)   $comSigQuery->whereDate('created_at', '<=', $endDate);
-
-                $totalSignatures       = (clone $authorQuery)->count()                              + (clone $comSigQuery)->count();
-                $totalSignaturesSigned = (clone $authorQuery)->where('status_sign', 1)->count()     + (clone $comSigQuery)->where('status_sign_comission', 1)->count();
-
-                if ($totalDocs === 0 && $totalSignatures === 0) continue;
+                if ($totalDocs === 0) continue;
 
                 $reportData[] = [
-                    'tenant_id'               => $tenant->id,
-                    'tenant_city'             => $tenant->credentials->first()->city_name ?? $tenant->id,
-                    'total_docs'              => $totalDocs,
-                    'total_signed'            => $totalSigned,
-                    'total_pending'           => $totalPending,
-                    'total_expired'           => $totalExpired,
-                    'total_signatures'        => $totalSignatures,
-                    'total_signatures_signed' => $totalSignaturesSigned,
-                    'estimated_cost'          => $isDev
-                        ? round($totalDocs * self::COST_PER_DOC_V19, 2)
-                        : null,
+                    'tenant_id'    => $tenant->id,
+                    'tenant_city'  => $tenant->credentials->first()->city_name ?? $tenant->id,
+                    'total_docs'   => $totalDocs,
+                    'total_signed' => $totalSigned,
+                    'total_pending' => $totalPending,
+                    'total_expired' => $totalExpired,
                 ];
             } catch (\Exception $e) {
                 continue;

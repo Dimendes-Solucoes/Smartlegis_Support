@@ -72,10 +72,12 @@ Route::middleware('auth')->group(function () {
     Route::prefix('clicksign')
         ->name('clicksign.')
         ->controller(ClicksignController::class)
-        ->middleware('is_root')
         ->group(function () {
-            Route::get('/', 'index')->name('index');
             Route::get('/report', 'report')->name('report');
-            Route::delete('/', 'destroy')->name('destroy');
+
+            Route::middleware('is_root')->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::delete('/', 'destroy')->name('destroy');
+            });
         });
 });

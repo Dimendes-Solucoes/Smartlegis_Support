@@ -19,6 +19,7 @@ import {
     IdentificationIcon,
     BookOpenIcon,
     HashtagIcon,
+    ClipboardDocumentCheckIcon,
 } from '@heroicons/vue/24/outline';
 import type { Method } from "@inertiajs/core";
 
@@ -80,7 +81,7 @@ export const staticNavigationLinks: NavigationLink[] = [
     },
     {
         label: 'Assinaturas',
-        icon: PencilSquareIcon,
+        icon: ClipboardDocumentCheckIcon,
         route: 'clicksign.report',
         type: 'link',
     },
