@@ -78,6 +78,12 @@ export const staticNavigationLinks: NavigationLink[] = [
         route: 'clicksign.index',
         type: 'link',
     },
+    {
+        label: 'Assinaturas',
+        icon: PencilSquareIcon,
+        route: 'clicksign.report',
+        type: 'link',
+    },
 
     { type: 'separator' },
     {

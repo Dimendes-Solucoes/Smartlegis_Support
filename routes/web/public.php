@@ -75,6 +75,7 @@ Route::middleware('auth')->group(function () {
         ->middleware('is_root')
         ->group(function () {
             Route::get('/', 'index')->name('index');
+            Route::get('/report', 'report')->name('report');
             Route::delete('/', 'destroy')->name('destroy');
         });
 });
