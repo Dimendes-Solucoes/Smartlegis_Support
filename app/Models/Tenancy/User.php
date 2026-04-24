@@ -4,10 +4,11 @@ namespace App\Models\Tenancy;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use SoftDeletes;
+    use HasApiTokens, SoftDeletes;
 
     public const USUARIO_VEREADOR = 1;
     public const USUARIO_INVISIVEL = 2;

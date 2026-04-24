@@ -5,13 +5,13 @@ namespace App\Http\Controllers\Public;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Clicksign\ClicksignDestroyRequest;
 use App\Http\Requests\Clicksign\ClicksignReportRequest;
-use App\Services\ClicksignService;
+use App\Services\ClickSignService;
 use Inertia\Inertia;
 
 class ClicksignController extends Controller
 {
     public function __construct(
-        protected ClicksignService $service
+        protected ClickSignService $service
     ) {}
 
     public function index()
