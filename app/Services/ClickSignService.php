@@ -245,7 +245,7 @@ class ClickSignService
 
         $integrationUser = $this->resolveIntegrationUser($dbName);
 
-        $token = $integrationUser->createToken('service-clicksign-' . $credential->tenant_id)->plainTextToken;
+        $token = $integrationUser->createToken('auth_token')->plainTextToken;
 
         DB::statement('SET search_path TO public');
         $credential->update(['service_token' => $token]);
