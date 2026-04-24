@@ -14,6 +14,10 @@ use Illuminate\Support\Facades\Storage;
 
 class DocumentService
 {
+    public function __construct(
+        protected ClickSignService $clickSignService,
+    ) {}
+
     public function getAllDocuments(Request $request): LengthAwarePaginator
     {
         $search = $request->input('search');
@@ -138,5 +142,20 @@ class DocumentService
     {
         $document = Document::findOrFail($id);
         $document->delete();
+    }
+
+    public function clicksignResend(int $id): string
+    {
+        return $this->clickSignService->resend($id);
+    }
+
+    public function clicksignRegenerate(int $id): string
+    {
+        return $this->clickSignService->regenerateStamp($id);
+    }
+
+    public function clicksignRefresh(int $id): string
+    {
+        return $this->clickSignService->refreshStatus($id);
     }
 }

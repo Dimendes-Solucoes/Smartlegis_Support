@@ -15,7 +15,7 @@ class DocumentConversionService
     {
         try {
             $tempPath = $file->getRealPath();
-dd($file);
+
             $command = sprintf(
                 'node --input-type=module -e "' .
                     'import mammoth from \'mammoth\'; ' .
@@ -33,7 +33,6 @@ dd($file);
 
             return $this->cleanHtml($html);
         } catch (\Exception $e) {
-            dd($e);
             Log::error('Erro na conversão Word: ' . $e->getMessage());
             throw new \Exception('Erro ao processar o arquivo Word.');
         }

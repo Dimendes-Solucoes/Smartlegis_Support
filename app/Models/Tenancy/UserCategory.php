@@ -18,6 +18,7 @@ class UserCategory extends Model
     public const CAMARA = 7;
     public const CONVIDADO = 8;
     public const CONTROLE = 9;
+    public const INTEGRACAO = 10;
 
     public const LEGISLATIVO = [
         self::VEREADOR,

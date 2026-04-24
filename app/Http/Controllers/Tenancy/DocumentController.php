@@ -39,4 +39,35 @@ class DocumentController extends Controller
         $this->service->destroyDocument($id);
         return back()->with('success', 'Documento movido para a lixeira!');
     }
+
+    public function clicksignResend(int $id)
+    {
+        try {
+            $message = $this->service->clicksignResend($id);
+            return response()->json(['message' => $message]);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+    }
+
+    public function clicksignRegenerate(int $id)
+    {
+        try {
+            $message = $this->service->clicksignRegenerate($id);
+            return response()->json(['message' => $message]);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+    }
+
+    public function clicksignRefresh(int $id)
+    {
+        try {
+            $message = $this->service->clicksignRefresh($id);
+            return response()->json(['message' => $message]);
+        } catch (\Exception $e) {
+            // dd($e);
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+    }
 }

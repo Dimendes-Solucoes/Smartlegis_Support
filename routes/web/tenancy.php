@@ -126,6 +126,10 @@ Route::middleware(['auth', 'tenant.connection'])
                 Route::get('/{id}/editar', 'edit')->name('edit');
                 Route::put('/{id}', 'update')->name('update');
                 Route::delete('/{id}', 'destroy')->name('destroy');
+
+                Route::post('/{id}/clicksign/resend', 'clicksignResend')->name('clicksign.resend');
+                Route::post('/{id}/clicksign/regenerate', 'clicksignRegenerate')->name('clicksign.regenerate');
+                Route::post('/{id}/clicksign/refresh', 'clicksignRefresh')->name('clicksign.refresh');
             });
 
         Route::prefix('tempos')
