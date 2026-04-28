@@ -15,6 +15,11 @@ class Credential extends Model
         'city_name',
         'city_shield',
         'service_token',
+        'state_name',
+        'address',
+        'zip_code',
+        'phone',
+        'cnpj',
     ];
 
     public function tenant()

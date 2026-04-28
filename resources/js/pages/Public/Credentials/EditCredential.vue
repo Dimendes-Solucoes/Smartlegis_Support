@@ -12,6 +12,11 @@ interface Credential {
     channel: string;
     host: string;
     city_name: string | null;
+    state_name: string | null;
+    address: string | null;
+    zip_code: string | null;
+    phone: string | null;
+    cnpj: string | null;
     city_shield: string | null;
     tenant: { city_name: string } | null;
 }
@@ -29,6 +34,11 @@ const form = useForm({
     host: props.data.credential.host,
     key: '',
     city_name: props.data.credential.city_name,
+    state_name: props.data.credential.state_name,
+    address: props.data.credential.address,
+    zip_code: props.data.credential.zip_code,
+    phone: props.data.credential.phone,
+    cnpj: props.data.credential.cnpj,
     city_shield: null as File | null,
     existing_city_shield: props.data.credential.city_shield,
     tenant: props.data.credential.tenant,
@@ -39,7 +49,8 @@ const submit = () => {
 };
 </script>
 
-<template>    
+<template>
+
     <Head title="Editar Credencial" />
 
     <AuthenticatedLayout>
