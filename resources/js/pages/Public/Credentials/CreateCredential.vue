@@ -23,6 +23,11 @@ const form = useForm({
     host: '',
     key: '',
     city_name: '',
+    state_name: '',
+    address: '',
+    zip_code: '',
+    phone: '',
+    cnpj: '',
     city_shield: null as File | null,
 });
 
@@ -32,16 +37,17 @@ const submit = () => {
 </script>
 
 <template>
+
     <Head title="Nova Credencial" />
     <AuthenticatedLayout>
-                        <BackButtonRow :href="route('credentials.index')" />
-                        <form @submit.prevent="submit" class="mt-6">
-                            <CredentialForm :form="form" :tenants="props.formData.tenants" />
-                            <div class="flex items-center justify-end mt-6">
-                                <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                                    Salvar Credencial
-                                </PrimaryButton>
-                            </div>
-                        </form>
+        <BackButtonRow :href="route('credentials.index')" />
+        <form @submit.prevent="submit" class="mt-6">
+            <CredentialForm :form="form" :tenants="props.formData.tenants" />
+            <div class="flex items-center justify-end mt-6">
+                <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                    Salvar Credencial
+                </PrimaryButton>
+            </div>
+        </form>
     </AuthenticatedLayout>
 </template>

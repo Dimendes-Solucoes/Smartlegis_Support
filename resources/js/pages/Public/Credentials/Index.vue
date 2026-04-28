@@ -17,6 +17,11 @@ interface Credential {
     host: string;
     key: string;
     city_name: string | null;
+    state_name: string | null;
+    address: string | null;
+    zip_code: string | null;
+    phone: string | null;
+    cnpj: string | null;
     city_shield: string | null;
 }
 

@@ -15,12 +15,17 @@ class CredentialUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'short_name' => ['required', 'string', 'max:255'],
-            'channel' => ['required', 'string', 'max:255'],
-            'host' => ['required', 'string', 'max:255'],
-            'key' => ['nullable', 'string', 'max:255'],
-            'city_name' => ['required', 'string', 'max:255'],
+            'short_name'  => ['required', 'string', 'max:255'],
+            'channel'     => ['required', 'string', 'max:255'],
+            'host'        => ['required', 'string', 'max:255'],
+            'key'         => ['nullable', 'string', 'max:255'],
+            'city_name'   => ['required', 'string', 'max:255'],
             'city_shield' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg'],
+            'state_name'  => ['nullable', 'string', 'max:255'],
+            'address'     => ['nullable', 'string', 'max:255'],
+            'zip_code'    => ['nullable', 'string', 'max:9'],
+            'phone'       => ['nullable', 'string', 'max:20'],
+            'cnpj'        => ['nullable', 'string', 'max:18'],
         ];
     }
 }
