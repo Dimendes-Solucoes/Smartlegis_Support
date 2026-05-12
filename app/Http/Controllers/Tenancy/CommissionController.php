@@ -60,4 +60,11 @@ class CommissionController extends Controller
 
         return redirect()->back()->with('success', 'Membros da comissão atualizados com sucesso!');
     }
+
+    public function toggleStatus(int $id)
+    {
+        $this->service->toggleStatus($id);
+
+        return redirect()->back()->with('success', 'Status da comissão alterado com sucesso!');
+    }
 }

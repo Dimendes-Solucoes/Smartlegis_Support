@@ -102,4 +102,13 @@ class CommissionService
 
         $commission->users()->sync($usersToAttach);
     }
+
+    public function toggleStatus(int $id): Comission
+    {
+        $commission = Comission::findOrFail($id);   
+        $commission->is_active = !$commission->is_active;
+        $commission->save();
+
+        return $commission;
+    }
 }

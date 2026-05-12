@@ -32,6 +32,7 @@ class Comission extends Model
         'legislature_id',
         'comission_name',
         'type',
+        'is_active',
     ];
 
     public function users()
