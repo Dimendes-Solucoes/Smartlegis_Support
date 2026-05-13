@@ -55,7 +55,7 @@ class LegislatureService
             ->sortBy('name')
             ->values();
 
-        $councilors = User::where('status_user', User::USUARIO_VEREADOR)
+        $councilors = User::whereIn('user_category_id', [UserCategory::VEREADOR, UserCategory::PRESIDENTE])
             ->orderBy('name')
             ->get(['id', 'name']);
 

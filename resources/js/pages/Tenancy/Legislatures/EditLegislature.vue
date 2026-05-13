@@ -103,8 +103,6 @@ const addTerm = () => {
     });
 
     sortUsers();
-
-    newTerm.value = { user_id: null, start_date: '', end_date: '' };
     submitUsers();
 };
 
