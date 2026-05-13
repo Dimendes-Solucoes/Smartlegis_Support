@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Tenancy\Legislature;
 use App\Models\Tenancy\User;
+use App\Models\Tenancy\UserCategory;
 use App\Models\Tenancy\UserTerm;
 use Illuminate\Support\Collection;
 
