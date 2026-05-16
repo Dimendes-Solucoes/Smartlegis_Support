@@ -36,7 +36,7 @@ class OpenAiLegalNormExtractor
             A partir do texto de um documento, extraia as seguintes informações e retorne APENAS um JSON válido, sem explicações, sem markdown.
 
             Campos obrigatórios:
-            - "object": string — descrição resumida do conteúdo/ementa da norma (máx 120 chars)
+            - "object": string — descrição resumida do conteúdo/ementa da norma (máx 120 chars). nao adicione aqui o numero e ano do documento.
             - "number": string — número identificador da norma (ex: "123", "45"). Apenas números. Se não tiver retorne vazio.
             - "publication_date": string no formato "Y-m-d" — data de publicação. Se não houver data, use "YYYY-01-01" com o ano identificado no documento. Se não encontrar ano, use o ano atual.
             - "norm_type_id": integer — ID do tipo mais próximo entre os disponíveis abaixo. Em lei de preferencia por lei sancionada, se houver.
