@@ -43,6 +43,10 @@ class StorageCustom
 
         $storedPath = Storage::disk($resolvedDisk)->putFile($fullPath, $file);
 
+        if ($storedPath === false || $storedPath === '') {
+            throw new \RuntimeException("Falha ao armazenar o arquivo em: {$fullPath}");
+        }
+
         $fileName = basename($storedPath);
 
         $publicLink = Storage::disk($resolvedDisk)->url($storedPath);
