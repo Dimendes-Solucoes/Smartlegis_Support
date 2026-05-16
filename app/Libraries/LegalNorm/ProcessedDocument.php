@@ -2,13 +2,13 @@
 
 namespace App\Libraries\LegalNorm;
 
-readonly class ProcessedDocument
+class ProcessedDocument
 {
     public function __construct(
-        public string $text,
-        public string $pdfPath,
-        public bool $wasConverted,
-        public bool $usedOcr,
+        public readonly string $text,
+        public readonly string $pdfPath,
+        public readonly bool $wasConverted,
+        public readonly bool $usedOcr,
     ) {}
 
     public function hasUsableText(): bool
