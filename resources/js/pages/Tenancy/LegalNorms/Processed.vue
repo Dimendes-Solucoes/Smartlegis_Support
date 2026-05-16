@@ -55,24 +55,30 @@ const props = defineProps<{
     norms: PaginatedNorms;
     normTypes: NormType[];
     normSubjects: NormSubject[];
-    filters: { search: string };
+    availableYears: number[];
+    filters: { search: string; year: number | null };
 }>();
 
 const norms = ref<LegalNorm[]>(props.norms.data);
 
 // --- Search ---
 const search = ref(props.filters.search ?? '');
+const year = ref<number | null>(props.filters.year ?? null);
 
 function applySearch() {
     router.get(
         route('legal-norms.confirmed.index'),
-        { search: search.value || undefined },
+        {
+            search: search.value || undefined,
+            year: year.value || undefined,
+        },
         { preserveState: true, replace: true },
     );
 }
 
 function clearSearch() {
     search.value = '';
+    year.value = null;
     applySearch();
 }
 
@@ -205,9 +211,17 @@ function formatDate(date: string | null): string {
                     placeholder="Buscar por objeto ou número..."
                     @keydown.enter="applySearch"
                 />
+                <select
+                    v-model="year"
+                    class="rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    @change="applySearch"
+                >
+                    <option :value="null">Todos os anos</option>
+                    <option v-for="y in props.availableYears" :key="y" :value="y">{{ y }}</option>
+                </select>
                 <TextButton @click="applySearch">Buscar</TextButton>
                 <button
-                    v-if="search"
+                    v-if="search || year"
                     type="button"
                     class="px-3 py-1.5 text-sm text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
                     @click="clearSearch"

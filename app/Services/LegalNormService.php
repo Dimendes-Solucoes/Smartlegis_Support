@@ -19,7 +19,7 @@ class LegalNormService
         protected DocumentProcessor $documentProcessor,
     ) {}
 
-    public function list(?string $search = null): LengthAwarePaginator
+    public function list(?string $search = null, ?int $year = null): LengthAwarePaginator
     {
         $query = LegalNorm::with([
             'normType'    => fn($q) => $q->select('id', 'name', 'abbreviation'),
@@ -38,7 +38,21 @@ class LegalNormService
             });
         }
 
+        if ($year) {
+            $query->whereRaw('EXTRACT(YEAR FROM legal_norms.publication_date) = ?', [$year]);
+        }
+
         return $query->paginate(50)->withQueryString();
+    }
+
+    public function availableYears(): array
+    {
+        return LegalNorm::selectRaw('EXTRACT(YEAR FROM publication_date)::int AS year')
+            ->whereNotNull('publication_date')
+            ->distinct()
+            ->orderByDesc('year')
+            ->pluck('year')
+            ->toArray();
     }
 
     public function update(int $id, array $data): LegalNorm

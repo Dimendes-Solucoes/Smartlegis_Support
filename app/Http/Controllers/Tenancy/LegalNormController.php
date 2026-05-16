@@ -21,11 +21,17 @@ class LegalNormController extends Controller
 
     public function index(Request $request)
     {
+        $year = $request->query('year') ? (int) $request->query('year') : null;
+
         return Inertia::render('Tenancy/LegalNorms/Processed', [
-            'norms'        => $this->service->list($request->query('search')),
-            'normTypes'    => NormType::select('id', 'name', 'abbreviation')->orderBy('name')->get(),
-            'normSubjects' => NormSubject::select('id', 'name')->orderBy('name')->get(),
-            'filters'      => ['search' => $request->query('search', '')],
+            'norms'          => $this->service->list($request->query('search'), $year),
+            'normTypes'      => NormType::select('id', 'name', 'abbreviation')->orderBy('name')->get(),
+            'normSubjects'   => NormSubject::select('id', 'name')->orderBy('name')->get(),
+            'availableYears' => $this->service->availableYears(),
+            'filters'        => [
+                'search' => $request->query('search', ''),
+                'year'   => $year,
+            ],
         ]);
     }
 
