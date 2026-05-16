@@ -43,11 +43,11 @@ class TempLegalNormService
 
         $upload = StorageCustom::upload($fileToUpload, 'legal_norm_attachments');
 
-        if (! $upload?->path) {
+        if (!$upload?->path) {
             throw new \RuntimeException('Não foi possível fazer upload do arquivo.');
         }
 
-        $normTypes    = NormType::select('id', 'name', 'abbreviation')->get()->toArray();
+        $normTypes = NormType::select('id', 'name', 'abbreviation')->get()->toArray();
         $normSubjects = NormSubject::select('id', 'name')->get()->toArray();
 
         $extracted = $this->extractor->extract(

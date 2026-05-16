@@ -3,6 +3,7 @@
 namespace App\Libraries;
 
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -44,6 +45,13 @@ class StorageCustom
         $storedPath = Storage::disk($resolvedDisk)->putFile($fullPath, $file);
 
         if ($storedPath === false || $storedPath === '') {
+            Log::error('StorageCustom::upload falhou', [
+                'disk'      => $resolvedDisk,
+                'fullPath'  => $fullPath,
+                'fileSize'  => $file->getSize(),
+                'realPath'  => $file->getRealPath(),
+                'readable'  => is_readable($file->getRealPath()),
+            ]);
             throw new \RuntimeException("Falha ao armazenar o arquivo em: {$fullPath}");
         }
 
