@@ -93,6 +93,7 @@ Route::middleware(['auth', 'tenant.connection'])
                 Route::get('/{id}/editar', 'edit')->name('edit');
                 Route::put('/{id}', 'update')->name('update');
                 Route::put('/{id}/users', 'updateUsers')->name('update_users');
+                Route::patch('/{id}/alternar-status', 'toggleStatus')->name('toggle_status');
             });
 
         Route::prefix('categorias-de-documentos')
