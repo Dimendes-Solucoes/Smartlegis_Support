@@ -21,6 +21,7 @@ import {
 } from '@heroicons/vue/24/outline';
 import axios from 'axios';
 import { getImageUrl } from '@/utils/image';
+import LinkButton from '@/components/Common/LinkButton.vue';
 
 interface NormType {
     id: number;
@@ -272,6 +273,7 @@ const queueStatusLabel: Record<UploadQueueItem['status'], string> = {
 </script>
 
 <template>
+
     <Head title="Normas Jurídicas" />
 
     <AuthenticatedLayout>
@@ -281,68 +283,49 @@ const queueStatusLabel: Record<UploadQueueItem['status'], string> = {
                 Upload em Lote
             </h2>
 
-            <FileAttachment
-                v-model="files"
-                label="Arquivos (PDF, DOC, DOCX)"
-                accept=".pdf,.doc,.docx"
-                :max-files="20"
-                :max-size="20"
-                :multiple="true"
-            />
+            <FileAttachment v-model="files" label="Arquivos (PDF, DOC, DOCX)" accept=".pdf,.doc,.docx" :max-files="20"
+                :max-size="20" :multiple="true" />
 
             <!-- Upload queue progress -->
             <div v-if="uploadQueue.length > 0" class="mt-4 space-y-2">
-                <div
-                    v-for="item in uploadQueue"
-                    :key="item.name"
-                    class="flex items-center justify-between text-sm px-3 py-2 rounded-lg"
-                    :class="{
+                <div v-for="item in uploadQueue" :key="item.name"
+                    class="flex items-center justify-between text-sm px-3 py-2 rounded-lg" :class="{
                         'bg-gray-100 dark:bg-gray-700': item.status === 'aguardando',
                         'bg-blue-50 dark:bg-blue-900/20': item.status === 'processando',
                         'bg-green-50 dark:bg-green-900/20': item.status === 'concluído',
                         'bg-red-50 dark:bg-red-900/20': item.status === 'erro',
-                    }"
-                >
+                    }">
                     <span class="truncate text-gray-700 dark:text-gray-300 max-w-xs">
                         {{ item.name }}
                     </span>
                     <div class="flex items-center gap-2 ml-4 shrink-0">
-                        <span
-                            :class="{
-                                'text-gray-500': item.status === 'aguardando',
-                                'text-blue-600 dark:text-blue-400': item.status === 'processando',
-                                'text-green-600 dark:text-green-400': item.status === 'concluído',
-                                'text-red-600 dark:text-red-400': item.status === 'erro',
-                            }"
-                        >
+                        <span :class="{
+                            'text-gray-500': item.status === 'aguardando',
+                            'text-blue-600 dark:text-blue-400': item.status === 'processando',
+                            'text-green-600 dark:text-green-400': item.status === 'concluído',
+                            'text-red-600 dark:text-red-400': item.status === 'erro',
+                        }">
                             {{ queueStatusLabel[item.status] }}
                             <span v-if="item.status === 'erro' && item.message">
                                 — {{ item.message }}
                             </span>
                         </span>
-                        <CheckCircleIcon v-if="item.status === 'concluído'" class="h-4 w-4 text-green-500" />
-                        <XCircleIcon v-else-if="item.status === 'erro'" class="h-4 w-4 text-red-500" />
+                        <CheckCircleIcon v-if="item.status === 'concluído'" class="h-5 w-5 text-green-500" />
+                        <XCircleIcon v-else-if="item.status === 'erro'" class="h-5 w-5 text-red-500" />
                     </div>
                 </div>
 
                 <div v-if="!uploading" class="flex justify-end pt-1">
-                    <button
-                        type="button"
-                        class="text-xs text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-                        @click="clearQueue"
-                    >
+                    <button type="button" class="text-xs text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                        @click="clearQueue">
                         Limpar progresso
                     </button>
                 </div>
             </div>
 
             <div class="mt-4 flex justify-end">
-                <TextButton
-                    @click="processFiles"
-                    :disabled="uploading || !files.length"
-                    class="p-4"
-                    :class="{ 'opacity-50 cursor-not-allowed': uploading || !files.length }"
-                >
+                <TextButton @click="processFiles" :disabled="uploading || !files.length" class="p-4"
+                    :class="{ 'opacity-50 cursor-not-allowed': uploading || !files.length }">
                     {{ uploading ? 'Processando...' : `Processar ${files.length || ''} Arquivo(s)` }}
                 </TextButton>
             </div>
@@ -350,7 +333,8 @@ const queueStatusLabel: Record<UploadQueueItem['status'], string> = {
 
         <!-- Pending norms table -->
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
-            <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex flex-wrap items-center justify-between gap-3">
+            <div
+                class="p-4 border-b border-gray-200 dark:border-gray-700 flex flex-wrap items-center justify-between gap-3">
                 <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">
                     Normas Pendentes
                     <span class="ml-1 text-sm font-normal text-gray-500">({{ norms.length }})</span>
@@ -360,21 +344,15 @@ const queueStatusLabel: Record<UploadQueueItem['status'], string> = {
                     <span v-if="selectedIds.length > 0" class="text-sm text-gray-500 dark:text-gray-400">
                         {{ selectedIds.length }} selecionada(s)
                     </span>
-                    <button
-                        type="button"
+                    <button type="button"
                         class="px-3 py-1.5 text-sm rounded-lg bg-green-100 hover:bg-green-200 text-green-800 dark:bg-green-900/30 dark:hover:bg-green-900/50 dark:text-green-300 transition-colors"
-                        :disabled="batchLoading"
-                        @click="showConfirmBatchModal = true"
-                    >
+                        :disabled="batchLoading" @click="showConfirmBatchModal = true">
                         <CheckIcon class="inline h-4 w-4 mr-1" />
                         {{ selectedIds.length ? 'Confirmar Selecionados' : 'Confirmar Todos' }}
                     </button>
-                    <button
-                        type="button"
+                    <button type="button"
                         class="px-3 py-1.5 text-sm rounded-lg bg-red-100 hover:bg-red-200 text-red-800 dark:bg-red-900/30 dark:hover:bg-red-900/50 dark:text-red-300 transition-colors"
-                        :disabled="batchLoading"
-                        @click="showDiscardBatchModal = true"
-                    >
+                        :disabled="batchLoading" @click="showDiscardBatchModal = true">
                         <XMarkIcon class="inline h-4 w-4 mr-1" />
                         {{ selectedIds.length ? 'Descartar Selecionados' : 'Descartar Todos' }}
                     </button>
@@ -390,57 +368,55 @@ const queueStatusLabel: Record<UploadQueueItem['status'], string> = {
                     <thead class="bg-gray-50 dark:bg-gray-700">
                         <tr>
                             <th class="px-4 py-3 w-8">
-                                <input
-                                    type="checkbox"
-                                    :checked="allSelected"
-                                    @change="toggleAll"
-                                    class="rounded border-gray-300 dark:border-gray-600"
-                                />
+                                <input type="checkbox" :checked="allSelected" @change="toggleAll"
+                                    class="rounded border-gray-300 dark:border-gray-600" />
                             </th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            <th
+                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                 Arquivo
                             </th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            <th
+                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                 Tipo
                             </th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            <th
+                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                 Assunto
                             </th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            <th
+                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                 Número
                             </th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            <th
+                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                 Objeto
                             </th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            <th
+                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                 Data Publicação
                             </th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            <th
+                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                 Confiança
                             </th>
                             <th class="px-4 py-3 relative"><span class="sr-only">Ações</span></th>
                         </tr>
                     </thead>
                     <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                        <tr
-                            v-for="norm in norms"
-                            :key="norm.id"
-                            class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
-                        >
+                        <tr v-for="norm in norms" :key="norm.id"
+                            class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                             <td class="px-4 py-3 w-8">
-                                <input
-                                    type="checkbox"
-                                    :checked="selectedIds.includes(norm.id)"
-                                    @change="toggleOne(norm.id)"
-                                    class="rounded border-gray-300 dark:border-gray-600"
-                                />
+                                <input type="checkbox" :checked="selectedIds.includes(norm.id)"
+                                    @change="toggleOne(norm.id)" class="rounded border-gray-300 dark:border-gray-600" />
                             </td>
                             <td class="px-4 py-3 whitespace-nowrap max-w-xs">
-                                <span class="truncate block text-gray-800 dark:text-gray-200" :title="norm.original_filename">
+                                <span class="truncate block text-gray-800 dark:text-gray-200"
+                                    :title="norm.original_filename">
                                     {{ norm.original_filename }}
                                 </span>
                                 <span v-if="norm.extraction_meta?.used_ocr" class="text-xs text-indigo-500">OCR</span>
-                                <span v-if="norm.extraction_meta?.was_converted" class="text-xs text-purple-500 ml-1">Convertido</span>
+                                <span v-if="norm.extraction_meta?.was_converted"
+                                    class="text-xs text-purple-500 ml-1">Convertido</span>
                             </td>
                             <td class="px-4 py-3 whitespace-nowrap">
                                 <span v-if="norm.norm_type" class="font-medium text-gray-800 dark:text-gray-200">
@@ -478,36 +454,25 @@ const queueStatusLabel: Record<UploadQueueItem['status'], string> = {
                                     </span>
                                 </div>
                             </td>
-                            <td class="px-4 py-3 whitespace-nowrap text-right">
-                                <IconButton
-                                    color="blue"
-                                    title="Visualizar arquivo"
-                                    :href="norm.attachment ? getImage(norm.attachment) : ''"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    <EyeIcon class="h-4 w-4" />
-                                </IconButton>
-                                <IconButton color="yellow" title="Editar" class="ml-1" @click="openEdit(norm)">
-                                    <PencilSquareIcon class="h-4 w-4" />
-                                </IconButton>
-                                <IconButton
-                                    color="green"
-                                    title="Confirmar"
-                                    class="ml-1"
-                                    :disabled="confirmLoading && confirmingId === norm.id"
-                                    @click="confirmingId = norm.id; confirmNorm(norm.id)"
-                                >
-                                    <CheckCircleIcon class="h-4 w-4" />
-                                </IconButton>
-                                <IconButton
-                                    color="red"
-                                    title="Descartar"
-                                    class="ml-1"
-                                    @click="discardingNorm = norm"
-                                >
-                                    <XCircleIcon class="h-4 w-4" />
-                                </IconButton>
+                            <td class="px-6 py-2 whitespace-nowrap text-right text-sm font-medium">
+                                <div class="flex items-center justify-end space-x-1">
+                                    <LinkButton v-if="norm.attachment" class="ml-1" :link="getImage(norm.attachment)"
+                                        title="Visualizar documento">
+                                        <EyeIcon class="h-5 w-5 text-white" />
+                                    </LinkButton>
+                                    <IconButton color="yellow" title="Editar" class="ml-1" @click="openEdit(norm)">
+                                        <PencilSquareIcon class="h-5 w-5" />
+                                    </IconButton>
+                                    <IconButton color="green" title="Confirmar" class="ml-1"
+                                        :disabled="confirmLoading && confirmingId === norm.id"
+                                        @click="confirmingId = norm.id; confirmNorm(norm.id)">
+                                        <CheckCircleIcon class="h-5 w-5" />
+                                    </IconButton>
+                                    <IconButton color="red" title="Descartar" class="ml-1"
+                                        @click="discardingNorm = norm">
+                                        <XCircleIcon class="h-5 w-5" />
+                                    </IconButton>
+                                </div>
                             </td>
                         </tr>
                     </tbody>
@@ -530,10 +495,7 @@ const queueStatusLabel: Record<UploadQueueItem['status'], string> = {
             <div class="space-y-4">
                 <div>
                     <InputLabel value="Tipo" />
-                    <SelectInput
-                        v-model="editForm.norm_type_id"
-                        class="mt-1 block w-full"
-                    >
+                    <SelectInput v-model="editForm.norm_type_id" class="mt-1 block w-full">
                         <option :value="null">— Selecione —</option>
                         <option v-for="t in props.normTypes" :key="t.id" :value="t.id">
                             {{ t.abbreviation }} — {{ t.name }}
@@ -544,10 +506,7 @@ const queueStatusLabel: Record<UploadQueueItem['status'], string> = {
 
                 <div>
                     <InputLabel value="Assunto" />
-                    <SelectInput
-                        v-model="editForm.norm_subject_id"
-                        class="mt-1 block w-full"
-                    >
+                    <SelectInput v-model="editForm.norm_subject_id" class="mt-1 block w-full">
                         <option :value="null">— Selecione —</option>
                         <option v-for="s in props.normSubjects" :key="s.id" :value="s.id">
                             {{ s.name }}
@@ -558,33 +517,21 @@ const queueStatusLabel: Record<UploadQueueItem['status'], string> = {
 
                 <div>
                     <InputLabel value="Número" />
-                    <TextInput
-                        v-model="editForm.number"
-                        class="mt-1 block w-full"
-                        placeholder="Ex: 123"
-                    />
+                    <TextInput v-model="editForm.number" class="mt-1 block w-full" placeholder="Ex: 123" />
                     <InputError :message="editErrors.number" class="mt-1" />
                 </div>
 
                 <div>
                     <InputLabel value="Data de Publicação" />
-                    <TextInput
-                        v-model="editForm.publication_date"
-                        type="date"
-                        class="mt-1 block w-full"
-                    />
+                    <TextInput v-model="editForm.publication_date" type="date" class="mt-1 block w-full" />
                     <InputError :message="editErrors.publication_date" class="mt-1" />
                 </div>
 
                 <div>
                     <InputLabel value="Objeto / Ementa" />
-                    <textarea
-                        v-model="editForm.object"
-                        rows="3"
-                        maxlength="120"
+                    <textarea v-model="editForm.object" rows="3" maxlength="120"
                         class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm"
-                        placeholder="Descrição resumida do conteúdo da norma"
-                    />
+                        placeholder="Descrição resumida do conteúdo da norma" />
                     <div class="text-xs text-right text-gray-400 mt-0.5">
                         {{ (editForm.object ?? '').length }}/120
                     </div>
@@ -593,11 +540,9 @@ const queueStatusLabel: Record<UploadQueueItem['status'], string> = {
             </div>
 
             <div class="mt-6 flex justify-end gap-3">
-                <button
-                    type="button"
+                <button type="button"
                     class="px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white"
-                    @click="closeEdit"
-                >
+                    @click="closeEdit">
                     Cancelar
                 </button>
                 <TextButton class="px-4 py-2" :disabled="editSaving" @click="saveEdit">
@@ -608,36 +553,19 @@ const queueStatusLabel: Record<UploadQueueItem['status'], string> = {
     </Modal>
 
     <!-- Discard single -->
-    <ConfirmDeletionModal
-        :show="discardingNorm !== null"
-        title="Descartar norma"
+    <ConfirmDeletionModal :show="discardingNorm !== null" title="Descartar norma"
         :message="`Deseja descartar '${discardingNorm?.original_filename}'? Ela será removida da fila de revisão.`"
-        button-text="Descartar"
-        @close="discardingNorm = null"
-        @confirm="discardNorm"
-    />
+        button-text="Descartar" @close="discardingNorm = null" @confirm="discardNorm" />
 
     <!-- Confirm batch -->
-    <ConfirmDeletionModal
-        :show="showConfirmBatchModal"
-        title="Confirmar normas"
-        :message="selectedIds.length
-            ? `Confirmar ${selectedIds.length} norma(s) selecionada(s)? Elas serão criadas como normas jurídicas definitivas.`
-            : `Confirmar TODAS as ${norms.length} normas pendentes?`"
-        button-text="Confirmar"
-        @close="showConfirmBatchModal = false"
-        @confirm="confirmBatch"
-    />
+    <ConfirmDeletionModal :show="showConfirmBatchModal" title="Confirmar normas" :message="selectedIds.length
+        ? `Confirmar ${selectedIds.length} norma(s) selecionada(s)? Elas serão criadas como normas jurídicas definitivas.`
+        : `Confirmar TODAS as ${norms.length} normas pendentes?`" button-text="Confirmar"
+        @close="showConfirmBatchModal = false" @confirm="confirmBatch" />
 
     <!-- Discard batch -->
-    <ConfirmDeletionModal
-        :show="showDiscardBatchModal"
-        title="Descartar normas"
-        :message="selectedIds.length
-            ? `Descartar ${selectedIds.length} norma(s) selecionada(s)?`
-            : `Descartar TODAS as ${norms.length} normas pendentes?`"
-        button-text="Descartar"
-        @close="showDiscardBatchModal = false"
-        @confirm="discardBatch"
-    />
+    <ConfirmDeletionModal :show="showDiscardBatchModal" title="Descartar normas" :message="selectedIds.length
+        ? `Descartar ${selectedIds.length} norma(s) selecionada(s)?`
+        : `Descartar TODAS as ${norms.length} normas pendentes?`" button-text="Descartar"
+        @close="showDiscardBatchModal = false" @confirm="discardBatch" />
 </template>
