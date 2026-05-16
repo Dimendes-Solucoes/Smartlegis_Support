@@ -14,6 +14,7 @@ use App\Http\Controllers\Tenancy\ProtocolMinimumController;
 use App\Http\Controllers\Tenancy\QuestionOrderController;
 use App\Http\Controllers\Tenancy\QuorumController;
 use App\Http\Controllers\Tenancy\SessionController;
+use App\Http\Controllers\Tenancy\LegalNormController;
 use App\Http\Controllers\Tenancy\TempLegalNormController;
 use App\Http\Controllers\Tenancy\TimerController;
 use App\Http\Controllers\Tenancy\TribuneController;
@@ -204,6 +205,15 @@ Route::middleware(['auth', 'tenant.connection'])
         Route::delete('explanacoes-pessoais/{id}/inscricoes', [BigDiscussionController::class, 'removeUser'])->name('big-discussions.users.destroy');
         Route::delete('discussoes/{id}/inscricoes', [DiscussionController::class, 'removeUser'])->name('discussions.users.destroy');
         Route::delete('questoes-de-ordem/{id}/inscricoes', [QuestionOrderController::class, 'removeUser'])->name('question-orders.users.destroy');
+
+        Route::prefix('normas-juridicas/confirmadas')
+            ->name('legal-norms.confirmed.')
+            ->controller(LegalNormController::class)
+            ->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::put('/{id}', 'update')->name('update');
+                Route::post('/{id}/reprocessar', 'reprocess')->name('reprocess');
+            });
 
         Route::prefix('normas-juridicas')
             ->name('legal-norms.')

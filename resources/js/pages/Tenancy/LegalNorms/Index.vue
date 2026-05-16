@@ -345,6 +345,13 @@ const queueStatusLabel: Record<UploadQueueItem['status'], string> = {
     <Head title="Normas Jurídicas" />
 
     <AuthenticatedLayout>
+        <!-- Top bar -->
+        <div class="flex justify-end mb-4">
+            <TextButton :href="route('legal-norms.confirmed.index')" color="gray">
+                Normas Confirmadas
+            </TextButton>
+        </div>
+
         <!-- Upload section -->
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
             <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">
