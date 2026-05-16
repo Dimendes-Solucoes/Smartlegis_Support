@@ -1,0 +1,44 @@
+services:
+
+  app:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: smartlegis_support_app
+    working_dir: /var/www
+    environment:
+      COMPOSER_PROCESS_TIMEOUT: 600
+    volumes:
+      - .:/var/www
+    depends_on:
+      - redis
+    networks:
+      - smartlegis_support
+      - smartlegis_back-end_smartlegis
+
+  nginx:
+    image: nginx:alpine
+    container_name: smartlegis_support_nginx
+    ports:
+      - "8001:80"
+    volumes:
+      - .:/var/www
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - app
+    networks:
+      - smartlegis_support
+
+  redis:
+    image: redis:7-alpine
+    container_name: smartlegis_support_redis
+    ports:
+      - "6380:6379"
+    networks:
+      - smartlegis_support
+
+networks:
+  smartlegis_support:
+    driver: bridge
+  smartlegis_back-end_smartlegis:
+    external: true
