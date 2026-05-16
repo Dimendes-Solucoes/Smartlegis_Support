@@ -60,7 +60,7 @@ class TempLegalNormService
         return TempLegalNorm::create([
             'object'            => $extracted['object']           ?? null,
             'number'            => $extracted['number']           ?? null,
-            'attachment'        => $upload->link,
+            'attachment'        => $upload->path,
             'publication_date'  => $extracted['publication_date'] ?? null,
             'norm_type_id'      => $extracted['norm_type_id']     ?? null,
             'norm_subject_id'   => $extracted['norm_subject_id']  ?? null,

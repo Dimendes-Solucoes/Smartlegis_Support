@@ -37,9 +37,9 @@ class OpenAiLegalNormExtractor
 
             Campos obrigatórios:
             - "object": string — descrição resumida do conteúdo/ementa da norma (máx 120 chars)
-            - "number": string — número identificador da norma (ex: "123", "45/A")
+            - "number": string — número identificador da norma (ex: "123", "45"). Apenas números. Se não tiver retorne vazio.
             - "publication_date": string no formato "Y-m-d" — data de publicação. Se não houver data, use "YYYY-01-01" com o ano identificado no documento. Se não encontrar ano, use o ano atual.
-            - "norm_type_id": integer — ID do tipo mais próximo entre os disponíveis abaixo
+            - "norm_type_id": integer — ID do tipo mais próximo entre os disponíveis abaixo. Em lei de preferencia por lei sancionada, se houver.
             - "norm_subject_id": integer — ID do assunto mais próximo entre os disponíveis abaixo
             - "confidence": object — {"object": 0-1, "number": 0-1, "publication_date": 0-1, "norm_type_id": 0-1, "norm_subject_id": 0-1}
 
