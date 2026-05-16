@@ -17,8 +17,10 @@ import {
     XCircleIcon,
     CheckIcon,
     XMarkIcon,
+    EyeIcon,
 } from '@heroicons/vue/24/outline';
 import axios from 'axios';
+import { getImageUrl } from '@/utils/image';
 
 interface NormType {
     id: number;
@@ -41,6 +43,7 @@ interface TempLegalNorm {
     norm_subject_id: number | null;
     is_active: boolean;
     attachment: string;
+    attachment_url: string | null;
     extraction_meta: {
         confidence: Record<string, number>;
         was_converted: boolean;
@@ -100,6 +103,10 @@ async function processFiles() {
 
 function clearQueue() {
     uploadQueue.value = [];
+}
+
+const getImage = (path: string): string => {
+    return getImageUrl(path)
 }
 
 // --- Edit modal ---
@@ -472,7 +479,16 @@ const queueStatusLabel: Record<UploadQueueItem['status'], string> = {
                                 </div>
                             </td>
                             <td class="px-4 py-3 whitespace-nowrap text-right">
-                                <IconButton color="yellow" title="Editar" @click="openEdit(norm)">
+                                <IconButton
+                                    color="blue"
+                                    title="Visualizar arquivo"
+                                    :href="norm.attachment ? getImage(norm.attachment) : ''"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    <EyeIcon class="h-4 w-4" />
+                                </IconButton>
+                                <IconButton color="yellow" title="Editar" class="ml-1" @click="openEdit(norm)">
                                     <PencilSquareIcon class="h-4 w-4" />
                                 </IconButton>
                                 <IconButton
