@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import AuthenticatedLayout from '@/layouts/AuthenticatedLayout.vue';
 import TextButton from '@/components/Itens/TextButton.vue';
 import IconButton from '@/components/Itens/IconButton.vue';
@@ -60,6 +60,10 @@ const props = defineProps<{
 }>();
 
 const norms = ref<LegalNorm[]>(props.norms.data);
+
+watch(() => props.norms.data, (newData: LegalNorm[]) => {
+    norms.value = newData;
+});
 
 // --- Search ---
 const search = ref(props.filters.search ?? '');
