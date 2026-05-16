@@ -20,6 +20,7 @@ import {
     BookOpenIcon,
     HashtagIcon,
     ClipboardDocumentCheckIcon,
+    ScaleIcon,
 } from '@heroicons/vue/24/outline';
 import type { Method } from "@inertiajs/core";
 
@@ -151,6 +152,12 @@ export const staticNavigationLinks: NavigationLink[] = [
         label: 'Sessões',
         icon: ClipboardDocumentListIcon,
         route: 'sessions.index',
+        type: 'link',
+    },
+    {
+        label: 'Normas',
+        icon: ScaleIcon,
+        route: 'legal-norms.index',
         type: 'link',
     },
 

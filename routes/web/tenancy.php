@@ -14,6 +14,7 @@ use App\Http\Controllers\Tenancy\ProtocolMinimumController;
 use App\Http\Controllers\Tenancy\QuestionOrderController;
 use App\Http\Controllers\Tenancy\QuorumController;
 use App\Http\Controllers\Tenancy\SessionController;
+use App\Http\Controllers\Tenancy\TempLegalNormController;
 use App\Http\Controllers\Tenancy\TimerController;
 use App\Http\Controllers\Tenancy\TribuneController;
 use App\Http\Controllers\Tenancy\UserController;
@@ -202,4 +203,17 @@ Route::middleware(['auth', 'tenant.connection'])
         Route::delete('explanacoes-pessoais/{id}/inscricoes', [BigDiscussionController::class, 'removeUser'])->name('big-discussions.users.destroy');
         Route::delete('discussoes/{id}/inscricoes', [DiscussionController::class, 'removeUser'])->name('discussions.users.destroy');
         Route::delete('questoes-de-ordem/{id}/inscricoes', [QuestionOrderController::class, 'removeUser'])->name('question-orders.users.destroy');
+
+        Route::prefix('normas-juridicas')
+            ->name('legal-norms.')
+            ->controller(TempLegalNormController::class)
+            ->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::post('/upload', 'upload')->name('upload');
+                Route::post('/confirmar-lote', 'confirmBatch')->name('confirm_batch');
+                Route::delete('/descartar-lote', 'discardBatch')->name('discard_batch');
+                Route::put('/{id}', 'update')->name('update');
+                Route::post('/{id}/confirmar', 'confirm')->name('confirm');
+                Route::delete('/{id}', 'discard')->name('discard');
+            });
     });
