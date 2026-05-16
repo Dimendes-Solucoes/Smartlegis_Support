@@ -22,14 +22,19 @@ class LegalNormService
     public function list(?string $search = null): LengthAwarePaginator
     {
         $query = LegalNorm::with([
-            'normType'    => fn ($q) => $q->select('id', 'name', 'abbreviation'),
-            'normSubject' => fn ($q) => $q->select('id', 'name'),
-        ])->latest();
+            'normType'    => fn($q) => $q->select('id', 'name', 'abbreviation'),
+            'normSubject' => fn($q) => $q->select('id', 'name'),
+        ])
+            ->join('norm_types', 'legal_norms.norm_type_id', '=', 'norm_types.id')
+            ->select('legal_norms.*')
+            ->orderByRaw('EXTRACT(YEAR FROM legal_norms.publication_date) DESC')
+            ->orderBy('legal_norms.number', 'DESC')
+            ->orderBy('norm_types.abbreviation', 'ASC');
 
         if ($search) {
             $query->where(function ($q) use ($search) {
-                $q->where('object', 'like', "%{$search}%")
-                  ->orWhere('number', 'like', "%{$search}%");
+                $q->where('legal_norms.object', 'like', "%{$search}%")
+                    ->orWhere('legal_norms.number', 'like', "%{$search}%");
             });
         }
 
@@ -39,7 +44,7 @@ class LegalNormService
     public function update(int $id, array $data): LegalNorm
     {
         $norm = LegalNorm::findOrFail($id);
-        $norm->update(array_filter($data, fn ($value) => ! is_null($value)));
+        $norm->update(array_filter($data, fn($value) => ! is_null($value)));
 
         return $norm->fresh(['normType', 'normSubject']);
     }
