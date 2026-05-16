@@ -141,6 +141,23 @@ class TempLegalNormService
         return compact('confirmed', 'errors');
     }
 
+    public function updateBatch(array $ids, array $data): int
+    {
+        $query = TempLegalNorm::pending()->where('created_by', Auth::id());
+
+        if (! empty($ids)) {
+            $query->whereIn('id', $ids);
+        }
+
+        $fields = array_filter($data, fn ($value) => ! is_null($value));
+
+        if (empty($fields)) {
+            return 0;
+        }
+
+        return $query->update($fields);
+    }
+
     public function discard(int $id): void
     {
         $this->findPending($id)->update(['status' => 'discarded']);

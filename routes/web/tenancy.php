@@ -211,6 +211,7 @@ Route::middleware(['auth', 'tenant.connection'])
             ->group(function () {
                 Route::get('/', 'index')->name('index');
                 Route::post('/upload', 'upload')->name('upload');
+                Route::put('/editar-lote', 'updateBatch')->name('update_batch');
                 Route::post('/confirmar-lote', 'confirmBatch')->name('confirm_batch');
                 Route::delete('/descartar-lote', 'discardBatch')->name('discard_batch');
                 Route::put('/{id}', 'update')->name('update');

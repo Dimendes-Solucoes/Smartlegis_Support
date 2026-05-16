@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Tenancy;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LegalNorm\TempLegalNormBatchRequest;
+use App\Http\Requests\LegalNorm\TempLegalNormBatchUpdateRequest;
 use App\Http\Requests\LegalNorm\TempLegalNormUpdateRequest;
 use App\Http\Requests\LegalNorm\TempLegalNormUploadRequest;
 use App\Models\Tenancy\NormSubject;
@@ -75,6 +76,21 @@ class TempLegalNormController extends Controller
         $this->service->discard($id);
 
         return response()->json(['message' => 'Norma descartada.']);
+    }
+
+    public function updateBatch(TempLegalNormBatchUpdateRequest $request): JsonResponse
+    {
+        $data = $request->validated();
+
+        $total = $this->service->updateBatch(
+            $data['ids'] ?? [],
+            array_intersect_key($data, array_flip(['norm_type_id', 'norm_subject_id']))
+        );
+
+        return response()->json([
+            'message' => "{$total} norma(s) atualizada(s).",
+            'total'   => $total,
+        ]);
     }
 
     public function discardBatch(TempLegalNormBatchRequest $request): JsonResponse

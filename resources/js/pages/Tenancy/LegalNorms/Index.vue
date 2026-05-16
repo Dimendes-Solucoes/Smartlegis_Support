@@ -222,6 +222,66 @@ function toggleOne(id: number) {
 const showConfirmBatchModal = ref(false);
 const showDiscardBatchModal = ref(false);
 
+// --- Batch edit ---
+const showBatchEditModal = ref(false);
+const batchEditForm = ref<{ norm_type_id: number | null; norm_subject_id: number | null }>({
+    norm_type_id: null,
+    norm_subject_id: null,
+});
+const batchEditSaving = ref(false);
+const batchEditErrors = ref<Record<string, string>>({});
+
+function openBatchEdit() {
+    batchEditForm.value = { norm_type_id: null, norm_subject_id: null };
+    batchEditErrors.value = {};
+    showBatchEditModal.value = true;
+}
+
+async function saveBatchEdit() {
+    if (batchEditSaving.value) return;
+
+    batchEditSaving.value = true;
+    batchEditErrors.value = {};
+
+    // SelectInput emits string from native <select>; coerce to number or null
+    const typeId = batchEditForm.value.norm_type_id ? Number(batchEditForm.value.norm_type_id) : null;
+    const subjectId = batchEditForm.value.norm_subject_id ? Number(batchEditForm.value.norm_subject_id) : null;
+
+    const payload: Record<string, any> = { ids: selectedIds.value };
+    if (typeId !== null) payload.norm_type_id = typeId;
+    if (subjectId !== null) payload.norm_subject_id = subjectId;
+
+    try {
+        await axios.put(route('legal-norms.update_batch'), payload);
+
+        const ids = new Set(selectedIds.value);
+        norms.value = norms.value.map((n: TempLegalNorm) => {
+            if (!ids.has(n.id)) return n;
+            const updated = { ...n };
+            if (typeId !== null) {
+                updated.norm_type_id = typeId;
+                updated.norm_type = props.normTypes.find((t: NormType) => t.id === typeId) ?? null;
+            }
+            if (subjectId !== null) {
+                updated.norm_subject_id = subjectId;
+                updated.norm_subject = props.normSubjects.find((s: NormSubject) => s.id === subjectId) ?? null;
+            }
+            return updated;
+        });
+
+        showBatchEditModal.value = false;
+    } catch (err: any) {
+        if (err.response?.status === 422) {
+            const apiErrors = err.response.data.errors ?? {};
+            Object.keys(apiErrors).forEach((k) => {
+                batchEditErrors.value[k] = apiErrors[k][0];
+            });
+        }
+    } finally {
+        batchEditSaving.value = false;
+    }
+}
+
 async function confirmBatch() {
     batchLoading.value = true;
     showConfirmBatchModal.value = false;
@@ -250,6 +310,14 @@ async function discardBatch() {
     } finally {
         batchLoading.value = false;
     }
+}
+
+const normTypeLabel = (t: NormType) => `${t.abbreviation} — ${t.name}`;
+
+function formatDate(date: string | null): string {
+    if (!date) return '—';
+    const [y, m, d] = date.split('-');
+    return `${d}/${m}/${y}`;
 }
 
 function confidenceColor(value: number | undefined): string {
@@ -344,6 +412,12 @@ const queueStatusLabel: Record<UploadQueueItem['status'], string> = {
                     <span v-if="selectedIds.length > 0" class="text-sm text-gray-500 dark:text-gray-400">
                         {{ selectedIds.length }} selecionada(s)
                     </span>
+                    <button v-if="selectedIds.length > 0" type="button"
+                        class="px-3 py-1.5 text-sm rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-800 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 dark:text-blue-300 transition-colors"
+                        :disabled="batchLoading" @click="openBatchEdit">
+                        <PencilSquareIcon class="inline h-4 w-4 mr-1" />
+                        Editar Selecionados
+                    </button>
                     <button type="button"
                         class="px-3 py-1.5 text-sm rounded-lg bg-green-100 hover:bg-green-200 text-green-800 dark:bg-green-900/30 dark:hover:bg-green-900/50 dark:text-green-300 transition-colors"
                         :disabled="batchLoading" @click="showConfirmBatchModal = true">
@@ -439,7 +513,7 @@ const queueStatusLabel: Record<UploadQueueItem['status'], string> = {
                                 </span>
                             </td>
                             <td class="px-4 py-3 whitespace-nowrap text-gray-700 dark:text-gray-300">
-                                {{ norm.publication_date ?? '—' }}
+                                {{ formatDate(norm.publication_date) }}
                             </td>
                             <td class="px-4 py-3 whitespace-nowrap">
                                 <div class="flex flex-col gap-0.5 text-xs">
@@ -499,7 +573,7 @@ const queueStatusLabel: Record<UploadQueueItem['status'], string> = {
                         v-model="editForm.norm_type_id"
                         class="mt-1 block w-full"
                         :options="props.normTypes"
-                        :formatLabel="(t) => `${t.abbreviation} — ${t.name}`"
+                        :formatLabel="normTypeLabel"
                     />
                     <InputError :message="editErrors.norm_type_id" class="mt-1" />
                 </div>
@@ -547,6 +621,61 @@ const queueStatusLabel: Record<UploadQueueItem['status'], string> = {
                 </button>
                 <TextButton class="px-4 py-2" :disabled="editSaving" @click="saveEdit">
                     {{ editSaving ? 'Salvando...' : 'Salvar' }}
+                </TextButton>
+            </div>
+        </div>
+    </Modal>
+
+    <!-- Batch edit modal -->
+    <Modal :show="showBatchEditModal" @close="showBatchEditModal = false" max-width="md">
+        <div class="p-6">
+            <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-1">
+                Editar Selecionadas em Lote
+            </h3>
+
+            <p class="text-sm text-gray-500 dark:text-gray-400 mb-5">
+                Os campos preenchidos abaixo serão aplicados às
+                <span class="font-medium text-gray-700 dark:text-gray-200">{{ selectedIds.length }} norma(s) selecionada(s)</span>.
+                Campos deixados em branco não serão alterados.
+            </p>
+
+            <div class="space-y-4">
+                <div>
+                    <InputLabel value="Tipo" />
+                    <SelectInput
+                        v-model="batchEditForm.norm_type_id"
+                        class="mt-1 block w-full"
+                        :options="props.normTypes"
+                        :formatLabel="normTypeLabel"
+                    />
+                    <p class="mt-1 text-xs text-gray-400">Deixe em branco para manter o tipo atual de cada norma.</p>
+                    <InputError :message="batchEditErrors.norm_type_id" class="mt-1" />
+                </div>
+
+                <div>
+                    <InputLabel value="Assunto" />
+                    <SelectInput
+                        v-model="batchEditForm.norm_subject_id"
+                        class="mt-1 block w-full"
+                        :options="props.normSubjects"
+                        labelKey="name"
+                    />
+                    <p class="mt-1 text-xs text-gray-400">Deixe em branco para manter o assunto atual de cada norma.</p>
+                    <InputError :message="batchEditErrors.norm_subject_id" class="mt-1" />
+                </div>
+            </div>
+
+            <div class="mt-6 flex justify-end gap-3">
+                <button type="button"
+                    class="px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white"
+                    @click="showBatchEditModal = false">
+                    Cancelar
+                </button>
+                <TextButton
+                    class="px-4 py-2"
+                    :disabled="batchEditSaving || (!batchEditForm.norm_type_id && !batchEditForm.norm_subject_id)"
+                    @click="saveBatchEdit">
+                    {{ batchEditSaving ? 'Salvando...' : 'Aplicar' }}
                 </TextButton>
             </div>
         </div>
