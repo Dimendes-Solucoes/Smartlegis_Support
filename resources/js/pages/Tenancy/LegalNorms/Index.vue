@@ -495,23 +495,23 @@ const queueStatusLabel: Record<UploadQueueItem['status'], string> = {
             <div class="space-y-4">
                 <div>
                     <InputLabel value="Tipo" />
-                    <SelectInput v-model="editForm.norm_type_id" class="mt-1 block w-full">
-                        <option :value="null">— Selecione —</option>
-                        <option v-for="t in props.normTypes" :key="t.id" :value="t.id">
-                            {{ t.abbreviation }} — {{ t.name }}
-                        </option>
-                    </SelectInput>
+                    <SelectInput
+                        v-model="editForm.norm_type_id"
+                        class="mt-1 block w-full"
+                        :options="props.normTypes"
+                        :formatLabel="(t) => `${t.abbreviation} — ${t.name}`"
+                    />
                     <InputError :message="editErrors.norm_type_id" class="mt-1" />
                 </div>
 
                 <div>
                     <InputLabel value="Assunto" />
-                    <SelectInput v-model="editForm.norm_subject_id" class="mt-1 block w-full">
-                        <option :value="null">— Selecione —</option>
-                        <option v-for="s in props.normSubjects" :key="s.id" :value="s.id">
-                            {{ s.name }}
-                        </option>
-                    </SelectInput>
+                    <SelectInput
+                        v-model="editForm.norm_subject_id"
+                        class="mt-1 block w-full"
+                        :options="props.normSubjects"
+                        labelKey="name"
+                    />
                     <InputError :message="editErrors.norm_subject_id" class="mt-1" />
                 </div>
 
