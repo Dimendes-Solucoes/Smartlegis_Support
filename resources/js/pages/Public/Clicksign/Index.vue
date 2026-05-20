@@ -5,6 +5,7 @@ import IconButton from '@/components/Itens/IconButton.vue';
 import { TrashIcon } from '@heroicons/vue/24/outline';
 import ConfirmDeletionModal from '@/components/Common/ConfirmDeletionModal.vue';
 import { ref } from 'vue';
+import TextButton from '@/components/Itens/TextButton.vue';
 
 interface Clicksign {
     tenant_id: number;
@@ -18,6 +19,7 @@ const props = defineProps<{
 
 const cityToDelete = ref<Clicksign | null>(null);
 const confirmingCityDeletion = ref(false);
+const confirmingAllDeletion = ref(false);
 
 const clearCity = () => {
     if (!cityToDelete.value) return;
@@ -30,6 +32,13 @@ const clearCity = () => {
     });
 };
 
+const clearAll = () => {
+    router.delete(route('clicksign.destroy.all'), {
+        preserveScroll: true,
+        onSuccess: () => closeModal(),
+    });
+};
+
 const openConfirmDeleteModal = (clicksign: Clicksign) => {
     cityToDelete.value = clicksign;
     confirmingCityDeletion.value = true;
@@ -37,6 +46,7 @@ const openConfirmDeleteModal = (clicksign: Clicksign) => {
 
 const closeModal = () => {
     confirmingCityDeletion.value = false;
+    confirmingAllDeletion.value = false;
     cityToDelete.value = null;
 }
 </script>
@@ -48,6 +58,13 @@ const closeModal = () => {
     <AuthenticatedLayout>
 
         <div v-if="clicksigns.length > 0" class="overflow-x-auto">
+            <div class="flex justify-end items-center mb-4">
+                <div class="flex items-center space-x-2">
+                    <TextButton @click="confirmingAllDeletion = true" class="p-4 justify-center text-center" color="yellow">
+                        Limpar Todas
+                    </TextButton>
+                </div>
+            </div>
             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
                 <thead class="bg-gray-50 dark:bg-gray-700">
                     <tr>
@@ -82,4 +99,8 @@ const closeModal = () => {
     <ConfirmDeletionModal :show="confirmingCityDeletion" title="Limpar eventos clicksign"
         :message="`Tem certeza que deseja limpar os registros de eventos clicksign de '${cityToDelete?.tenant_city}'?`"
         @close="closeModal" @confirm="clearCity" />
+
+    <ConfirmDeletionModal :show="confirmingAllDeletion" title="Limpar todos os eventos clicksign"
+        message="Tem certeza que deseja limpar os registros de eventos clicksign de TODAS as cidades? Esta ação não pode ser desfeita."
+        @close="closeModal" @confirm="clearAll" />
 </template>

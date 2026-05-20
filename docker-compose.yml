@@ -8,6 +8,8 @@ services:
     working_dir: /var/www
     environment:
       COMPOSER_PROCESS_TIMEOUT: 600
+    ports:
+      - "5173:5173"
     volumes:
       - .:/var/www
     depends_on:

@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Exceptions\ClickSignException;
+use App\Jobs\ClearClicksignJob;
 use App\Models\Credential;
 use App\Models\Tenant;
 use App\Models\Tenancy\Author;
@@ -113,6 +114,25 @@ class ClickSignService
         } catch (\Exception $e) {
             throw new Exception('Erro ao deletar registros: ' . $e->getMessage());
         }
+    }
+
+    public function clearAll(): int
+    {
+        $tenants = Tenant::with('credentials')->get();
+        $dispatched = 0;
+
+        foreach ($tenants as $tenant) {
+            $dbName = $tenant->data['tenancy_db_name'] ?? null;
+
+            if (empty($dbName)) continue;
+
+            $city = $tenant->credentials->first()->city_name ?? (string) $tenant->id;
+
+            ClearClicksignJob::dispatch($dbName, $city);
+            $dispatched++;
+        }
+
+        return $dispatched;
     }
 
     private function orderCities(array $cities): array
