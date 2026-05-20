@@ -78,6 +78,7 @@ Route::middleware('auth')->group(function () {
             Route::middleware('is_root')->group(function () {
                 Route::get('/', 'index')->name('index');
                 Route::delete('/', 'destroy')->name('destroy');
+                Route::delete('/all', 'destroyAll')->name('destroy.all');
             });
         });
 });

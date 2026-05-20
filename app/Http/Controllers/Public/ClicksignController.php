@@ -42,4 +42,12 @@ class ClicksignController extends Controller
         return redirect()->route('clicksign.index')
             ->with('success', 'Registros limpos com sucesso!');
     }
+
+    public function destroyAll()
+    {
+        $dispatched = $this->service->clearAll();
+
+        return redirect()->route('clicksign.index')
+            ->with('success', "{$dispatched} cidades enfileiradas para limpeza.");
+    }
 }
