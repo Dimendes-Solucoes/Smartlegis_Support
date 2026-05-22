@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Tenancy;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Documents\UpdateDocumentRequest;
 use App\Services\DocumentService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -38,6 +39,21 @@ class DocumentController extends Controller
     {
         $this->service->destroyDocument($id);
         return back()->with('success', 'Documento movido para a lixeira!');
+    }
+
+    public function availableSessions(Request $request): JsonResponse
+    {
+        return response()->json($this->service->getAvailableSessions($request));
+    }
+
+    public function addToSession(int $id, int $session_id): JsonResponse
+    {
+        try {
+            $this->service->addDocumentToSession($id, $session_id);
+            return response()->json(['message' => 'Documento enviado para a sessão com sucesso!']);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
     }
 
     public function clicksignResend(int $id)

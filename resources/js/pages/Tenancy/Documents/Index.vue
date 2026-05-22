@@ -21,6 +21,7 @@ import {
     XMarkIcon,
     CheckCircleIcon,
     ClockIcon,
+    InboxArrowDownIcon,
 } from "@heroicons/vue/24/outline";
 
 interface Author {
@@ -136,6 +137,114 @@ const getMovementStatusColor = (id: number) =>
         7: "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200",
         8: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
     } as Record<number, string>)[id] ?? "bg-gray-100 text-gray-800";
+
+// ── Enviar para sessão ─────────────────────────────────────────
+interface Session {
+    id: number;
+    name: string;
+    datetime_start: string;
+    session_status_id: number;
+}
+
+const showSessionModal = ref(false);
+const selectedDocForSession = ref<Document | null>(null);
+const sessions = ref<Session[]>([]);
+const sessionLoading = ref(false);
+const sessionError = ref('');
+const addingToSession = ref(false);
+const selectedSessionId = ref<number | null>(null);
+
+const sessionYear = ref('');
+const sessionName = ref('');
+const sessionStatusFilter = ref('0');
+
+const sessionStatusOptions = [
+    { id: '0', name: 'Qualquer status' },
+    { id: '1', name: 'Abertas / Em andamento' },
+];
+
+const getSessionStatusText = (id: number) =>
+    ({ 1: 'Aguardando Votação', 2: 'Em Votação', 3: 'Concluída' } as Record<number, string>)[id] ?? 'N/A';
+
+const getSessionStatusColor = (id: number) =>
+    ({
+        1: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
+        2: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+        3: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200',
+    } as Record<number, string>)[id] ?? 'bg-gray-100 text-gray-800';
+
+const openSessionModal = (doc: Document) => {
+    selectedDocForSession.value = doc;
+    sessionYear.value = new Date().getFullYear().toString();
+    sessionName.value = '';
+    sessionStatusFilter.value = '0';
+    sessions.value = [];
+    sessionError.value = '';
+    showSessionModal.value = true;
+    fetchSessions();
+};
+
+const closeSessionModal = () => {
+    showSessionModal.value = false;
+    selectedDocForSession.value = null;
+    sessions.value = [];
+    sessionError.value = '';
+    addingToSession.value = false;
+    selectedSessionId.value = null;
+};
+
+const fetchSessions = async () => {
+    sessionLoading.value = true;
+    sessionError.value = '';
+    try {
+        const params = new URLSearchParams();
+        if (sessionYear.value) params.append('year', sessionYear.value);
+        if (sessionName.value) params.append('name', sessionName.value);
+        if (sessionStatusFilter.value === '1') params.append('only_open', '1');
+
+        const response = await fetch(`${route('documents.available_sessions')}?${params.toString()}`, {
+            headers: { 'Accept': 'application/json' },
+        });
+        if (!response.ok) throw new Error();
+        sessions.value = await response.json();
+    } catch {
+        sessionError.value = 'Erro ao carregar sessões.';
+    } finally {
+        sessionLoading.value = false;
+    }
+};
+
+const addDocumentToSession = async (sessionId: number) => {
+    if (!selectedDocForSession.value || addingToSession.value) return;
+    addingToSession.value = true;
+    selectedSessionId.value = sessionId;
+    sessionError.value = '';
+    try {
+        const csrfMeta = document.querySelector<HTMLMetaElement>('meta[name="csrf-token"]');
+        const response = await fetch(
+            route('documents.add_to_session', { id: selectedDocForSession.value.id, session_id: sessionId }),
+            {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfMeta?.content ?? '',
+                    'Accept': 'application/json',
+                },
+            }
+        );
+        const data = await response.json();
+        if (!response.ok) {
+            sessionError.value = data.message ?? 'Erro ao enviar documento.';
+            return;
+        }
+        closeSessionModal();
+        router.reload({ preserveScroll: true });
+    } catch {
+        sessionError.value = 'Erro ao enviar documento para a sessão.';
+    } finally {
+        addingToSession.value = false;
+        selectedSessionId.value = null;
+    }
+};
 
 // ── Exclusão ───────────────────────────────────────────────────
 const confirmingDeletion = ref(false);
@@ -305,7 +414,12 @@ const sortBy = (field: string) => {
                         </td>
                         <td class="px-6 py-2 whitespace-nowrap text-right text-sm font-medium">
                             <div class="flex items-center justify-end space-x-1">
-                                <!-- Botão autores/assinaturas -->
+                                <button v-if="doc.document_status_movement_id === 1"
+                                    type="button" title="Enviar para sessão" @click="openSessionModal(doc)"
+                                    class="p-1.5 rounded bg-green-500 hover:bg-green-600 text-white">
+                                    <InboxArrowDownIcon class="h-5 w-5" />
+                                </button>
+
                                 <button type="button" title="Ver autores e assinaturas" @click="openAuthorsModal(doc)"
                                     class="p-1.5 rounded bg-blue-500 hover:bg-blue-600 text-white">
                                     <UserGroupIcon class="h-5 w-5" />
@@ -416,4 +530,89 @@ const sortBy = (field: string) => {
     <ConfirmDeletionModal :show="confirmingDeletion" title="Excluir Documento"
         :message="`Tem certeza que deseja mover o documento '${itemToDelete?.name}' para a lixeira?`"
         @close="closeDeleteModal" @confirm="deleteItem" />
+
+    <!-- Modal enviar para sessão -->
+    <Teleport to="body">
+        <div v-if="showSessionModal" class="fixed inset-0 z-50 flex items-center justify-center p-4"
+            @click.self="closeSessionModal">
+            <div class="absolute inset-0 bg-black/50" />
+
+            <div class="relative z-10 w-full max-w-2xl bg-white dark:bg-gray-800 rounded-xl shadow-xl flex flex-col max-h-[90vh]">
+                <!-- Header -->
+                <div class="flex items-start justify-between p-5 border-b border-gray-200 dark:border-gray-700">
+                    <div>
+                        <h3 class="text-base font-semibold text-gray-900 dark:text-gray-100">Enviar para Sessão</h3>
+                        <p class="mt-0.5 text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
+                            {{ selectedDocForSession?.name }}
+                        </p>
+                    </div>
+                    <button type="button" @click="closeSessionModal"
+                        class="ml-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+                        <XMarkIcon class="h-5 w-5" />
+                    </button>
+                </div>
+
+                <!-- Filtros -->
+                <div class="p-5 border-b border-gray-200 dark:border-gray-700">
+                    <div class="flex flex-col gap-3">
+                        <TextInput type="text" v-model="sessionName" placeholder="Nome da sessão..." />
+                        <div class="grid grid-cols-2 gap-3">
+                            <TextInput type="number" v-model="sessionYear" placeholder="Ano (ex: 2024)" />
+                            <SelectInput v-model="sessionStatusFilter" :options="sessionStatusOptions"
+                                value-key="id" label-key="name" :disable-placeholder="true" />
+                        </div>
+                    </div>
+                    <div class="flex justify-end mt-3">
+                        <PrimaryButton type="button" @click="fetchSessions" :disabled="sessionLoading"
+                            class="h-9 flex items-center">
+                            <MagnifyingGlassIcon class="h-5 w-5 mr-2" />
+                            Buscar
+                        </PrimaryButton>
+                    </div>
+                </div>
+
+                <!-- Lista de sessões -->
+                <div class="flex-1 overflow-y-auto p-5 min-h-[12rem]">
+                    <div v-if="sessionLoading" class="text-center py-10 text-gray-500 dark:text-gray-400">
+                        Carregando sessões...
+                    </div>
+                    <div v-else-if="sessionError"
+                        class="text-center py-4 text-sm text-red-600 dark:text-red-400">
+                        {{ sessionError }}
+                    </div>
+                    <div v-else-if="sessions.length === 0"
+                        class="text-center py-10 text-gray-400 dark:text-gray-500 text-sm">
+                        Nenhuma sessão encontrada.
+                    </div>
+                    <div v-else class="space-y-2">
+                        <button v-for="session in sessions" :key="session.id" type="button"
+                            :disabled="addingToSession"
+                            @click="addDocumentToSession(session.id)"
+                            class="w-full flex items-center justify-between p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 text-left transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                            :class="{ 'opacity-60': addingToSession && selectedSessionId !== session.id }">
+                            <div>
+                                <p class="font-medium text-gray-900 dark:text-gray-100 text-sm">{{ session.name }}</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                                    {{ session.datetime_start }}
+                                </p>
+                            </div>
+                            <div class="flex items-center gap-2 ml-3 shrink-0">
+                                <span class="px-2 py-0.5 text-xs font-semibold rounded-full"
+                                    :class="getSessionStatusColor(session.session_status_id)">
+                                    {{ getSessionStatusText(session.session_status_id) }}
+                                </span>
+                                <span v-if="addingToSession && selectedSessionId === session.id"
+                                    class="text-xs text-gray-400">Enviando...</span>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="flex justify-end px-5 py-4 border-t border-gray-200 dark:border-gray-700">
+                    <SecondaryButton @click="closeSessionModal">Fechar</SecondaryButton>
+                </div>
+            </div>
+        </div>
+    </Teleport>
 </template>
