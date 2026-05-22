@@ -126,9 +126,11 @@ Route::middleware(['auth', 'tenant.connection'])
             ->controller(DocumentController::class)
             ->group(function () {
                 Route::get('/', 'index')->name('index');
+                Route::get('/sessoes-disponiveis', 'availableSessions')->name('available_sessions');
                 Route::get('/{id}/editar', 'edit')->name('edit');
                 Route::put('/{id}', 'update')->name('update');
                 Route::delete('/{id}', 'destroy')->name('destroy');
+                Route::post('/{id}/sessoes/{session_id}', 'addToSession')->name('add_to_session');
 
                 Route::post('/{id}/clicksign/resend', 'clicksignResend')->name('clicksign.resend');
                 Route::post('/{id}/clicksign/regenerate', 'clicksignRegenerate')->name('clicksign.regenerate');
