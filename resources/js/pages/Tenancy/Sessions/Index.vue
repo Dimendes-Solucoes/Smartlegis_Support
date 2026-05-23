@@ -23,6 +23,7 @@ interface Session {
     name: string;
     datetime_start: string;
     session_status_id: number;
+    has_ata: boolean;
 }
 
 interface PaginatedSessions {
@@ -200,6 +201,7 @@ const closeModal = () => {
                                 </button>
                             </RegularColumn>
                             <RegularColumn>Status</RegularColumn>
+                            <RegularColumn>Ata</RegularColumn>
                             <th
                                 scope="col"
                                 class="relative px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400"
@@ -224,6 +226,14 @@ const closeModal = () => {
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <SessionStatusBadge :status="session.session_status_id" />
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
+                                    :class="session.has_ata
+                                        ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                                        : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'">
+                                    {{ session.has_ata ? 'SIM' : 'NÃO' }}
+                                </span>
                             </td>
                             <td
                                 class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
