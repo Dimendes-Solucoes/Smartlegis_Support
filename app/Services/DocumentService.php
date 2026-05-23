@@ -152,11 +152,13 @@ class DocumentService
         $year = $request->input('year');
         $name = $request->input('name');
         $onlyOpen = $request->boolean('only_open', false);
+        $withoutAta = $request->boolean('without_ata', false);
 
         return Session::query()
             ->when($year, fn($q) => $q->whereYear('datetime_start', $year))
             ->when($name, fn($q) => $q->where('name', 'ilike', "%{$name}%"))
             ->when($onlyOpen, fn($q) => $q->whereIn('session_status_id', [1, 2]))
+            ->when($withoutAta, fn($q) => $q->whereDoesntHave('documents', fn($d) => $d->where('document_category_id', 7)))
             ->orderBy('datetime_start', 'desc')
             ->get()
             ->map(fn($session) => [
@@ -190,7 +192,7 @@ class DocumentService
                 'session_id' => $session_id,
                 'document_id' => $document->id,
                 'ordem_do_dia' => 0,
-                'order' => $maxOrder + 1,
+                'order' => 0,
             ]);
 
             $document->update(['document_status_movement_id' => DocumentStatusMovement::EM_SESSAO]);

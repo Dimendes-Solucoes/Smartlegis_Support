@@ -157,6 +157,7 @@ const selectedSessionId = ref<number | null>(null);
 const sessionYear = ref('');
 const sessionName = ref('');
 const sessionStatusFilter = ref('0');
+const sessionWithoutAta = ref(false);
 
 const sessionStatusOptions = [
     { id: '0', name: 'Qualquer status' },
@@ -175,13 +176,11 @@ const getSessionStatusColor = (id: number) =>
 
 const openSessionModal = (doc: Document) => {
     selectedDocForSession.value = doc;
-    sessionYear.value = new Date().getFullYear().toString();
-    sessionName.value = '';
-    sessionStatusFilter.value = '0';
-    sessions.value = [];
     sessionError.value = '';
     showSessionModal.value = true;
-    fetchSessions();
+    if (sessions.value.length === 0 && !sessionLoading.value) {
+        fetchSessions();
+    }
 };
 
 const closeSessionModal = () => {
@@ -201,6 +200,7 @@ const fetchSessions = async () => {
         if (sessionYear.value) params.append('year', sessionYear.value);
         if (sessionName.value) params.append('name', sessionName.value);
         if (sessionStatusFilter.value === '1') params.append('only_open', '1');
+        if (sessionWithoutAta.value) params.append('without_ata', '1');
 
         const response = await fetch(`${route('documents.available_sessions')}?${params.toString()}`, {
             headers: { 'Accept': 'application/json' },
@@ -561,6 +561,11 @@ const sortBy = (field: string) => {
                             <SelectInput v-model="sessionStatusFilter" :options="sessionStatusOptions"
                                 value-key="id" label-key="name" :disable-placeholder="true" />
                         </div>
+                        <label class="flex items-center gap-2 cursor-pointer select-none w-fit">
+                            <input type="checkbox" v-model="sessionWithoutAta"
+                                class="rounded border-gray-300 dark:border-gray-600 text-indigo-600 focus:ring-indigo-500 dark:bg-gray-900" />
+                            <span class="text-sm text-gray-700 dark:text-gray-300">Exibir apenas sessões sem ata</span>
+                        </label>
                     </div>
                     <div class="flex justify-end mt-3">
                         <PrimaryButton type="button" @click="fetchSessions" :disabled="sessionLoading"
