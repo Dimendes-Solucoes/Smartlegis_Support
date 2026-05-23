@@ -37,13 +37,15 @@ class SessionService
             $sort_field = 'datetime_start';
         }
 
-        return Session::orderBy($sort_field, $sort_direction)
+        return Session::withExists(['documents as has_ata' => fn($q) => $q->where('document_category_id', 7)])
+            ->orderBy($sort_field, $sort_direction)
             ->paginate(15)
             ->through(fn($session) => [
                 'id' => $session->id,
                 'name' => $session->name,
                 'datetime_start' => $session->datetime_start,
                 'session_status_id' => $session->session_status_id,
+                'has_ata' => (bool) $session->has_ata,
             ]);
     }
 
