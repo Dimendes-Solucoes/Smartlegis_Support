@@ -8,6 +8,10 @@ import ConfirmDeletionModal from "@/components/Common/ConfirmDeletionModal.vue";
 import TextButton from "@/components/Itens/TextButton.vue";
 import RegularColumn from "@/components/Table/RegularColumn.vue";
 import Pagination from "@/components/Table/Pagination.vue";
+import TextInput from "@/components/Form/TextInput.vue";
+import SelectInput from "@/components/Form/SelectInput.vue";
+import PrimaryButton from "@/components/Common/PrimaryButton.vue";
+import SecondaryButton from "@/components/Common/SecondaryButton.vue";
 import {
     TrashIcon,
     ChevronUpIcon,
@@ -16,6 +20,7 @@ import {
     DocumentDuplicateIcon,
     ArrowPathIcon,
     ListBulletIcon,
+    MagnifyingGlassIcon,
 } from "@heroicons/vue/24/outline";
 
 interface Session {
@@ -35,31 +40,63 @@ interface PaginatedSessions {
     }[];
 }
 
+interface StatusOption {
+    id: string;
+    name: string;
+}
+
 const props = defineProps<{
     sessions: PaginatedSessions;
     filters: {
         sort: string;
         direction: string;
+        search?: string;
+        year?: string;
+        status_id?: string;
+        has_ata?: string;
     };
 }>();
 
-const sortBy = (field: string) => {
-    let direction = "asc";
-    if (props.filters.sort === field && props.filters.direction === "asc") {
-        direction = "desc";
-    }
+const sessionStatusOptions: StatusOption[] = [
+    { id: "1", name: "Aguardando Votação" },
+    { id: "2", name: "Em Votação" },
+    { id: "3", name: "Concluída" },
+];
 
-    router.get(
-        route("sessions.index"),
-        {
-            sort: field,
-            direction: direction,
-        },
-        {
-            preserveState: true,
-            replace: true,
-        }
-    );
+const ataOptions: StatusOption[] = [
+    { id: "1", name: "Com ata" },
+    { id: "0", name: "Sem ata" },
+];
+
+const search = ref(props.filters.search ?? "");
+const year = ref(props.filters.year ?? "");
+const selectedStatus = ref(props.filters.status_id ?? null);
+const selectedAta = ref(props.filters.has_ata ?? null);
+
+const buildFilterParams = () => ({
+    search: search.value,
+    year: year.value,
+    status_id: selectedStatus.value,
+    has_ata: selectedAta.value,
+    sort: props.filters.sort,
+    direction: props.filters.direction,
+});
+
+const submitFilters = () => {
+    router.get(route("sessions.index"), buildFilterParams(), { preserveState: true, replace: true });
+};
+
+const clearFilters = () => {
+    search.value = "";
+    year.value = "";
+    selectedStatus.value = null;
+    selectedAta.value = null;
+    router.get(route("sessions.index"), { sort: props.filters.sort, direction: props.filters.direction }, { preserveState: true, replace: true });
+};
+
+const sortBy = (field: string) => {
+    const direction = props.filters.sort === field && props.filters.direction === "asc" ? "desc" : "asc";
+    router.get(route("sessions.index"), { ...buildFilterParams(), sort: field, direction }, { preserveState: true, replace: true });
 };
 
 const formatDate = (datetime: string) => {
@@ -143,9 +180,31 @@ const closeModal = () => {
     <Head title="Sessões" />
 
     <AuthenticatedLayout>
-        <div class="flex justify-end items-center mb-4">
-            <TextButton :href="route('sessions.create')"> Nova Sessão </TextButton>
-        </div>
+        <!-- Filtros -->
+        <form @submit.prevent="submitFilters" class="mb-4">
+            <div class="flex flex-col gap-4">
+                <TextInput type="text" v-model="search" placeholder="Buscar por nome da sessão..." />
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <TextInput type="number" v-model="year" placeholder="Ano (ex: 2024)" />
+                    <SelectInput v-model="selectedStatus" :options="sessionStatusOptions" value-key="id"
+                        label-key="name" placeholder="Todos os status" />
+                    <SelectInput v-model="selectedAta" :options="ataOptions" value-key="id"
+                        label-key="name" placeholder="Com ou sem ata" />
+                </div>
+            </div>
+            <div class="flex justify-end items-center space-x-4 mt-4">
+                <PrimaryButton type="submit" class="h-9 flex items-center">
+                    <MagnifyingGlassIcon class="h-5 w-5 mr-2" />
+                    Pesquisar
+                </PrimaryButton>
+                <SecondaryButton
+                    v-if="search || year || selectedStatus !== null || selectedAta !== null"
+                    type="button" @click="clearFilters" class="h-9">
+                    Limpar
+                </SecondaryButton>
+                <TextButton :href="route('sessions.create')">Nova Sessão</TextButton>
+            </div>
+        </form>
 
         <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
             <div class="overflow-x-auto">
