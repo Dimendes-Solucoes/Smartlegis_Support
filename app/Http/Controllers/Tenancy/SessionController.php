@@ -22,7 +22,7 @@ class SessionController extends Controller
 
         return Inertia::render('Tenancy/Sessions/Index', [
             'sessions' => $sessions,
-            'filters' => $request->only(['sort', 'direction']),
+            'filters' => $request->only(['sort', 'direction', 'search', 'year', 'status_id', 'has_ata']),
         ]);
     }
 

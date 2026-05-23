@@ -37,7 +37,17 @@ class SessionService
             $sort_field = 'datetime_start';
         }
 
+        $search = Request::input('search');
+        $year = Request::input('year');
+        $status_id = Request::input('status_id');
+        $has_ata = Request::input('has_ata');
+
         return Session::withExists(['documents as has_ata' => fn($q) => $q->where('document_category_id', 7)])
+            ->when($search, fn($q) => $q->where('name', 'like', "%{$search}%"))
+            ->when($year, fn($q) => $q->whereYear('datetime_start', $year))
+            ->when($status_id !== null && $status_id !== '', fn($q) => $q->where('session_status_id', $status_id))
+            ->when($has_ata === '1', fn($q) => $q->whereHas('documents', fn($dq) => $dq->where('document_category_id', 7)))
+            ->when($has_ata === '0', fn($q) => $q->whereDoesntHave('documents', fn($dq) => $dq->where('document_category_id', 7)))
             ->orderBy($sort_field, $sort_direction)
             ->paginate(15)
             ->through(fn($session) => [
