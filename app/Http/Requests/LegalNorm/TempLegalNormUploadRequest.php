@@ -14,7 +14,7 @@ class TempLegalNormUploadRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'attachment' => ['required', 'file', 'mimes:pdf,doc,docx', 'max:20480'],
+            'attachment' => ['required', 'file', 'mimes:pdf,doc,docx', 'max:51200'],
         ];
     }
 
@@ -23,7 +23,7 @@ class TempLegalNormUploadRequest extends FormRequest
         return [
             'attachment.required' => 'O arquivo é obrigatório.',
             'attachment.mimes'    => 'Apenas arquivos PDF, DOC e DOCX são aceitos.',
-            'attachment.max'      => 'O arquivo não pode ultrapassar 20MB.',
+            'attachment.max'      => 'O arquivo não pode ultrapassar 50MB.',
         ];
     }
 }

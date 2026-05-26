@@ -359,7 +359,7 @@ const queueStatusLabel: Record<UploadQueueItem['status'], string> = {
             </h2>
 
             <FileAttachment v-model="files" label="Arquivos (PDF, DOC, DOCX)" accept=".pdf,.doc,.docx" :max-files="20"
-                :max-size="20" :multiple="true" />
+                :max-size="50" :multiple="true" />
 
             <!-- Upload queue progress -->
             <div v-if="uploadQueue.length > 0" class="mt-4 space-y-2">
