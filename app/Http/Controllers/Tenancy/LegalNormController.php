@@ -21,16 +21,26 @@ class LegalNormController extends Controller
 
     public function index(Request $request)
     {
-        $year = $request->query('year') ? (int) $request->query('year') : null;
+        $year          = $request->query('year') ? (int) $request->query('year') : null;
+        $normTypeId    = $request->query('norm_type_id') ? (int) $request->query('norm_type_id') : null;
+        $normSubjectId = $request->query('norm_subject_id') ? (int) $request->query('norm_subject_id') : null;
 
         return Inertia::render('Tenancy/LegalNorms/Processed', [
-            'norms'          => $this->service->list($request->query('search'), $year),
-            'normTypes'      => NormType::select('id', 'name', 'abbreviation')->orderBy('name')->get(),
-            'normSubjects'   => NormSubject::select('id', 'name')->orderBy('name')->get(),
+            'norms'          => $this->service->list($request->query('search'), $year, $normTypeId, $normSubjectId),
+            'normTypes'      => NormType::select('id', 'name', 'abbreviation')
+                                    ->whereHas('legalNorms')
+                                    ->orderBy('name')
+                                    ->get(),
+            'normSubjects'   => NormSubject::select('id', 'name')
+                                    ->whereHas('legalNorms')
+                                    ->orderBy('name')
+                                    ->get(),
             'availableYears' => $this->service->availableYears(),
             'filters'        => [
-                'search' => $request->query('search', ''),
-                'year'   => $year,
+                'search'         => $request->query('search', ''),
+                'year'           => $year,
+                'norm_type_id'   => $normTypeId,
+                'norm_subject_id' => $normSubjectId,
             ],
         ]);
     }

@@ -86,7 +86,12 @@ const props = defineProps<{
     normTypes: NormType[];
     normSubjects: NormSubject[];
     availableYears: number[];
-    filters: { search: string; year: number | null };
+    filters: {
+        search: string;
+        year: number | null;
+        norm_type_id: number | null;
+        norm_subject_id: number | null;
+    };
 }>();
 
 const norms = ref<LegalNorm[]>(props.norms.data);
@@ -98,18 +103,31 @@ watch(() => props.norms.data, (newData: LegalNorm[]) => {
 // ── Busca ──────────────────────────────────────────────────────
 const search = ref(props.filters.search ?? '');
 const year = ref<number | null>(props.filters.year ?? null);
+const selectedNormType = ref<number | null>(props.filters.norm_type_id ?? null);
+const selectedNormSubject = ref<number | null>(props.filters.norm_subject_id ?? null);
 
 function applySearch() {
     router.get(
         route('legal-norms.confirmed.index'),
-        { search: search.value || undefined, year: year.value || undefined },
+        {
+            search: search.value || undefined,
+            year: year.value || undefined,
+            norm_type_id: selectedNormType.value || undefined,
+            norm_subject_id: selectedNormSubject.value || undefined,
+        },
         { preserveState: true, replace: true },
     );
 }
 
+const hasActiveFilters = computed(() =>
+    !!(search.value || year.value || selectedNormType.value || selectedNormSubject.value)
+);
+
 function clearSearch() {
     search.value = '';
     year.value = null;
+    selectedNormType.value = null;
+    selectedNormSubject.value = null;
     applySearch();
 }
 
@@ -490,30 +508,47 @@ function formatDate(date: string | null): string {
 
         <!-- Search -->
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 mb-6">
-            <div class="flex gap-2">
+            <div class="flex flex-col gap-3">
                 <TextInput
                     v-model="search"
-                    class="flex-1"
+                    class="w-full"
                     placeholder="Buscar por objeto ou número..."
                     @keydown.enter="applySearch"
                 />
-                <select
-                    v-model="year"
-                    class="rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                    @change="applySearch"
-                >
-                    <option :value="null">Todos os anos</option>
-                    <option v-for="y in props.availableYears" :key="y" :value="y">{{ y }}</option>
-                </select>
-                <TextButton @click="applySearch">Buscar</TextButton>
-                <button
-                    v-if="search || year"
-                    type="button"
-                    class="px-3 py-1.5 text-sm text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-                    @click="clearSearch"
-                >
-                    Limpar
-                </button>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <SelectInput
+                        v-model="selectedNormType"
+                        :options="props.normTypes"
+                        value-key="id"
+                        label-key="name"
+                        placeholder="Todos os tipos"
+                    />
+                    <SelectInput
+                        v-model="selectedNormSubject"
+                        :options="props.normSubjects"
+                        value-key="id"
+                        label-key="name"
+                        placeholder="Todos os assuntos"
+                    />
+                    <select
+                        v-model="year"
+                        class="rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    >
+                        <option :value="null">Todos os anos</option>
+                        <option v-for="y in props.availableYears" :key="y" :value="y">{{ y }}</option>
+                    </select>
+                </div>
+                <div class="flex justify-end gap-2">
+                    <button
+                        v-if="hasActiveFilters"
+                        type="button"
+                        class="px-3 py-1.5 text-sm text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                        @click="clearSearch"
+                    >
+                        Limpar
+                    </button>
+                    <TextButton @click="applySearch">Buscar</TextButton>
+                </div>
             </div>
         </div>
 
