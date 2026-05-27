@@ -128,10 +128,12 @@ Route::middleware(['auth', 'tenant.connection'])
             ->group(function () {
                 Route::get('/', 'index')->name('index');
                 Route::get('/sessoes-disponiveis', 'availableSessions')->name('available_sessions');
+                Route::get('/comissoes-disponiveis', 'availableCommissions')->name('available_commissions');
                 Route::get('/{id}/editar', 'edit')->name('edit');
                 Route::put('/{id}', 'update')->name('update');
                 Route::delete('/{id}', 'destroy')->name('destroy');
                 Route::post('/{id}/sessoes/{session_id}', 'addToSession')->name('add_to_session');
+                Route::post('/{id}/comissoes', 'addToCommission')->name('add_to_commission');
 
                 Route::post('/{id}/clicksign/resend', 'clicksignResend')->name('clicksign.resend');
                 Route::post('/{id}/clicksign/regenerate', 'clicksignRegenerate')->name('clicksign.regenerate');

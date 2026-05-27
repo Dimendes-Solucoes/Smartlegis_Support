@@ -4,6 +4,7 @@ namespace App\Models\Tenancy;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\Tenancy\ComissionDocument;
 
 class Document extends Model
 {
@@ -67,5 +68,10 @@ class Document extends Model
     public function authors()
     {
         return $this->hasMany(Author::class, 'document_id');
+    }
+
+    public function comissionDocuments()
+    {
+        return $this->hasMany(ComissionDocument::class, 'document_id');
     }
 }

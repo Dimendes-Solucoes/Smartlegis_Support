@@ -56,6 +56,23 @@ class DocumentController extends Controller
         }
     }
 
+    public function availableCommissions(): JsonResponse
+    {
+        return response()->json($this->service->getAvailableCommissions());
+    }
+
+    public function addToCommission(Request $request, int $id): JsonResponse
+    {
+        $request->validate(['commission_id' => 'required|integer']);
+
+        try {
+            $this->service->addDocumentToCommission($id, $request->integer('commission_id'));
+            return response()->json(['message' => 'Documento enviado para a comissão com sucesso!']);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+    }
+
     public function clicksignResend(int $id)
     {
         try {

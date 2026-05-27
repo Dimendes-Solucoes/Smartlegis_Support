@@ -3,11 +3,14 @@
 namespace App\Services;
 
 use App\Models\Tenancy\Author;
+use App\Models\Tenancy\Comission;
+use App\Models\Tenancy\ComissionDocument;
 use App\Models\Tenancy\Document;
 use App\Models\Tenancy\DocumentCategory;
 use App\Models\Tenancy\DocumentSession;
 use App\Models\Tenancy\DocumentStatusMovement;
 use App\Models\Tenancy\DocumentStatusVote;
+use App\Models\Tenancy\Legislature;
 use App\Models\Tenancy\Session;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
@@ -37,7 +40,7 @@ class DocumentService
         }
 
         $query = Document::query()
-            ->with(['voteStatus', 'movementStatus', 'authors.user'])
+            ->with(['voteStatus', 'movementStatus', 'authors.user', 'comissionDocuments'])
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('name', 'ilike', "%{$search}%")
@@ -78,6 +81,7 @@ class DocumentService
                 'email' => $author->user?->email,
                 'status' => $author->status_sign
             ]),
+            'commission_ids' => $document->comissionDocuments->pluck('comission_id')->values()->toArray(),
         ]);
     }
 
@@ -199,6 +203,46 @@ class DocumentService
 
             $document->update(['document_status_movement_id' => DocumentStatusMovement::EM_SESSAO]);
         });
+    }
+
+    public function getAvailableCommissions(): array
+    {
+        return Legislature::with([
+            'comissions' => fn($q) => $q->orderBy('comission_name'),
+        ])
+            ->orderByDesc('start_at')
+            ->get()
+            ->map(fn($legislature) => [
+                'id'          => $legislature->id,
+                'title'       => $legislature->title,
+                'commissions' => $legislature->comissions->map(fn($c) => [
+                    'id'             => $c->id,
+                    'comission_name' => $c->comission_name,
+                    'type'           => $c->type,
+                ])->values(),
+            ])
+            ->filter(fn($l) => count($l['commissions']) > 0)
+            ->values()
+            ->toArray();
+    }
+
+    public function addDocumentToCommission(int $document_id, int $commission_id): void
+    {
+        $document = Document::findOrFail($document_id);
+        Comission::findOrFail($commission_id);
+
+        $exists = ComissionDocument::where('comission_id', $commission_id)
+            ->where('document_id', $document_id)
+            ->exists();
+
+        if ($exists) {
+            throw new \Exception('Documento já está nesta comissão.');
+        }
+
+        ComissionDocument::create([
+            'comission_id' => $commission_id,
+            'document_id'  => $document->id,
+        ]);
     }
 
     public function clicksignResend(int $id): string

@@ -22,6 +22,7 @@ import {
     CheckCircleIcon,
     ClockIcon,
     InboxArrowDownIcon,
+    BuildingOffice2Icon,
 } from "@heroicons/vue/24/outline";
 
 interface Author {
@@ -41,6 +42,7 @@ interface Document {
     document_status_movement_id: number;
     status_sign: number;
     authors: Author[];
+    commission_ids: number[];
 }
 
 interface PaginatedDocuments {
@@ -263,6 +265,117 @@ const addDocumentToSession = async (sessionId: number) => {
     }
 };
 
+// ── Enviar para comissão ───────────────────────────────────────
+interface Commission {
+    id: number;
+    comission_name: string;
+    type: number;
+}
+
+interface Legislature {
+    id: number;
+    title: string;
+    commissions: Commission[];
+}
+
+const showCommissionModal = ref(false);
+const selectedDocForCommission = ref<Document | null>(null);
+const legislatures = ref<Legislature[]>([]);
+const commissionLoading = ref(false);
+const commissionError = ref('');
+const addingToCommission = ref(false);
+const selectedCommissionId = ref<number | null>(null);
+const pendingCommissionId = ref<number | null>(null);
+const activeLegislatureTab = ref<number | null>(null);
+
+const pendingCommission = computed(() => {
+    if (pendingCommissionId.value === null) return null;
+    for (const leg of legislatures.value) {
+        const found = leg.commissions.find((c: Commission) => c.id === pendingCommissionId.value);
+        if (found) return found;
+    }
+    return null;
+});
+
+const visibleCommissions = computed(() => {
+    const tabId = activeLegislatureTab.value;
+    return legislatures.value.find((l: Legislature) => l.id === tabId)?.commissions ?? [];
+});
+
+const docCommissionIds = computed(() => selectedDocForCommission.value?.commission_ids ?? []);
+
+watch(legislatures, (newList: Legislature[]) => {
+    activeLegislatureTab.value = newList[0]?.id ?? null;
+});
+
+const openCommissionModal = (doc: Document) => {
+    selectedDocForCommission.value = doc;
+    commissionError.value = '';
+    legislatures.value = [];
+    activeLegislatureTab.value = null;
+    showCommissionModal.value = true;
+    fetchCommissions();
+};
+
+const closeCommissionModal = () => {
+    showCommissionModal.value = false;
+    selectedDocForCommission.value = null;
+    legislatures.value = [];
+    commissionError.value = '';
+    addingToCommission.value = false;
+    selectedCommissionId.value = null;
+    pendingCommissionId.value = null;
+};
+
+const fetchCommissions = async () => {
+    commissionLoading.value = true;
+    commissionError.value = '';
+    try {
+        const response = await fetch(route('documents.available_commissions'), {
+            headers: { 'Accept': 'application/json' },
+        });
+        if (!response.ok) throw new Error();
+        legislatures.value = await response.json();
+    } catch {
+        commissionError.value = 'Erro ao carregar comissões.';
+    } finally {
+        commissionLoading.value = false;
+    }
+};
+
+const confirmAddToCommission = async () => {
+    if (!selectedDocForCommission.value || pendingCommissionId.value === null || addingToCommission.value) return;
+    addingToCommission.value = true;
+    selectedCommissionId.value = pendingCommissionId.value;
+    commissionError.value = '';
+    try {
+        const csrfMeta = document.querySelector<HTMLMetaElement>('meta[name="csrf-token"]');
+        const response = await fetch(
+            route('documents.add_to_commission', { id: selectedDocForCommission.value.id }),
+            {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfMeta?.content ?? '',
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({ commission_id: pendingCommissionId.value }),
+            }
+        );
+        const data = await response.json();
+        if (!response.ok) {
+            commissionError.value = data.message ?? 'Erro ao enviar documento.';
+            return;
+        }
+        closeCommissionModal();
+    } catch {
+        commissionError.value = 'Erro ao enviar documento para a comissão.';
+    } finally {
+        addingToCommission.value = false;
+        selectedCommissionId.value = null;
+    }
+};
+
 // ── Exclusão ───────────────────────────────────────────────────
 const confirmingDeletion = ref(false);
 const itemToDelete = ref<Document | null>(null);
@@ -436,6 +549,11 @@ const sortBy = (field: string) => {
                                     class="p-1.5 rounded bg-green-500 hover:bg-green-600 text-white">
                                     <InboxArrowDownIcon class="h-5 w-5" />
                                 </button>
+                                <button
+                                    type="button" title="Associar a comissão" @click="openCommissionModal(doc)"
+                                    class="p-1.5 rounded bg-orange-500 hover:bg-orange-600 text-white">
+                                    <BuildingOffice2Icon class="h-5 w-5" />
+                                </button>
 
                                 <button type="button" title="Ver autores e assinaturas" @click="openAuthorsModal(doc)"
                                     class="p-1.5 rounded bg-blue-500 hover:bg-blue-600 text-white">
@@ -538,6 +656,103 @@ const sortBy = (field: string) => {
                 <!-- Footer -->
                 <div class="flex justify-end px-5 pb-5">
                     <SecondaryButton @click="closeAuthorsModal">Fechar</SecondaryButton>
+                </div>
+            </div>
+        </div>
+    </Teleport>
+
+    <!-- Modal associar a comissão -->
+    <Teleport to="body">
+        <div v-if="showCommissionModal" class="fixed inset-0 z-50 flex items-center justify-center p-4"
+            @click.self="closeCommissionModal">
+            <div class="absolute inset-0 bg-black/50" />
+
+            <div class="relative z-10 w-full max-w-2xl bg-white dark:bg-gray-800 rounded-xl shadow-xl flex flex-col max-h-[90vh]">
+                <!-- Header -->
+                <div class="flex items-start justify-between p-5 border-b border-gray-200 dark:border-gray-700">
+                    <div>
+                        <h3 class="text-base font-semibold text-gray-900 dark:text-gray-100">Associar a Comissão</h3>
+                        <p class="mt-0.5 text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
+                            {{ selectedDocForCommission?.name }}
+                        </p>
+                    </div>
+                    <button type="button" @click="closeCommissionModal"
+                        class="ml-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+                        <XMarkIcon class="h-5 w-5" />
+                    </button>
+                </div>
+
+                <!-- Abas de legislatura -->
+                <div v-if="!commissionLoading && legislatures.length > 0"
+                    class="px-5 pt-4 flex gap-1 flex-wrap border-b border-gray-200 dark:border-gray-700 pb-3">
+                    <button v-for="leg in legislatures" :key="leg.id" type="button"
+                        @click="activeLegislatureTab = leg.id"
+                        class="px-3 py-1 text-xs font-medium rounded-full transition-colors"
+                        :class="activeLegislatureTab === leg.id
+                            ? 'bg-indigo-600 text-white'
+                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'">
+                        {{ leg.title }}
+                    </button>
+                </div>
+
+                <!-- Lista de comissões -->
+                <div class="flex-1 overflow-y-auto p-5 min-h-[12rem]">
+                    <div v-if="commissionLoading" class="text-center py-10 text-gray-500 dark:text-gray-400">
+                        Carregando comissões...
+                    </div>
+                    <div v-else-if="commissionError" class="text-center py-4 text-sm text-red-600 dark:text-red-400">
+                        {{ commissionError }}
+                    </div>
+                    <div v-else-if="legislatures.length === 0"
+                        class="text-center py-10 text-gray-400 dark:text-gray-500 text-sm">
+                        Nenhuma comissão encontrada.
+                    </div>
+                    <div v-else-if="visibleCommissions.length === 0"
+                        class="text-center py-10 text-gray-400 dark:text-gray-500 text-sm">
+                        Nenhuma comissão ativa nesta legislatura.
+                    </div>
+                    <div v-else class="space-y-2">
+                        <button v-for="commission in visibleCommissions" :key="commission.id" type="button"
+                            :disabled="addingToCommission || docCommissionIds.includes(commission.id)"
+                            @click="pendingCommissionId = commission.id"
+                            class="w-full flex items-center justify-between p-3 rounded-lg border text-left transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                            :class="docCommissionIds.includes(commission.id)
+                                ? 'border-green-300 bg-green-50 dark:border-green-700 dark:bg-green-900/20'
+                                : pendingCommissionId === commission.id
+                                    ? 'border-indigo-400 bg-indigo-50 dark:border-indigo-500 dark:bg-indigo-900/20'
+                                    : 'border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50'">
+                            <div class="flex items-center gap-3">
+                                <BuildingOffice2Icon class="h-5 w-5 shrink-0"
+                                    :class="docCommissionIds.includes(commission.id) ? 'text-green-500' : pendingCommissionId === commission.id ? 'text-indigo-500' : 'text-gray-400'" />
+                                <p class="font-medium text-sm"
+                                    :class="docCommissionIds.includes(commission.id) ? 'text-green-700 dark:text-green-300' : pendingCommissionId === commission.id ? 'text-indigo-700 dark:text-indigo-300' : 'text-gray-900 dark:text-gray-100'">
+                                    {{ commission.comission_name }}
+                                </p>
+                            </div>
+                            <span v-if="docCommissionIds.includes(commission.id)"
+                                class="text-xs font-medium text-green-600 dark:text-green-400 ml-3 shrink-0">Já associado</span>
+                            <span v-else-if="pendingCommissionId === commission.id"
+                                class="text-xs font-medium text-indigo-600 dark:text-indigo-400 ml-3 shrink-0">Selecionado</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="flex items-center justify-between px-5 py-4 border-t border-gray-200 dark:border-gray-700">
+                    <p v-if="pendingCommission" class="text-sm text-gray-600 dark:text-gray-300">
+                        Associar a <span class="font-semibold">{{ pendingCommission.comission_name }}</span>?
+                    </p>
+                    <div v-else />
+                    <div class="flex gap-3">
+                        <SecondaryButton @click="closeCommissionModal">Fechar</SecondaryButton>
+                        <PrimaryButton
+                            v-if="pendingCommission"
+                            :disabled="addingToCommission"
+                            @click="confirmAddToCommission"
+                        >
+                            {{ addingToCommission ? 'Enviando...' : 'Confirmar' }}
+                        </PrimaryButton>
+                    </div>
                 </div>
             </div>
         </div>
