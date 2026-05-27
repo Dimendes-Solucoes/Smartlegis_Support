@@ -165,6 +165,7 @@ class DocumentService
                 'id' => $session->id,
                 'name' => $session->name,
                 'datetime_start' => $session->datetime_start?->format('d/m/Y H:i'),
+                'year' => $session->datetime_start?->year,
                 'session_status_id' => $session->session_status_id,
             ])
             ->toArray();

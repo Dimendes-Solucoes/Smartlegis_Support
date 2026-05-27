@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, computed, watch } from "vue";
 import AuthenticatedLayout from "@/layouts/AuthenticatedLayout.vue";
 import { Head, router } from "@inertiajs/vue3";
 import IconButton from "@/components/Itens/IconButton.vue";
@@ -143,6 +143,7 @@ interface Session {
     id: number;
     name: string;
     datetime_start: string;
+    year: number | null;
     session_status_id: number;
 }
 
@@ -154,10 +155,26 @@ const sessionError = ref('');
 const addingToSession = ref(false);
 const selectedSessionId = ref<number | null>(null);
 
-const sessionYear = ref('');
 const sessionName = ref('');
 const sessionStatusFilter = ref('0');
 const sessionWithoutAta = ref(false);
+
+const sessionYearTabs = computed(() => {
+    const years = new Set<number>();
+    sessions.value.forEach((s: Session) => { if (s.year) years.add(s.year); });
+    return [...years].sort((a: number, b: number) => b - a);
+});
+const activeSessionYearTab = ref<number | null>(null);
+const visibleSessions = computed(() =>
+    activeSessionYearTab.value === null
+        ? sessions.value
+        : sessions.value.filter((s: Session) => s.year === activeSessionYearTab.value)
+);
+
+watch(sessions, (newSessions: Session[]) => {
+    const tabs = sessionYearTabs.value;
+    activeSessionYearTab.value = (newSessions.length > 0 && tabs.length > 0) ? tabs[0] : null;
+});
 
 const sessionStatusOptions = [
     { id: '0', name: 'Qualquer status' },
@@ -177,10 +194,10 @@ const getSessionStatusColor = (id: number) =>
 const openSessionModal = (doc: Document) => {
     selectedDocForSession.value = doc;
     sessionError.value = '';
+    sessions.value = [];
+    activeSessionYearTab.value = null;
     showSessionModal.value = true;
-    if (sessions.value.length === 0 && !sessionLoading.value) {
-        fetchSessions();
-    }
+    fetchSessions();
 };
 
 const closeSessionModal = () => {
@@ -197,7 +214,6 @@ const fetchSessions = async () => {
     sessionError.value = '';
     try {
         const params = new URLSearchParams();
-        if (sessionYear.value) params.append('year', sessionYear.value);
         if (sessionName.value) params.append('name', sessionName.value);
         if (sessionStatusFilter.value === '1') params.append('only_open', '1');
         if (sessionWithoutAta.value) params.append('without_ata', '1');
@@ -557,15 +573,14 @@ const sortBy = (field: string) => {
                     <div class="flex flex-col gap-3">
                         <TextInput type="text" v-model="sessionName" placeholder="Nome da sessão..." />
                         <div class="grid grid-cols-2 gap-3">
-                            <TextInput type="number" v-model="sessionYear" placeholder="Ano (ex: 2024)" />
                             <SelectInput v-model="sessionStatusFilter" :options="sessionStatusOptions"
                                 value-key="id" label-key="name" :disable-placeholder="true" />
+                            <label class="flex items-center gap-2 cursor-pointer select-none">
+                                <input type="checkbox" v-model="sessionWithoutAta"
+                                    class="rounded border-gray-300 dark:border-gray-600 text-indigo-600 focus:ring-indigo-500 dark:bg-gray-900" />
+                                <span class="text-sm text-gray-700 dark:text-gray-300">Sem ata</span>
+                            </label>
                         </div>
-                        <label class="flex items-center gap-2 cursor-pointer select-none w-fit">
-                            <input type="checkbox" v-model="sessionWithoutAta"
-                                class="rounded border-gray-300 dark:border-gray-600 text-indigo-600 focus:ring-indigo-500 dark:bg-gray-900" />
-                            <span class="text-sm text-gray-700 dark:text-gray-300">Exibir apenas sessões sem ata</span>
-                        </label>
                     </div>
                     <div class="flex justify-end mt-3">
                         <PrimaryButton type="button" @click="fetchSessions" :disabled="sessionLoading"
@@ -589,28 +604,41 @@ const sortBy = (field: string) => {
                         class="text-center py-10 text-gray-400 dark:text-gray-500 text-sm">
                         Nenhuma sessão encontrada.
                     </div>
-                    <div v-else class="space-y-2">
-                        <button v-for="session in sessions" :key="session.id" type="button"
-                            :disabled="addingToSession"
-                            @click="addDocumentToSession(session.id)"
-                            class="w-full flex items-center justify-between p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 text-left transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
-                            :class="{ 'opacity-60': addingToSession && selectedSessionId !== session.id }">
-                            <div>
-                                <p class="font-medium text-gray-900 dark:text-gray-100 text-sm">{{ session.name }}</p>
-                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                                    {{ session.datetime_start }}
-                                </p>
-                            </div>
-                            <div class="flex items-center gap-2 ml-3 shrink-0">
-                                <span class="px-2 py-0.5 text-xs font-semibold rounded-full"
-                                    :class="getSessionStatusColor(session.session_status_id)">
-                                    {{ getSessionStatusText(session.session_status_id) }}
-                                </span>
-                                <span v-if="addingToSession && selectedSessionId === session.id"
-                                    class="text-xs text-gray-400">Enviando...</span>
-                            </div>
-                        </button>
-                    </div>
+                    <template v-else>
+                        <!-- Abas de ano -->
+                        <div v-if="sessionYearTabs.length > 1" class="flex gap-1 flex-wrap mb-3">
+                            <button v-for="tabYear in sessionYearTabs" :key="tabYear" type="button"
+                                @click="activeSessionYearTab = tabYear"
+                                class="px-3 py-1 text-xs font-medium rounded-full transition-colors"
+                                :class="activeSessionYearTab === tabYear
+                                    ? 'bg-indigo-600 text-white'
+                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'">
+                                {{ tabYear }}
+                            </button>
+                        </div>
+                        <div class="space-y-2">
+                            <button v-for="session in visibleSessions" :key="session.id" type="button"
+                                :disabled="addingToSession"
+                                @click="addDocumentToSession(session.id)"
+                                class="w-full flex items-center justify-between p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 text-left transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                                :class="{ 'opacity-60': addingToSession && selectedSessionId !== session.id }">
+                                <div>
+                                    <p class="font-medium text-gray-900 dark:text-gray-100 text-sm">{{ session.name }}</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                                        {{ session.datetime_start }}
+                                    </p>
+                                </div>
+                                <div class="flex items-center gap-2 ml-3 shrink-0">
+                                    <span class="px-2 py-0.5 text-xs font-semibold rounded-full"
+                                        :class="getSessionStatusColor(session.session_status_id)">
+                                        {{ getSessionStatusText(session.session_status_id) }}
+                                    </span>
+                                    <span v-if="addingToSession && selectedSessionId === session.id"
+                                        class="text-xs text-gray-400">Enviando...</span>
+                                </div>
+                            </button>
+                        </div>
+                    </template>
                 </div>
 
                 <!-- Footer -->

@@ -15,6 +15,7 @@ use App\Http\Controllers\Tenancy\QuestionOrderController;
 use App\Http\Controllers\Tenancy\QuorumController;
 use App\Http\Controllers\Tenancy\SessionController;
 use App\Http\Controllers\Tenancy\LegalNormController;
+use App\Http\Controllers\Tenancy\LegalNormConversionController;
 use App\Http\Controllers\Tenancy\TempLegalNormController;
 use App\Http\Controllers\Tenancy\TimerController;
 use App\Http\Controllers\Tenancy\TribuneController;
@@ -215,6 +216,16 @@ Route::middleware(['auth', 'tenant.connection'])
                 Route::get('/', 'index')->name('index');
                 Route::put('/{id}', 'update')->name('update');
                 Route::post('/{id}/reprocessar', 'reprocess')->name('reprocess');
+            });
+
+        Route::prefix('normas-juridicas/confirmadas')
+            ->controller(LegalNormConversionController::class)
+            ->group(function () {
+                Route::get('/sessoes-disponiveis', 'availableSessions')->name('legal-norms.confirmed.available_sessions');
+                Route::get('/comissoes-disponiveis', 'availableCommissions')->name('legal-norms.confirmed.available_commissions');
+                Route::post('/{id}/converter-sessao', 'convertToSessionDocument')->name('legal-norms.confirmed.convert_to_session');
+                Route::post('/{id}/converter-comissao', 'convertToCommissionDocument')->name('legal-norms.confirmed.convert_to_commission');
+                Route::delete('/{id}', 'destroy')->name('legal-norms.confirmed.destroy');
             });
 
         Route::prefix('normas-juridicas')
