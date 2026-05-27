@@ -40,7 +40,7 @@ class LegalNormConversionService
     public function availableCommissions(): array
     {
         return Legislature::with([
-            'comissions' => fn($q) => $q->where('is_active', true)->orderBy('comission_name'),
+            'comissions' => fn($q) => $q->orderBy('comission_name'),
         ])
             ->orderByDesc('start_at')
             ->get()
