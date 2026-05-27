@@ -84,6 +84,8 @@ const props = defineProps<{
     norms: PaginatedNorms;
     normTypes: NormType[];
     normSubjects: NormSubject[];
+    allNormTypes: NormType[];
+    allNormSubjects: NormSubject[];
     availableYears: number[];
     filters: {
         search: string;
@@ -698,7 +700,7 @@ function formatDate(date: string | null): string {
                     <SelectInput
                         v-model="editForm.norm_type_id"
                         class="mt-1 block w-full"
-                        :options="props.normTypes"
+                        :options="props.allNormTypes"
                         :formatLabel="normTypeLabel"
                     />
                     <InputError :message="editErrors.norm_type_id" class="mt-1" />
@@ -708,7 +710,7 @@ function formatDate(date: string | null): string {
                     <SelectInput
                         v-model="editForm.norm_subject_id"
                         class="mt-1 block w-full"
-                        :options="props.normSubjects"
+                        :options="props.allNormSubjects"
                         labelKey="name"
                     />
                     <InputError :message="editErrors.norm_subject_id" class="mt-1" />

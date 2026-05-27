@@ -4,9 +4,6 @@ namespace App\Http\Controllers\Tenancy;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LegalNorm\LegalNormUpdateRequest;
-use App\Models\Tenancy\LegalNorm;
-use App\Models\Tenancy\NormSubject;
-use App\Models\Tenancy\NormType;
 use App\Services\LegalNormService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -26,20 +23,16 @@ class LegalNormController extends Controller
         $normSubjectId = $request->query('norm_subject_id') ? (int) $request->query('norm_subject_id') : null;
 
         return Inertia::render('Tenancy/LegalNorms/Processed', [
-            'norms'          => $this->service->list($request->query('search'), $year, $normTypeId, $normSubjectId),
-            'normTypes'      => NormType::select('id', 'name', 'abbreviation')
-                                    ->whereHas('legalNorms')
-                                    ->orderBy('name')
-                                    ->get(),
-            'normSubjects'   => NormSubject::select('id', 'name')
-                                    ->whereHas('legalNorms')
-                                    ->orderBy('name')
-                                    ->get(),
-            'availableYears' => $this->service->availableYears(),
-            'filters'        => [
-                'search'         => $request->query('search', ''),
-                'year'           => $year,
-                'norm_type_id'   => $normTypeId,
+            'norms'           => $this->service->list($request->query('search'), $year, $normTypeId, $normSubjectId),
+            'normTypes'       => $this->service->normTypesForFilter(),
+            'normSubjects'    => $this->service->normSubjectsForFilter(),
+            'allNormTypes'    => $this->service->allNormTypes(),
+            'allNormSubjects' => $this->service->allNormSubjects(),
+            'availableYears'  => $this->service->availableYears(),
+            'filters'         => [
+                'search'          => $request->query('search', ''),
+                'year'            => $year,
+                'norm_type_id'    => $normTypeId,
                 'norm_subject_id' => $normSubjectId,
             ],
         ]);
@@ -57,10 +50,8 @@ class LegalNormController extends Controller
 
     public function reprocess(int $id): JsonResponse
     {
-        $norm = LegalNorm::findOrFail($id);
-
         try {
-            $extracted = $this->service->reprocess($norm);
+            $extracted = $this->service->reprocess($id);
 
             return response()->json([
                 'message' => 'Reprocessamento concluído.',

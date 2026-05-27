@@ -67,6 +67,36 @@ class LegalNormService
             ->toArray();
     }
 
+    public function normTypesForFilter(): \Illuminate\Database\Eloquent\Collection
+    {
+        return NormType::select('id', 'name', 'abbreviation')
+            ->whereHas('legalNorms')
+            ->orderBy('name')
+            ->get();
+    }
+
+    public function allNormTypes(): \Illuminate\Database\Eloquent\Collection
+    {
+        return NormType::select('id', 'name', 'abbreviation')
+            ->orderBy('name')
+            ->get();
+    }
+
+    public function normSubjectsForFilter(): \Illuminate\Database\Eloquent\Collection
+    {
+        return NormSubject::select('id', 'name')
+            ->whereHas('legalNorms')
+            ->orderBy('name')
+            ->get();
+    }
+
+    public function allNormSubjects(): \Illuminate\Database\Eloquent\Collection
+    {
+        return NormSubject::select('id', 'name')
+            ->orderBy('name')
+            ->get();
+    }
+
     public function update(int $id, array $data): LegalNorm
     {
         $norm = LegalNorm::findOrFail($id);
@@ -75,8 +105,9 @@ class LegalNormService
         return $norm->fresh(['normType', 'normSubject']);
     }
 
-    public function reprocess(LegalNorm $norm): array
+    public function reprocess(int $id): array
     {
+        $norm = LegalNorm::findOrFail($id);
         $relativePath = ltrim($norm->attachment, '/');
         $tempPath     = StorageCustom::download($relativePath);
 
