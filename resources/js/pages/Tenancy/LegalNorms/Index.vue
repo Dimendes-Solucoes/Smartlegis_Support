@@ -358,7 +358,7 @@ const queueStatusLabel: Record<UploadQueueItem['status'], string> = {
                 Upload em Lote
             </h2>
 
-            <FileAttachment v-model="files" label="Arquivos (PDF, DOC, DOCX)" accept=".pdf,.doc,.docx" :max-files="20"
+            <FileAttachment v-model="files" label="Arquivos (PDF, DOC, DOCX)" accept=".pdf,.doc,.docx" :max-files="50"
                 :max-size="50" :multiple="true" />
 
             <!-- Upload queue progress -->
