@@ -167,6 +167,7 @@ class DocumentService
                 'datetime_start' => $session->datetime_start?->format('d/m/Y H:i'),
                 'year' => $session->datetime_start?->year,
                 'session_status_id' => $session->session_status_id,
+                'has_ata' => $session->documents()->where('document_category_id', 7)->exists(),
             ])
             ->toArray();
     }

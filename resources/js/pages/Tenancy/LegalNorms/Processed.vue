@@ -65,6 +65,7 @@ interface Session {
     datetime_start: string;
     year: number | null;
     session_status_id: number;
+    has_ata: boolean;
 }
 
 interface Commission {
@@ -823,6 +824,10 @@ function formatDate(date: string | null): string {
                                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{{ session.datetime_start }}</p>
                                 </div>
                                 <div class="flex items-center gap-2 ml-3 shrink-0">
+                                    <span v-if="session.has_ata"
+                                        class="px-2 py-0.5 text-xs font-semibold rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200">
+                                        Tem ata
+                                    </span>
                                     <span class="px-2 py-0.5 text-xs font-semibold rounded-full"
                                         :class="getSessionStatusColor(session.session_status_id)">
                                         {{ getSessionStatusText(session.session_status_id) }}

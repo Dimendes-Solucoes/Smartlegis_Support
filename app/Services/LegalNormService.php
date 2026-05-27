@@ -28,7 +28,7 @@ class LegalNormService
             ->join('norm_types', 'legal_norms.norm_type_id', '=', 'norm_types.id')
             ->select('legal_norms.*')
             ->orderByRaw('EXTRACT(YEAR FROM legal_norms.publication_date) DESC')
-            ->orderByRaw('CAST(legal_norms.number AS INTEGER) DESC')
+            ->orderByRaw("CASE WHEN legal_norms.number ~ '^[0-9]+$' THEN CAST(legal_norms.number AS INTEGER) ELSE NULL END DESC NULLS LAST")
             ->orderBy('norm_types.abbreviation', 'ASC');
 
         if ($search) {
