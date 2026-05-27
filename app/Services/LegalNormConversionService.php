@@ -47,7 +47,6 @@ class LegalNormConversionService
             ->map(fn($legislature) => [
                 'id'          => $legislature->id,
                 'title'       => $legislature->title,
-                'is_current'  => $legislature->is_current,
                 'commissions' => $legislature->comissions->map(fn($c) => [
                     'id'             => $c->id,
                     'comission_name' => $c->comission_name,

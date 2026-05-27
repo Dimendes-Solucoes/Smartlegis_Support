@@ -77,7 +77,6 @@ interface Commission {
 interface Legislature {
     id: number;
     title: string;
-    is_current: boolean;
     commissions: Commission[];
 }
 
@@ -395,21 +394,13 @@ const addingToCommission = ref(false);
 const selectedCommissionId = ref<number | null>(null);
 const activeLegislatureTab = ref<number | null>(null);
 
-const currentLegislature = computed(() =>
-    legislatures.value.find(l => l.is_current) ?? legislatures.value[0] ?? null
-);
-
 const visibleCommissions = computed(() => {
     const tabId = activeLegislatureTab.value;
-    if (tabId === null) return currentLegislature.value?.commissions ?? [];
     return legislatures.value.find(l => l.id === tabId)?.commissions ?? [];
 });
 
 watch(legislatures, (newList: Legislature[]) => {
-    if (newList.length > 0) {
-        const current = newList.find(l => l.is_current) ?? newList[0];
-        activeLegislatureTab.value = current.id;
-    }
+    activeLegislatureTab.value = newList[0]?.id ?? null;
 });
 
 function openCommissionModal(norm: LegalNorm) {
@@ -914,7 +905,6 @@ function formatDate(date: string | null): string {
                             ? 'bg-indigo-600 text-white'
                             : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'">
                         {{ leg.title }}
-                        <span v-if="leg.is_current" class="ml-1 opacity-70">(atual)</span>
                     </button>
                 </div>
 
