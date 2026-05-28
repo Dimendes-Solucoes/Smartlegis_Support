@@ -494,6 +494,11 @@ class SessionService
                     ->groupBy('document_id')
                     ->map(fn($votes) => $votes->pluck('order')->unique()->values());
 
+                $ordemDoDiaDocumentIds = DocumentSession::where('session_id', $session->id)
+                    ->whereIn('document_id', $documentIds)
+                    ->where('ordem_do_dia', 1)
+                    ->pluck('document_id');
+
                 Vote::where('session_id', $session->id)
                     ->whereIn('document_id', $documentIds)
                     ->delete();
@@ -513,7 +518,7 @@ class SessionService
                     ]);
 
                 foreach ($session->documents as $document) {
-                    $statusVoteId = $document->pivot->ordem_do_dia == 0 ? 6 : 2;
+                    $statusVoteId = $ordemDoDiaDocumentIds->contains($document->id) ? 2 : 6;
 
                     $updateData = [
                         'document_status_vote_id' => $statusVoteId,
