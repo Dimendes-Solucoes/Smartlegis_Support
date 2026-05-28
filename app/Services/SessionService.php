@@ -535,7 +535,10 @@ class SessionService
                     $document->update($updateData);
                 }
             }
-            $session->update(['session_status_id' => 1]);
+            $session->update([
+                'session_status_id' => 1,
+                'starts_at' => null
+            ]);
         });
     }
 

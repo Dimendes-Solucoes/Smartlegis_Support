@@ -17,11 +17,13 @@ class Session extends Model
         'session_status_id',
         'datetime_start',
         'datetime_end',
+        'starts_at',
     ];
 
     protected $casts = [
         'datetime_start' => 'datetime',
         'datetime_end' => 'datetime',
+        'starts_at' => 'datetime',
     ];
 
     public function user()
