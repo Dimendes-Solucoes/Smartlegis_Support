@@ -500,8 +500,10 @@ class SessionService
                 foreach ($session->documents as $document) {
                     $lastVoteOrder = Vote::where('document_id', $document->id)->max('order');
 
+                    $statusVoteId = $document->pivot->ordem_do_dia == 0 ? 6 : 2;
+
                     $updateData = [
-                        'document_status_vote_id' => 2,
+                        'document_status_vote_id' => $statusVoteId,
                         'document_status_movement_id' => 2,
                     ];
 
