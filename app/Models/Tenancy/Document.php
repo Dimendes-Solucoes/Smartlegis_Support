@@ -26,6 +26,7 @@ class Document extends Model
         'pedido_de_vista',
         'motivo_pedido_vista',
         'votes_are_secret',
+        'voting_result_0',
         'voting_result_1',
         'voting_result_2',
         'status_sign',

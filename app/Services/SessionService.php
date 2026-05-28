@@ -488,6 +488,12 @@ class SessionService
                 $this->restoreDocumentsFromStamps($session->id, $documentIds);
                 $this->clearHistory($session->id);
 
+                $voteOrdersByDocument = Vote::where('session_id', $session->id)
+                    ->whereIn('document_id', $documentIds)
+                    ->get(['document_id', 'order'])
+                    ->groupBy('document_id')
+                    ->map(fn($votes) => $votes->pluck('order')->unique()->values());
+
                 Vote::where('session_id', $session->id)
                     ->whereIn('document_id', $documentIds)
                     ->delete();
@@ -507,8 +513,6 @@ class SessionService
                     ]);
 
                 foreach ($session->documents as $document) {
-                    $lastVoteOrder = Vote::where('document_id', $document->id)->max('order');
-
                     $statusVoteId = $document->pivot->ordem_do_dia == 0 ? 6 : 2;
 
                     $updateData = [
@@ -516,8 +520,11 @@ class SessionService
                         'document_status_movement_id' => 2,
                     ];
 
-                    if (in_array($lastVoteOrder, [1, 2])) {
-                        $updateData['voting_result_' . $lastVoteOrder] = null;
+                    $orders = $voteOrdersByDocument->get($document->id, collect());
+                    foreach ([0, 1, 2] as $order) {
+                        if ($orders->contains($order)) {
+                            $updateData['voting_result_' . $order] = null;
+                        }
                     }
 
                     $document->update($updateData);
