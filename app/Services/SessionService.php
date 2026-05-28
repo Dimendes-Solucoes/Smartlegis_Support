@@ -301,6 +301,38 @@ class SessionService
         $session->delete();
     }
 
+    private function restoreDocumentsFromStamps(int $sessionId, \Illuminate\Support\Collection $documentIds): void
+    {
+        $stampedSessions = DocumentSession::where('session_id', $sessionId)
+            ->whereIn('document_id', $documentIds)
+            ->where(fn($q) => $q->where('is_read', true)->orWhere('is_approved', true))
+            ->get();
+
+        foreach ($stampedSessions as $documentSession) {
+            $document = Document::find($documentSession->document_id);
+            if (!$document) {
+                continue;
+            }
+
+            $lastHistory = DocumentHistory::where('document_id', $document->id)
+                ->oldest()
+                ->first();
+
+            if (!$lastHistory) {
+                continue;
+            }
+
+            $field = match (true) {
+                !empty($document->carimbo_prefeitura_pdf) => 'carimbo_prefeitura_pdf',
+                !empty($document->carimbo_camara_pdf)     => 'carimbo_camara_pdf',
+                default                                   => 'attachment',
+            };
+
+            $document->{$field} = $lastHistory->attachment;
+            $document->save();
+        }
+    }
+
     private function updateDocumentOrder(int $session_id, array $document_ids, int $ordem_do_dia): void
     {
         if (empty($document_ids)) {
@@ -447,11 +479,13 @@ class SessionService
             $this->clearDiscussions($session->id);
             $this->clearBigDiscussions($session->id);
             $this->clearQuestionOrders($session->id);
-            $this->clearHistory($session->id);
 
             $documentIds = $session->documents->pluck('id');
 
             if ($documentIds->isNotEmpty()) {
+                $this->restoreDocumentsFromStamps($session->id, $documentIds);
+                $this->clearHistory($session->id);
+
                 Vote::where('session_id', $session->id)
                     ->whereIn('document_id', $documentIds)
                     ->delete();
