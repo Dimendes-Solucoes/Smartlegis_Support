@@ -7,6 +7,8 @@ use App\Models\Tenancy\DocumentSession;
 use App\Models\Tenancy\Quorum;
 use App\Models\Tenancy\Session;
 use App\Models\Tenancy\SessionStatus;
+use App\Models\Tenancy\UrgentDocument;
+use App\Models\Tenancy\UrgentDocumentVote;
 use App\Models\Tenancy\Vote;
 use App\Models\Tenancy\VoteCategory;
 use App\Models\Tenancy\DocumentHistory;
@@ -489,6 +491,13 @@ class SessionService
                 Vote::where('session_id', $session->id)
                     ->whereIn('document_id', $documentIds)
                     ->delete();
+
+                $urgentDocumentIds = UrgentDocument::whereIn('document_id', $documentIds)->pluck('id');
+
+                if ($urgentDocumentIds->isNotEmpty()) {
+                    UrgentDocumentVote::whereIn('urgent_document_id', $urgentDocumentIds)->delete();
+                    UrgentDocument::whereIn('id', $urgentDocumentIds)->delete();
+                }
 
                 DocumentSession::where('session_id', $session->id)
                     ->whereIn('document_id', $documentIds)
