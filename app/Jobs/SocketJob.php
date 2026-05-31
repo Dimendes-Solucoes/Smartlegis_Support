@@ -49,5 +49,7 @@ class SocketJob implements ShouldQueue
 
             Event::dispatch(new ChannelEvents($channel, $event_id, $socket_id, $payload));
         }
+
+        DB::statement("SET search_path TO public");
     }
 }
