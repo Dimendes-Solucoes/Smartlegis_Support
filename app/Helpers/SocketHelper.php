@@ -37,6 +37,7 @@ class SocketHelper
                 'payload' => json_encode($payload),
             ]);
 
+            DB::statement("SET search_path TO public");
             SocketJob::dispatch($event->id);
         }
     }
