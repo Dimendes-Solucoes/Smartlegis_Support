@@ -24,6 +24,12 @@ class SocketHelper
     {
         $channel = self::getChannel();
 
+        $tenant = current_tenant();
+        $dbName = $tenant->data['tenancy_db_name'] ?? null;
+        if (!empty($dbName)) {
+            DB::statement("SET search_path TO {$dbName}");
+        }
+
         if ($channel) {
             $event = SocketEvent::create([
                 'channel' => $channel,
