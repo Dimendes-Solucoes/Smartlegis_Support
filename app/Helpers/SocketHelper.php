@@ -38,7 +38,7 @@ class SocketHelper
             ]);
 
             DB::statement("SET search_path TO public");
-            SocketJob::dispatch($event->id);
+            SocketJob::dispatch($event->id, $dbName);
         }
     }
 }

@@ -10,6 +10,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
 
@@ -18,13 +19,15 @@ class SocketJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $event_id;
+    public $dbName;
 
     /**
      * Create a new job instance.
      */
-    public function __construct($event_id)
+    public function __construct($event_id, $dbName)
     {
         $this->event_id = $event_id;
+        $this->dbName = $dbName;
     }
 
     /**
@@ -32,6 +35,7 @@ class SocketJob implements ShouldQueue
      */
     public function handle(): void
     {
+        DB::statement("SET search_path TO {$this->dbName}");
         $event = SocketEvent::find($this->event_id);
 
         Log::info("SocketJob.handle");
