@@ -21,6 +21,7 @@ import {
     HashtagIcon,
     ClipboardDocumentCheckIcon,
     ScaleIcon,
+    WrenchScrewdriverIcon,
 } from '@heroicons/vue/24/outline';
 import type { Method } from "@inertiajs/core";
 
@@ -158,6 +159,12 @@ export const staticNavigationLinks: NavigationLink[] = [
         label: 'Normas',
         icon: ScaleIcon,
         route: 'legal-norms.index',
+        type: 'link',
+    },
+    {
+        label: 'Ferramentas',
+        icon: WrenchScrewdriverIcon,
+        route: 'maintenance.index',
         type: 'link',
     },
 
