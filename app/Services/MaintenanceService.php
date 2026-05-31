@@ -13,6 +13,9 @@ use RuntimeException;
 
 class MaintenanceService
 {
+    private ?Credential $cachedCredential = null;
+    private ?string $cachedDbName = null;
+
     public function __construct(
         private readonly TenantService $tenantService,
     ) {}
@@ -31,6 +34,11 @@ class MaintenanceService
     {
         try {
             $response = $this->buildClient()->{$method}($endpoint, $payload);
+
+            if ($response->status() === 401) {
+                $this->cachedCredential->service_token = null;
+                $response = $this->buildClient()->{$method}($endpoint, $payload);
+            }
         } catch (\Illuminate\Http\Client\ConnectionException $e) {
             Log::error('Maintenance: falha de conexão', [
                 'endpoint' => $endpoint,
@@ -55,13 +63,15 @@ class MaintenanceService
 
     private function buildClient(): PendingRequest
     {
-        ['credential' => $credential, 'dbName' => $dbName] = $this->resolveCredential();
+        if (!$this->cachedCredential) {
+            ['credential' => $this->cachedCredential, 'dbName' => $this->cachedDbName] = $this->resolveCredential();
+        }
 
-        $token = $this->resolveToken($credential, $dbName);
+        $token = $this->resolveToken($this->cachedCredential, $this->cachedDbName);
 
         return Http::withHeaders(['X-Service-Secret' => config('app.service_secret')])
             ->withToken($token)
-            ->baseUrl("https://{$credential->host}/api")
+            ->baseUrl("https://{$this->cachedCredential->host}/api")
             ->acceptJson()
             ->timeout(30)
             ->connectTimeout(10);
