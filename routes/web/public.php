@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\Public\AdminController;
-use App\Http\Controllers\Tenancy\SocketMaintenanceController;
 use App\Http\Controllers\Public\CalendarController;
 use App\Http\Controllers\Public\ClicksignController;
 use App\Http\Controllers\Public\CredentialController;
@@ -68,15 +67,6 @@ Route::middleware('auth')->group(function () {
             Route::get('/{id}/editar', 'edit')->name('edit');
             Route::put('/{id}', 'update')->name('update');
             Route::delete('/{id}', 'destroy')->name('destroy');
-        });
-
-    Route::prefix('ferramentas')
-        ->name('maintenance.')
-        ->controller(SocketMaintenanceController::class)
-        ->group(function () {
-            Route::get('/', 'index')->name('index');
-            Route::post('/atualizar-paginas', 'refreshAll')->name('refresh-all');
-            Route::post('/atualizar-tv', 'refreshTv')->name('refresh-tv');
         });
 
     Route::prefix('clicksign')

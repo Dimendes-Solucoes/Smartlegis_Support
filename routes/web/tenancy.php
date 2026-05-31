@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Tenancy\BigDiscussionController;
+use App\Http\Controllers\Tenancy\MaintenanceController;
 use App\Http\Controllers\Tenancy\CategoryPartyController;
 use App\Http\Controllers\Tenancy\CommissionController;
 use App\Http\Controllers\Tenancy\CouncilorController;
@@ -204,6 +205,15 @@ Route::middleware(['auth', 'tenant.connection'])
                 Route::post('/', 'store')->name('store');
                 Route::put('/{id}', 'update')->name('update');
                 Route::delete('/{id}', 'destroy')->name('destroy');
+            });
+
+        Route::prefix('ferramentas')
+            ->name('maintenance.')
+            ->controller(MaintenanceController::class)
+            ->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::post('/atualizar-paginas', 'refreshAll')->name('refresh-all');
+                Route::post('/atualizar-tv', 'refreshTv')->name('refresh-tv');
             });
 
         Route::delete('quorums/{id}/inscricoes', [QuorumController::class, 'removeUser'])->name('quorums.users.destroy');
