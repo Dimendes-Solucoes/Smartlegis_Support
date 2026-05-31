@@ -11,10 +11,16 @@ class SocketHelper
 {
     public static function getChannel()
     {
-        $tenant_id = current_tenant_id();
+        $tenant = current_tenant();
+        $dbName = $tenant->data['tenancy_db_name'] ?? null;
 
         DB::statement("SET search_path TO public");
-        $credential = Credential::where('tenant_id', $tenant_id)->first();
+
+        $credential = Credential::where('tenant_id', $tenant->id)->first();
+
+        if ($tenant && !empty($dbName)) {
+            DB::statement("SET search_path TO {$dbName}");
+        }
 
         return $credential->channel ?? null;
     }
