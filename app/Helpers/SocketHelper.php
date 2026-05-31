@@ -5,6 +5,7 @@ namespace App\Helpers;
 use App\Jobs\SocketJob;
 use App\Models\Credential;
 use App\Models\SocketEvent;
+use Illuminate\Support\Facades\DB;
 
 class SocketHelper
 {
