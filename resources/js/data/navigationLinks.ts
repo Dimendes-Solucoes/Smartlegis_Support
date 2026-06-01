@@ -96,6 +96,12 @@ export const staticNavigationLinks: NavigationLink[] = [
         type: 'link',
     },
     {
+        label: 'Mandatos',
+        icon: IdentificationIcon,
+        route: 'mandates.index',
+        type: 'link',
+    },
+    {
         label: 'Partidos',
         icon: FlagIcon,
         route: 'category-parties.index',

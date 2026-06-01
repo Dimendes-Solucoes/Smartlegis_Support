@@ -24,15 +24,15 @@ class CouncilorTermController extends Controller
     public function store(Request $request, int $councilorId)
     {
         $validated = $request->validate([
-            'legislature_id' => 'required|exists:legislatures,id',
-            'start_date'     => 'required|date',
-            'end_date'       => 'nullable|date|after:start_date',
+            'mandate_id' => 'required|exists:mandates,id',
+            'start_date' => 'required|date',
+            'end_date'   => 'nullable|date|after:start_date',
         ]);
 
         try {
             $this->service->store($councilorId, $validated);
         } catch (Exception $e) {
-            return redirect()->back()->withErrors(['legislature_id' => $e->getMessage()]);
+            return redirect()->back()->withErrors(['mandate_id' => $e->getMessage()]);
         }
 
         return redirect()->back()->with('success', 'Mandato adicionado com sucesso!');
@@ -41,15 +41,15 @@ class CouncilorTermController extends Controller
     public function update(Request $request, int $termId)
     {
         $validated = $request->validate([
-            'legislature_id' => 'required|exists:legislatures,id',
-            'start_date'     => 'required|date',
-            'end_date'       => 'nullable|date|after:start_date',
+            'mandate_id' => 'required|exists:mandates,id',
+            'start_date' => 'required|date',
+            'end_date'   => 'nullable|date|after:start_date',
         ]);
 
         try {
             $this->service->update($termId, $validated);
         } catch (Exception $e) {
-            return redirect()->back()->withErrors(['legislature_id' => $e->getMessage()]);
+            return redirect()->back()->withErrors(['mandate_id' => $e->getMessage()]);
         }
 
         return redirect()->back()->with('success', 'Mandato atualizado com sucesso!');

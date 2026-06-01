@@ -6,7 +6,7 @@ import SelectInput from '@/components/Form/SelectInput.vue';
 import { useForm } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
-interface Legislature {
+interface Mandate {
     id: number;
     title: string;
     start_at: string;
@@ -16,22 +16,22 @@ interface Legislature {
 
 const props = defineProps<{
     form: ReturnType<typeof useForm>;
-    legislatures: Legislature[];
+    mandates: Mandate[];
 }>();
 
-const selectedLegislature = computed({
-    get: () => props.form.legislature_id as number | null,
-    set: (val) => { props.form.legislature_id = val; },
+const selectedMandate = computed({
+    get: () => props.form.mandate_id as number | null,
+    set: (val) => { props.form.mandate_id = val; },
 });
 </script>
 
 <template>
     <div class="space-y-4">
         <div>
-            <InputLabel for="legislature_id" value="Legislatura" />
-            <SelectInput id="legislature_id" v-model="selectedLegislature" :options="legislatures" value-key="id"
-                label-key="title" placeholder="Selecione uma legislatura" />
-            <InputError :message="form.errors.legislature_id" class="mt-2" />
+            <InputLabel for="mandate_id" value="Mandato" />
+            <SelectInput id="mandate_id" v-model="selectedMandate" :options="mandates" value-key="id"
+                label-key="title" placeholder="Selecione um mandato" />
+            <InputError :message="form.errors.mandate_id" class="mt-2" />
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">

@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\Tenancy\Legislature;
+use App\Models\Tenancy\Mandate;
 use App\Models\Tenancy\User;
 use App\Models\Tenancy\UserTerm;
 use Exception;
@@ -14,30 +14,33 @@ class CouncilorTermService
     {
         $councilor = User::findOrFail($councilorId);
 
-        $terms = UserTerm::with('legislature')
+        $terms = UserTerm::with('mandate')
             ->where('user_id', $councilorId)
-            ->orderByDesc('legislature_id')
+            ->orderByDesc('mandate_id')
             ->get();
 
-        $legislatures = Legislature::orderByDesc('start_at')->get();
+        $mandates = Mandate::orderByDesc('start_at')->get();
 
         return [
-            'councilor'    => $councilor,
-            'terms'        => $terms,
-            'legislatures' => $legislatures,
+            'councilor' => $councilor,
+            'terms'     => $terms,
+            'mandates'  => $mandates,
         ];
     }
 
     public function store(int $councilorId, array $data): UserTerm
     {
-        $this->ensureNoDuplicate($councilorId, $data['legislature_id']);
+        $this->ensureNoDuplicate($councilorId, $data['mandate_id']);
 
-        return DB::transaction(function () use ($councilorId, $data) {
+        $councilor = User::findOrFail($councilorId);
+
+        return DB::transaction(function () use ($councilorId, $data, $councilor) {
             return UserTerm::create([
-                'user_id'        => $councilorId,
-                'legislature_id' => $data['legislature_id'],
-                'start_date'     => $data['start_date'],
-                'end_date'       => $data['end_date'] ?? null,
+                'user_id'           => $councilorId,
+                'mandate_id'        => $data['mandate_id'],
+                'category_party_id' => $councilor->category_party_id,
+                'start_date'        => $data['start_date'],
+                'end_date'          => $data['end_date'] ?? null,
             ]);
         });
     }
@@ -46,16 +49,17 @@ class CouncilorTermService
     {
         $term = UserTerm::findOrFail($termId);
 
-        $this->ensureNoDuplicate($term->user_id, $data['legislature_id'], $termId);
+        $this->ensureNoDuplicate($term->user_id, $data['mandate_id'], $termId);
 
         return DB::transaction(function () use ($term, $data) {
             $term->update([
-                'legislature_id' => $data['legislature_id'],
-                'start_date'     => $data['start_date'],
-                'end_date'       => $data['end_date'] ?? null,
+                'mandate_id'        => $data['mandate_id'],
+                'category_party_id' => $term->user->category_party_id,
+                'start_date'        => $data['start_date'],
+                'end_date'          => $data['end_date'] ?? null,
             ]);
 
-            return $term->fresh('legislature');
+            return $term->fresh('mandate');
         });
     }
 
@@ -65,17 +69,17 @@ class CouncilorTermService
         $term->delete();
     }
 
-    private function ensureNoDuplicate(int $userId, int $legislatureId, ?int $excludeTermId = null): void
+    private function ensureNoDuplicate(int $userId, int $mandateId, ?int $excludeTermId = null): void
     {
         $query = UserTerm::where('user_id', $userId)
-            ->where('legislature_id', $legislatureId);
+            ->where('mandate_id', $mandateId);
 
         if ($excludeTermId) {
             $query->where('id', '!=', $excludeTermId);
         }
 
         if ($query->exists()) {
-            throw new Exception('Este vereador já possui um mandato cadastrado para esta legislatura.');
+            throw new Exception('Este vereador já possui um mandato cadastrado para este mandato.');
         }
     }
 }

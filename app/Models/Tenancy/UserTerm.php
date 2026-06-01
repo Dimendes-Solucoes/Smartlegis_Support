@@ -11,7 +11,8 @@ class UserTerm extends Model
 
     protected $fillable = [
         'user_id',
-        'legislature_id',
+        'mandate_id',
+        'category_party_id',
         'start_date',
         'end_date',
     ];
@@ -26,8 +27,13 @@ class UserTerm extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function legislature()
+    public function mandate()
     {
-        return $this->belongsTo(Legislature::class, 'legislature_id');
+        return $this->belongsTo(Mandate::class, 'mandate_id');
+    }
+
+    public function party()
+    {
+        return $this->belongsTo(CategoryParty::class, 'category_party_id');
     }
 }

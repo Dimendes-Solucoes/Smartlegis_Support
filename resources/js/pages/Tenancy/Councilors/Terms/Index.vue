@@ -26,14 +26,14 @@ interface Term {
     id: number;
     start_date: string;
     end_date: string | null;
-    legislature: Legislature | null;
+    mandate: Legislature | null;
 }
 
 const props = defineProps<{
     data: {
         councilor: User;
         terms: Term[];
-        legislatures: Legislature[];
+        mandates: Legislature[];
     };
 }>();
 
@@ -47,7 +47,7 @@ const formatDate = (dateString: string | null): string => {
 
 const form = useForm({
     id: null as number | null,
-    legislature_id: null as number | null,
+    mandate_id: null as number | null,
     start_date: '',
     end_date: null as string | null,
 });
@@ -61,7 +61,7 @@ const openCreateModal = () => {
 
 const openEditModal = (term: Term) => {
     form.id = term.id;
-    form.legislature_id = term.legislature?.id ?? null;
+    form.mandate_id = term.mandate?.id ?? null;
     form.start_date = term.start_date;
     form.end_date = term.end_date || null;
     showTermModal.value = true;
@@ -148,9 +148,9 @@ const deleteTerm = () => {
                             <td class="px-6 py-4">
                                 <div class="flex items-center space-x-2">
                                     <span class="font-medium text-gray-900 dark:text-gray-100">
-                                        {{ term.legislature?.title ?? '-' }}
+                                        {{ term.mandate?.title ?? '-' }}
                                     </span>
-                                    <span v-if="term.legislature?.is_current"
+                                    <span v-if="term.mandate?.is_current"
                                         class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
                                         Atual
                                     </span>
@@ -183,7 +183,7 @@ const deleteTerm = () => {
         </div>
     </AuthenticatedLayout>
 
-    <TermModal :show="showTermModal" :form="form" :legislatures="data.legislatures" @close="closeModal"
+    <TermModal :show="showTermModal" :form="form" :mandates="data.mandates" @close="closeModal"
         @submit="submitTerm" />
 
     <ConfirmDeletionModal :show="confirmingDeletion" title="Excluir Mandato"

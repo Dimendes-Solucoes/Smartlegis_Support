@@ -16,7 +16,7 @@ interface Legislature {
 const props = defineProps<{
     show: boolean;
     form: any;
-    legislatures: Legislature[];
+    mandates: Legislature[];
 }>();
 
 const emit = defineEmits(["close", "submit"]);
@@ -34,7 +34,7 @@ const closeModal = () => emit("close");
             </h2>
 
             <form @submit.prevent="$emit('submit')" class="mt-6 space-y-6">
-                <TermForm :form="form" :legislatures="legislatures" />
+                <TermForm :form="form" :mandates="mandates" />
 
                 <div class="flex justify-end space-x-2">
                     <SecondaryButton @click="closeModal" type="button">
