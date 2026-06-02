@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Legislature extends Model
+class Mandate extends Model
 {
     use HasFactory, SoftDeletes;
 
@@ -20,7 +20,7 @@ class Legislature extends Model
     protected $casts = [
         'start_at'   => 'date',
         'end_at'     => 'date',
-        'is_current' => 'boolean'
+        'is_current' => 'boolean',
     ];
 
     public function userTerms()
@@ -31,10 +31,5 @@ class Legislature extends Model
     public function users()
     {
         return $this->hasManyThrough(User::class, UserTerm::class, 'mandate_id', 'id', 'id', 'user_id');
-    }
-
-    public function comissions()
-    {
-        return $this->hasMany(Comission::class);
     }
 }

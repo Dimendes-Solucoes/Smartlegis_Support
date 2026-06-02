@@ -24,8 +24,8 @@ class LegislatureService
     {
         $legislature = Legislature::with('userTerms.user')->findOrFail($id);
 
-        $allOtherTerms = UserTerm::with('legislature')
-            ->where('legislature_id', '!=', $id)
+        $allOtherTerms = UserTerm::with('mandate')
+            ->where('mandate_id', '!=', $id)
             ->get();
 
         $userTerms = $legislature->userTerms->map(function ($term) use ($allOtherTerms) {

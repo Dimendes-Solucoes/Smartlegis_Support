@@ -32,8 +32,8 @@ class CommissionService
             'legislatures' => Legislature::orderBy('start_at', 'desc')
                 ->get(['id', 'title', 'is_current'])
                 ->map(fn($legislature) => [
-                    'id'       => $legislature->id,
-                    'title'    => $legislature->is_current ? "{$legislature->title} - Atual" : $legislature->title,
+                    'id'         => $legislature->id,
+                    'title'      => $legislature->is_current ? "{$legislature->title} - Atual" : $legislature->title,
                     'is_current' => $legislature->is_current,
                 ]),
         ];
@@ -105,7 +105,7 @@ class CommissionService
 
     public function toggleStatus(int $id): Comission
     {
-        $commission = Comission::findOrFail($id);   
+        $commission = Comission::findOrFail($id);
         $commission->is_active = !$commission->is_active;
         $commission->save();
 

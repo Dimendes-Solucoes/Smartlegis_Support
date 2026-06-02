@@ -11,6 +11,7 @@ use App\Http\Controllers\Tenancy\DocumentCategoryController;
 use App\Http\Controllers\Tenancy\DocumentModelController;
 use App\Http\Controllers\Tenancy\DocumentController;
 use App\Http\Controllers\Tenancy\LegislatureController;
+use App\Http\Controllers\Tenancy\MandateController;
 use App\Http\Controllers\Tenancy\ProtocolMinimumController;
 use App\Http\Controllers\Tenancy\QuestionOrderController;
 use App\Http\Controllers\Tenancy\QuorumController;
@@ -77,6 +78,18 @@ Route::middleware(['auth', 'tenant.connection'])
         Route::prefix('legislaturas')
             ->name('legislatures.')
             ->controller(LegislatureController::class)
+            ->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/cadastrar', 'create')->name('create');
+                Route::post('/', 'store')->name('store');
+                Route::get('/{id}/editar', 'edit')->name('edit');
+                Route::put('/{id}', 'update')->name('update');
+                Route::put('/{id}/users', 'updateUsers')->name('update_users');
+            });
+
+        Route::prefix('mandatos')
+            ->name('mandates.')
+            ->controller(MandateController::class)
             ->group(function () {
                 Route::get('/', 'index')->name('index');
                 Route::get('/cadastrar', 'create')->name('create');

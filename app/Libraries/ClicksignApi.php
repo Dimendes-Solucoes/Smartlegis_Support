@@ -10,9 +10,10 @@ use Illuminate\Support\Str;
 
 class ClicksignApi
 {
-    private static string $host;
-    private static string $token;
-    private static PendingRequest $httpClient;
+    private static ?string $host = null;
+    private static ?string $token = null;
+    private static ?PendingRequest $httpClient = null;
+    private static bool $initialized = false;
 
     public const SIGN_AS_SIGN = 'sign';
     public const AUTH_EMAIL = 'email';
@@ -20,20 +21,38 @@ class ClicksignApi
 
     public static function boot(): void
     {
-        self::$host = config('services.clicksign.host');
-        self::$token = config('services.clicksign.token');
+        self::$initialized = true;
+
+        $host  = config('services.clicksign.host');
+        $token = config('services.clicksign.token');
+
+        if (!$host || !$token) {
+            return;
+        }
+
+        self::$host  = $host;
+        self::$token = $token;
 
         self::$httpClient = Http::baseUrl("https://" . self::$host . ".clicksign.com/api/v1/")
             ->withHeaders([
-                'Accept' => 'application/json',
+                'Accept'       => 'application/json',
                 'Content-Type' => 'application/json',
             ]);
     }
 
+    private static function ensure(): bool
+    {
+        if (!self::$initialized) {
+            self::boot();
+        }
+
+        return self::$httpClient !== null;
+    }
+
     public static function sendDocument(string $fileName, string $attachmentPath, int $deadlineInMonths = 1): ?array
     {
-        if (!isset(self::$httpClient)) {
-            self::boot();
+        if (!self::ensure()) {
+            return null;
         }
 
         try {
@@ -73,8 +92,8 @@ class ClicksignApi
 
     public static function cancelDocument(string $docKey): ?array
     {
-        if (!isset(self::$httpClient)) {
-            self::boot();
+        if (!self::ensure()) {
+            return null;
         }
 
         try {
@@ -92,8 +111,8 @@ class ClicksignApi
 
     public static function deleteDocument(string $docKey): ?array
     {
-        if (!isset(self::$httpClient)) {
-            self::boot();
+        if (!self::ensure()) {
+            return null;
         }
 
         try {
@@ -111,8 +130,8 @@ class ClicksignApi
 
     public static function addSigner(string $docKey, string $signerKey, string $userName, string $message = '', string $signAs = self::SIGN_AS_SIGN): ?array
     {
-        if (!isset(self::$httpClient)) {
-            self::boot();
+        if (!self::ensure()) {
+            return null;
         }
 
         try {
@@ -141,8 +160,8 @@ class ClicksignApi
 
     public static function removeSigner(string $listKey): ?array
     {
-        if (!isset(self::$httpClient)) {
-            self::boot();
+        if (!self::ensure()) {
+            return null;
         }
 
         try {
@@ -160,8 +179,8 @@ class ClicksignApi
 
     public static function createBatch(string $signerKey, array $documentKeys): ?array
     {
-        if (!isset(self::$httpClient)) {
-            self::boot();
+        if (!self::ensure()) {
+            return null;
         }
 
         try {
@@ -190,8 +209,8 @@ class ClicksignApi
         array $auths = [self::AUTH_EMAIL],
         string $delivery = self::DELIVERY_EMAIL
     ): ?array {
-        if (!isset(self::$httpClient)) {
-            self::boot();
+        if (!self::ensure()) {
+            return null;
         }
 
         try {
