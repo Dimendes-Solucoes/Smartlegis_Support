@@ -7,6 +7,10 @@ import TextInput from '@/components/Form/TextInput.vue';
 import IconButton from '@/components/Itens/IconButton.vue';
 import BackButtonRow from '@/components/Common/BackButtonRow.vue';
 import SelectInput from '@/components/Form/SelectInput.vue';
+import Modal from '@/components/Common/Modal.vue';
+import UserForm from '@/components/User/UserForm.vue';
+import ImageUploadWithCropper from '@/components/User/ImageUploadWithCropper.vue';
+import CouncilorForm from '@/pages/Tenancy/Councilors/CouncilorForm.vue';
 import { TrashIcon, PencilIcon, CheckIcon, XMarkIcon } from '@heroicons/vue/24/outline';
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
@@ -39,11 +43,17 @@ interface Party {
     name_party: string;
 }
 
+interface Category {
+    id: number;
+    name: string;
+}
+
 const props = defineProps<{
     mandate: Mandate;
     userTerms: UserTerm[];
     councilors: Councilor[];
     parties: Party[];
+    categories: Category[];
 }>();
 
 const mandateForm = useForm({
@@ -68,6 +78,21 @@ const usersForm = useForm({
         has_conflict: t.has_conflict,
     })),
 });
+
+watch(
+    () => props.userTerms,
+    (terms: UserTerm[]) => {
+        usersForm.users = terms.map((t: UserTerm) => ({
+            id: t.id,
+            user_id: t.user_id,
+            name: t.name,
+            category_party_id: t.category_party_id,
+            start_date: t.start_date,
+            end_date: t.end_date ?? '',
+            has_conflict: t.has_conflict,
+        }));
+    },
+);
 
 const sortUsers = () => {
     usersForm.users.sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
@@ -162,6 +187,36 @@ const partyName = (partyId: number | null) => {
     if (!partyId) return '-';
     return props.parties.find((p: Party) => p.id === partyId)?.name_party ?? '-';
 };
+
+const showCreateModal = ref(false);
+
+const createForm = useForm({
+    name: '',
+    email: '',
+    password: '',
+    password_confirmation: '',
+    nickname: '',
+    path_image: null as File | null,
+    category_id: '',
+    party_id: '',
+    mandate_id: props.mandate.id,
+    is_vereador_active: props.mandate.is_current,
+    is_leader: false,
+    is_first_secretary: false,
+    birthdate: '',
+    summary: '',
+});
+
+const submitCreate = () => {
+    createForm.post(route('councilors.store'), {
+        forceFormData: true,
+        onSuccess: () => {
+            showCreateModal.value = false;
+            createForm.reset();
+        },
+        onFinish: () => createForm.reset('password', 'password_confirmation'),
+    });
+};
 </script>
 
 <template>
@@ -209,7 +264,13 @@ const partyName = (partyId: number | null) => {
         </form>
 
         <div class="p-4 border rounded-lg">
-            <h3 class="text-md font-semibold mb-4">Gerenciar Vereadores</h3>
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-md font-semibold">Gerenciar Vereadores</h3>
+                <button type="button" @click="showCreateModal = true"
+                    class="text-sm text-indigo-600 dark:text-indigo-400 hover:underline">
+                    + Cadastrar novo vereador
+                </button>
+            </div>
 
             <div class="mb-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
                 <div class="lg:col-span-2">
@@ -322,5 +383,32 @@ const partyName = (partyId: number | null) => {
 
             <InputError class="mt-2" :message="usersForm.errors.users" />
         </div>
+        <Modal :show="showCreateModal" max-width="2xl" @close="showCreateModal = false">
+            <div class="p-6">
+                <h2 class="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Cadastrar Vereador</h2>
+
+                <form @submit.prevent="submitCreate">
+                    <div class="mb-4">
+                        <ImageUploadWithCropper v-model="createForm.path_image"
+                            :error="createForm.errors.path_image" />
+                    </div>
+
+                    <UserForm :form="createForm" :categories="props.categories" :isCreating="true" />
+                    <CouncilorForm :form="createForm" :parties="props.parties"
+                        :mandates="[props.mandate]" :isCreating="true" />
+
+                    <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+                        <button type="button" @click="showCreateModal = false"
+                            class="px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:underline">
+                            Cancelar
+                        </button>
+                        <PrimaryButton :class="{ 'opacity-25': createForm.processing }"
+                            :disabled="createForm.processing">
+                            Salvar
+                        </PrimaryButton>
+                    </div>
+                </form>
+            </div>
+        </Modal>
     </AuthenticatedLayout>
 </template>

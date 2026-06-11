@@ -106,7 +106,7 @@ const props = defineProps<{
             </div>
         </div>
 
-        <div class="border-t border-gray-200 dark:border-gray-700 pt-6 mt-6">
+        <div>
             <p
                 v-if="!props.isCreating"
                 class="text-sm text-gray-600 dark:text-gray-400 mb-4"

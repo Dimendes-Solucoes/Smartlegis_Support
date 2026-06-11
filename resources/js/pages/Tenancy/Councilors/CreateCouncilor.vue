@@ -18,9 +18,18 @@ interface Party {
     name_party: string;
 }
 
+interface Mandate {
+    id: number;
+    title: string;
+    start_at: string;
+    end_at: string;
+    is_current: boolean;
+}
+
 const props = defineProps<{
     categories: Category[];
     parties: Party[];
+    mandates: Mandate[];
 }>();
 
 const form = useForm({
@@ -34,6 +43,8 @@ const form = useForm({
     party_id: '',
     is_leader: false,
     is_first_secretary: false,
+    is_vereador_active: true,
+    mandate_id: '' as string | number,
     birthdate: '',
     summary: '',
 });
@@ -61,9 +72,9 @@ const submit = () => {
             </div>
 
             <UserForm :form="form" :categories="props.categories" :isCreating="true" />
-            <CouncilorForm :form="form" :parties="props.parties" :isCreating="true" />
+            <CouncilorForm :form="form" :parties="props.parties" :mandates="props.mandates" :isCreating="true" />
 
-            <div class="flex items-center justify-end">
+            <div class="flex items-center justify-end border-t border-gray-200 dark:border-gray-700 pt-6 mt-6">
                 <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
                     Salvar
                 </PrimaryButton>

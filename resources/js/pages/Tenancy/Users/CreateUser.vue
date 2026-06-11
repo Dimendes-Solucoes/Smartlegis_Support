@@ -50,7 +50,7 @@ const submit = () => {
 
             <UserForm :form="form" :categories="props.categories" :isCreating="true" />
 
-            <div class="flex items-center justify-end">
+            <div class="flex items-center justify-end border-t border-gray-200 dark:border-gray-700 pt-6 mt-6">
                 <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
                     Adicionar Usuário
                 </PrimaryButton>

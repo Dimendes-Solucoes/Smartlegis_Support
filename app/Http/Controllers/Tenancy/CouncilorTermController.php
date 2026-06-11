@@ -32,13 +32,15 @@ class CouncilorTermController extends Controller
         try {
             $this->service->store($councilorId, $validated);
         } catch (Exception $e) {
-            return redirect()->back()->withErrors(['mandate_id' => $e->getMessage()]);
+            return redirect()->route('councilors.terms.index', $councilorId)
+                ->withErrors(['mandate_id' => $e->getMessage()]);
         }
 
-        return redirect()->back()->with('success', 'Mandato adicionado com sucesso!');
+        return redirect()->route('councilors.terms.index', $councilorId)
+            ->with('success', 'Mandato adicionado com sucesso!');
     }
 
-    public function update(Request $request, int $termId)
+    public function update(Request $request, int $councilorId, int $termId)
     {
         $validated = $request->validate([
             'mandate_id' => 'required|exists:mandates,id',
@@ -49,16 +51,19 @@ class CouncilorTermController extends Controller
         try {
             $this->service->update($termId, $validated);
         } catch (Exception $e) {
-            return redirect()->back()->withErrors(['mandate_id' => $e->getMessage()]);
+            return redirect()->route('councilors.terms.index', $councilorId)
+                ->withErrors(['mandate_id' => $e->getMessage()]);
         }
 
-        return redirect()->back()->with('success', 'Mandato atualizado com sucesso!');
+        return redirect()->route('councilors.terms.index', $councilorId)
+            ->with('success', 'Mandato atualizado com sucesso!');
     }
 
-    public function destroy(int $termId)
+    public function destroy(int $councilorId, int $termId)
     {
         $this->service->delete($termId);
 
-        return redirect()->back()->with('success', 'Mandato removido com sucesso!');
+        return redirect()->route('councilors.terms.index', $councilorId)
+            ->with('success', 'Mandato removido com sucesso!');
     }
 }

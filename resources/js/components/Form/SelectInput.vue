@@ -79,7 +79,7 @@ const getOptionLabel = (option) => {
         :class="selectClasses"
         :required="required"
         :disabled="disabled"
-        @change="$emit('update:modelValue', $event.target.value)"
+        @change="$emit('update:modelValue', isNaN(Number($event.target.value)) || $event.target.value === '' ? $event.target.value : Number($event.target.value))"
     >
         <option value="" :disabled="disablePlaceholder">
             {{ placeholder }}

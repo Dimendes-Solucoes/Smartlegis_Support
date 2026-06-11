@@ -29,11 +29,13 @@ class CouncilorStoreRequest extends FormRequest
             'nickname' => ['nullable', 'string', 'max:255'],
             'path_image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg'],
             'category_id' => ['required', 'exists:user_categories,id'],
-            'party_id' => ['required', 'exists:category_parties,id'],
-            'is_leader' => ['nullable', 'boolean'],
+            'party_id'           => ['required', 'exists:category_parties,id'],
+            'is_leader'          => ['nullable', 'boolean'],
             'is_first_secretary' => ['nullable', 'boolean'],
-            'birthdate' => ['nullable', 'date', 'before:today'],
-            'summary' => ['nullable', 'string', 'max:65535'],
+            'birthdate'          => ['nullable', 'date', 'before:today'],
+            'summary'            => ['nullable', 'string', 'max:65535'],
+            'mandate_id'         => ['nullable', 'exists:mandates,id'],
+            'is_vereador_active' => ['nullable', 'boolean'],
         ];
     }
 

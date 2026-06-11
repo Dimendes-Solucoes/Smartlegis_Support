@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Libraries\ClicksignApi;
 use App\Libraries\ImageUploader;
 use App\Models\Tenancy\CategoryParty;
+use App\Models\Tenancy\Mandate;
 use App\Models\Tenancy\User;
 use App\Models\Tenancy\UserCategory;
 use App\Models\Tenancy\UserTerm;
@@ -36,10 +37,12 @@ class CouncilorService
             ->get();
 
         $parties = CategoryParty::orderBy('name_party')->get();
+        $mandates = Mandate::orderBy('start_at', 'desc')->get();
 
         return [
             'categories' => $categories,
-            'parties' => $parties
+            'parties'    => $parties,
+            'mandates'   => $mandates,
         ];
     }
 
@@ -48,11 +51,12 @@ class CouncilorService
         try {
             DB::beginTransaction();
 
+            $mandateId = Arr::get($data, 'mandate_id');
             $userData = $this->prepareUserData($data);
 
             $user = User::create($userData);
 
-            $this->createTerm($user);
+            $this->createTerm($user, $mandateId, $user->category_party_id);
 
             if ($user->user_category_id == UserCategory::PRESIDENTE) {
                 $this->demotePreviousPresident($user);
@@ -141,11 +145,22 @@ class CouncilorService
         }
     }
 
-    private function createTerm(User $user)
+    private function createTerm(User $user, ?int $mandateId = null, ?int $categoryPartyId = null)
     {
+        $endDate = null;
+        if ($mandateId) {
+            $mandate = Mandate::find($mandateId);
+            if ($mandate && !$mandate->is_current) {
+                $endDate = $mandate->end_at->format('Y-m-d');
+            }
+        }
+
         UserTerm::create([
-            'user_id' => $user->id,
-            'start_date' => date('Y-m-d')
+            'user_id'           => $user->id,
+            'mandate_id'        => $mandateId,
+            'category_party_id' => $categoryPartyId ?? $user->category_party_id,
+            'start_date'        => date('Y-m-d'),
+            'end_date'          => $endDate,
         ]);
     }
 
@@ -177,7 +192,8 @@ class CouncilorService
             unset($data['password']);
         }
 
-        $data['status_user'] = User::USUARIO_VEREADOR;
+        $isActive = filter_var(Arr::get($data, 'is_vereador_active', true), FILTER_VALIDATE_BOOLEAN);
+        $data['status_user'] = $isActive ? User::USUARIO_VEREADOR : User::USUARIO_INVISIVEL;
         $data['user_category_id'] = $data['category_id'] ?? null;
         $data['category_party_id'] = $data['party_id'] ?? null;
         $data['status_lider'] = $data['is_leader'] ?? false;
@@ -205,7 +221,9 @@ class CouncilorService
             'password_confirmation',
             'category_id',
             'party_id',
-            'is_leader'
+            'is_leader',
+            'mandate_id',
+            'is_vereador_active',
         ];
 
         return Arr::except($data, $fieldsToRemove);
