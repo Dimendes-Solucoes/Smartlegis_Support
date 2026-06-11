@@ -84,7 +84,6 @@ Route::middleware(['auth', 'tenant.connection'])
                 Route::post('/', 'store')->name('store');
                 Route::get('/{id}/editar', 'edit')->name('edit');
                 Route::put('/{id}', 'update')->name('update');
-                Route::put('/{id}/users', 'updateUsers')->name('update_users');
             });
 
         Route::prefix('mandatos')

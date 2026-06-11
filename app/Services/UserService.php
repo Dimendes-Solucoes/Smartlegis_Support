@@ -40,7 +40,7 @@ class UserService
             ->get();
 
         return [
-            'categories' => $categories
+            'categories' => $categories,
         ];
     }
 

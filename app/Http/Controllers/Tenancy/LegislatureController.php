@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Tenancy;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Legislatures\LegislatureStoreRequest;
-use App\Http\Requests\Legislatures\LegislatureUpdateUsersRequest;
 use App\Services\LegislatureService;
 use Inertia\Inertia;
 
@@ -49,10 +48,4 @@ class LegislatureController extends Controller
         return redirect()->back()->with('success', 'Legislatura atualizada com sucesso!');
     }
 
-    public function updateUsers(LegislatureUpdateUsersRequest $request, int $id)
-    {
-        $this->service->updateUsers($id, $request->validated());
-
-        return redirect()->back()->with('success', 'Vereadores atualizados com sucesso!');
-    }
 }

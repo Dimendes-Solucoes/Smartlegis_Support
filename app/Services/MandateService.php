@@ -18,7 +18,7 @@ class MandateService
 
     public function getForEdit(int $id): array
     {
-        $mandate = Mandate::with('userTerms.user')->findOrFail($id);
+        $mandate = Mandate::with(['userTerms.user' => fn ($q) => $q->withTrashed()])->findOrFail($id);
 
         $allOtherTerms = UserTerm::with('mandate')
             ->where('mandate_id', '!=', $id)
@@ -43,7 +43,7 @@ class MandateService
             return [
                 'id'                => $term->id,
                 'user_id'           => $term->user_id,
-                'name'              => $term->user->name,
+                'name'              => $term->user?->name ?? '',
                 'category_party_id' => $term->category_party_id,
                 'start_date'        => $termStart?->format('Y-m-d'),
                 'end_date'          => $termEnd?->format('Y-m-d'),
@@ -59,6 +59,10 @@ class MandateService
 
         $parties = CategoryParty::orderBy('name_party')->get(['id', 'name_party']);
 
+        $categories = UserCategory::whereIn('id', UserCategory::LEGISLATIVO)
+            ->orderBy('name')
+            ->get(['id', 'name']);
+
         return [
             'mandate'   => [
                 ...$mandate->toArray(),
@@ -68,6 +72,7 @@ class MandateService
             'userTerms'  => $userTerms,
             'councilors' => $councilors,
             'parties'    => $parties,
+            'categories' => $categories,
         ];
     }
 
@@ -90,11 +95,16 @@ class MandateService
         $mandate->userTerms()->delete();
 
         foreach ($data['users'] as $term) {
+            $endDate = $term['end_date'] ?: null;
+            if (!$endDate && !$mandate->is_current) {
+                $endDate = $mandate->end_at->format('Y-m-d');
+            }
+
             $mandate->userTerms()->create([
                 'user_id'           => $term['user_id'],
                 'category_party_id' => $term['category_party_id'] ?? null,
                 'start_date'        => $term['start_date'],
-                'end_date'          => $term['end_date'] ?? null,
+                'end_date'          => $endDate,
             ]);
         }
 

@@ -36,7 +36,13 @@ class CouncilorController extends Controller
 
     public function store(CouncilorStoreRequest $request)
     {
-        $this->service->createCouncilor($request->validated());
+        $validated = $request->validated();
+        $this->service->createCouncilor($validated);
+
+        if (!empty($validated['mandate_id'])) {
+            return redirect()->route('mandates.edit', $validated['mandate_id'])
+                ->with('success', 'Vereador cadastrado com sucesso!');
+        }
 
         return redirect()->route('councilors.index')->with('success', 'Vereador cadastrado com sucesso!');
     }
